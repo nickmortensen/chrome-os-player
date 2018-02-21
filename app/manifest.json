@@ -1,0 +1,56 @@
+{
+    "manifest_version": 2,
+    "name": "Rise Vision Player Beta",
+    "version": "0.0.0.0",
+    "permissions": [
+      "<all_urls>",
+      {"fileSystem": ["write", "directory"]},
+      "unlimitedStorage",
+      "system.cpu",
+      "system.memory",
+      "system.storage",
+      "system.display",
+      "serial",
+      "webview",
+      "storage"
+    ],
+    "minimum_chrome_version": "52",
+    "icons": {
+      "16": "icon_16.png",
+      "48": "icon_48.png",
+      "128": "icon_128.png"
+    },
+    "app": {
+      "background": {
+        "scripts": [
+          "background.bundle.js"
+        ]
+      }
+    },
+    "sockets": {
+      "udp": {
+        "send": [""],
+        "bind": [""],
+        "multicastMembership": ""
+      },
+      "tcp": {
+        "connect": [""]
+      },
+      "tcpServer": {
+        "listen": ["*:*"]
+      }
+   },
+   "webview": {
+    "partitions": [
+        {
+          "name": "trusted",
+          "accessible_resources": ["*"]
+        }
+      ]
+    },
+    "offline_enabled": true,
+    "kiosk_enabled": true,
+    "kiosk": {
+      "required_platform_version": "10032.86.0"
+    }
+  }
