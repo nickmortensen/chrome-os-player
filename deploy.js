@@ -4,10 +4,8 @@ const program = require('commander');
 const fs = require("fs");
 
 const spawnSync = require("child_process").spawnSync;
-const credentialsPath = "private-keys/chrome-os-player/credentials.json";
+
 function utf8() {return {encoding: "utf8"};}
-const credentials = JSON.parse(fs.readFileSync(credentialsPath, utf8()));
-const appId = process.env.CIRCLE_BRANCH === "master" ? credentials.production_app_id_no_restart : credentials.test_app_id;
 const manifestFilePath = "dist/manifest.json";
 
 program
@@ -34,11 +32,14 @@ function incrementVersion() {
 
 
 function publish() {
+  const credentialsPath = "private-keys/chrome-os-player/credentials.json";
+  const credentials = JSON.parse(fs.readFileSync(credentialsPath, utf8()));
+  const appId = process.env.CIRCLE_BRANCH === "master" ? credentials.production_app_id_no_restart : credentials.test_app_id;
 
   const accessTokenRequest = spawnSync("curl", ["--data",
   "client_id=" + credentials.client_id +
   "&client_secret=" + credentials.client_secret +
-  "&refresh_token=" + credentials.refresh_token + 
+  "&refresh_token=" + credentials.refresh_token +
   "&grant_type=refresh_token",
   "https://www.googleapis.com/oauth2/v4/token"], utf8());
 
@@ -47,13 +48,13 @@ function publish() {
   console.log("Uploading...");
 
   const chromeWebStoreUploadRequest = spawnSync("curl", [
-  "-H", "Authorization: Bearer " + accessToken, 
+  "-H", "Authorization: Bearer " + accessToken,
   "-H", "x-goog-api-version: 2",
   "-X", "PUT",
   "-T", "dist/app.zip",
   "-vv",
   "https://www.googleapis.com/upload/chromewebstore/v1.1/items/" + appId]);
-    
+
   console.log(JSON.parse(chromeWebStoreUploadRequest.stdout.toString()).uploadState);
 
   if (chromeWebStoreUploadRequest.stdout.toString().indexOf("FAILURE") > -1) {
@@ -63,9 +64,9 @@ function publish() {
 
   const manifest = JSON.parse(fs.readFileSync(manifestFilePath, {encoding: "utf8"}));
   console.log("Publishing version " + manifest.version);
-  
+
   const chromeWebStorePublishRequest = spawnSync("curl", [
-  "-H", "Authorization: Bearer " + accessToken, 
+  "-H", "Authorization: Bearer " + accessToken,
   "-H", "x-goog-api-verison: 2",
   "-H", "Content-Length: 0",
   "-H", "publishTarget: trustedTesters",
@@ -75,7 +76,7 @@ function publish() {
   "https://www.googleapis.com/chromewebstore/v1.1/items/" + appId + "/publish"]);
 
   console.log(chromeWebStorePublishRequest.stdout.toString());
-  
+
   process.exit(chromeWebStorePublishRequest.status);
 }
 
