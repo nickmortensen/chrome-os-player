@@ -34,7 +34,7 @@ function incrementVersion() {
 function publish() {
   const credentialsPath = "private-keys/chrome-os-player/credentials.json";
   const credentials = JSON.parse(fs.readFileSync(credentialsPath, utf8()));
-  const appId = process.env.CIRCLE_BRANCH === "master" ? credentials.production_app_id_no_restart : credentials.test_app_id;
+  const appId = credentials.beta_app_id;
 
   const accessTokenRequest = spawnSync("curl", ["--data",
   "client_id=" + credentials.client_id +
