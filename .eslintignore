@@ -3,3 +3,4 @@ app/*.bundle.js
 app/local-viewer/**
 deploy.js
 src/lib/*.js
+webpack.config.js
