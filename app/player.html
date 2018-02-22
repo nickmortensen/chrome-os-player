@@ -1,10 +1,30 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <title>Rise Vision Player</title>
+  <meta charset="utf-8">
+  <link href="css/player.css" rel="stylesheet" />
+  <title>Rise Vision Player</title>
 </head>
+
 <body>
-  <h1>Rise Vision</h1>
+  <div class="container">
+    <img class="logo" src="img/logo.svg">
+
+    <div class="content">
+      <h2>
+        <label for="displayId">Enter your Display ID</label>
+      </h2>
+      <input id="displayId" type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false">
+    </div>
+
+    <footer>
+      <h4>Need Help?</h4>
+      <p>Check out the Help Center at
+        <a target="_blank" href="https://help.risevision.com">https://help.risevision.com</a>
+      </p>
+    </footer>
+  </div>
 </body>
+
 </html>
