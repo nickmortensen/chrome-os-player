@@ -1,10 +1,40 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-    <meta charset="utf-8">
-    <title>Rise Vision Player</title>
+  <meta charset="utf-8">
+  <link href="css/player.css" rel="stylesheet" />
+  <title>Rise Vision Player</title>
 </head>
+
 <body>
-  <h1>Rise Vision</h1>
+
+  <img class="logo" src="img/logo.svg">
+
+  <main>
+    <div class="display-id-group">
+      <h1>
+        <label for="displayId">Enter your Display ID</label>
+      </h1>
+      <input id="displayId" type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+      <div class="greenbox">
+        <h4>Where do I get my Display ID?</h4>
+        <div class="text-muted half-top"> You can find your Display ID from the Display Settings page. You can access your Displays or create a new one at
+          <a target="_blank" href="https://displays.risevision.com">https://displays.risevision.com</a>.</div>
+      </div>
+      <button type="button" class="btn-continue btn btn-primary" id="continue">Continue</button>
+      <div class="terms"> By continuing you agree to the
+        <a target="_blank" href="https://www.risevision.com/terms-service-privacy">Terms &amp; Conditions</a>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <h4>Need Help?</h4>
+    <p>Check out the Help Center at
+      <a target="_blank" href="https://help.risevision.com">https://help.risevision.com</a>
+    </p>
+  </footer>
 </body>
+
 </html>
