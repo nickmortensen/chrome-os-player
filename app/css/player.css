@@ -1,3 +1,21 @@
+/* Reset */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-family: sans-serif;
+  line-height: 1.15;
+  -webkit-text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+}
+
+article, aside, dialog, figcaption, figure, footer, header, hgroup, main, nav, section {
+  display: block;
+}
+
 *:focus {
   outline: 0;
 }
@@ -20,21 +38,56 @@ a:link, a:visited {
   color: blue;
 }
 
-.container {
+/* Layout */
+body {
   display: flex;
   flex-direction: column;
   height: 100%;
   margin: 8px;
 }
 
+main {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+
+/* App */
+
 .logo {
   width: 120px;
 }
 
-.content {
-  flex-grow: 1;
+.display-id-group {
+  width: 60%;
+  display: flex;
+  flex-direction: column;
 }
 
+.btn.btn-primary.btn-continue {
+  margin-top: 20px;
+  width: 400px;
+  align-self: flex-end;
+  font-weight: bold;
+  font-size: 20pt;
+}
+
+.terms {
+  align-self: flex-end;
+}
+
+.greenbox {
+  padding: 4px;
+  border: #4ab767 1px solid;
+  border-radius: 3px;
+  margin-top: 20px;
+  margin-bottom: 8px;
+}
+
+/* Form */
 .form-control {
   display: block;
   box-sizing: border-box;
@@ -56,12 +109,39 @@ a:link, a:visited {
 }
 
 .form-control.id-form {
-    font-family: "Lucida Console", Monaco, monospace;
-    padding: 0;
-    text-indent: 8px;
-    letter-spacing: 25px;
-    background: none;
+  font-family: "Lucida Console", Monaco, monospace;
+  padding: 0;
+  text-indent: 8px;
+  letter-spacing: 40px;
+  background: none;
+  letter-spacing: 1em;
+  height: 3em;
+  font-size: 4em;
 }
 .form-control:focus {
   border: 1px solid green;
+}
+
+/* Buttons */
+.btn {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-size: 14px;
+  display: inline-block;
+  margin-bottom: 0;
+  font-weight: 400;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 10px 16px;
+  font-size: 16px;
+  line-height: 1.42857;
+  border-radius: 3px;
+}
+
+.btn.btn-primary {
+  color: #fff;
+  background-color: #4ab767;
+  border-color: #4ab767;
 }
