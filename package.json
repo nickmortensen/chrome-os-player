@@ -1,0 +1,46 @@
+{
+  "name": "chrome-os-player",
+  "version": "0.0.1",
+  "description": "Rise Vision Player for Chrome OS",
+  "directories": {
+    "test": "test"
+  },
+  "scripts": {
+    "lint": "eslint test && eslint src",
+    "prebuild": "npm run lint",
+    "build": "webpack",
+    "pretest": "npm run lint",
+    "test": "mocha -r test/mocha-env.js -t 20000 --recursive --exit test/unit/**",
+    "predist": "npm run build && rimraf dist && mkdir dist && cp -r app/* dist",
+    "dist": "node deploy.js -i && zip dist/app.zip -r dist",
+    "predeploy": "npm run dist",
+    "deploy": "node deploy.js -p",
+    "postdeploy": "rimraf dist",
+    "watch": "webpack --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rise-Vision/chrome-os-player.git"
+  },
+  "author": "Rise Vision",
+  "license": "GPL-3.0",
+  "bugs": {
+    "url": "https://github.com/Rise-Vision/chrome-os-player/issues"
+  },
+  "homepage": "https://github.com/Rise-Vision/chrome-os-player#readme",
+  "devDependencies": {
+    "commander": "^2.13.0",
+    "eslint": "^4.18.1",
+    "eslint-config-standard": "^11.0.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1",
+    "mocha": "^5.0.1",
+    "mocha-junit-reporter": "^1.15.0",
+    "rimraf": "^2.6.2",
+    "sinon": "^4.3.0",
+    "sinon-chrome": "^2.2.4",
+    "webpack": "^3.11.0"
+  },
+  "dependencies": {}
+}
