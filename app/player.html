@@ -4,6 +4,7 @@
 <head>
   <meta charset="utf-8">
   <link href="css/player.css" rel="stylesheet" />
+  <script src="player.bundle.js"></script>
   <title>Rise Vision Player</title>
 </head>
 
@@ -16,13 +17,18 @@
       <h1>
         <label for="displayId">Enter your Display ID</label>
       </h1>
-      <input id="displayId" type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+
+      <div id="errorMessage" class="alert alert-danger text-center display-id-error"></div>
+
+      <form id="displayId">
+        <input type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
+      </form>
       <div class="greenbox">
         <h4>Where do I get my Display ID?</h4>
         <div class="text-muted half-top"> You can find your Display ID from the Display Settings page. You can access your Displays or create a new one at
-          <a target="_blank" href="https://displays.risevision.com">https://displays.risevision.com</a>.</div>
+          <a target="_blank" tabindex="2" href="https://displays.risevision.com">https://displays.risevision.com</a>.</div>
       </div>
-      <button type="button" class="btn-continue btn btn-primary" id="continue">Continue</button>
+      <button type="submit" class="btn-continue btn btn-primary" form="displayId">Continue</button>
       <div class="terms"> By continuing you agree to the
         <a target="_blank" href="https://www.risevision.com/terms-service-privacy">Terms &amp; Conditions</a>
       </div>

@@ -87,6 +87,10 @@ main {
   margin-bottom: 8px;
 }
 
+.greenbox h4 {
+  margin-top: 0px;
+}
+
 /* Form */
 .form-control {
   display: block;
@@ -144,4 +148,29 @@ main {
   color: #fff;
   background-color: #4ab767;
   border-color: #4ab767;
+}
+
+/* Messages */
+.alert {
+  padding: 4px 22px;
+  margin-bottom: 0;
+  border: 1px solid transparent;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 15px;
+}
+
+.alert.display-id-error {
+  margin-bottom: 20px;
+  display: none;
+}
+
+.alert-danger {
+  background-color: #f2dede;
+  border-color: #ebccd1;
+  color: #333;
+}
+
+.text-center {
+  text-align: center;
 }
