@@ -1,17 +1,19 @@
+/* eslint-disable no-magic-numbers */
+
 function createPlayerWindow() {
   // Center window on screen.
   const screenWidth = screen.availWidth;
   const screenHeight = screen.availHeight;
-  const width = 600;
-  const height = 500;
+  const width = Math.round(screenWidth * 0.9);
+  const height = Math.round(screenHeight * 0.9);
 
   chrome.app.window.create('player.html', {
     id: 'player',
     outerBounds: {
       width,
       height,
-      left: Math.round((screenWidth - width) / 2), // eslint-disable-line no-magic-numbers
-      top: Math.round((screenHeight - height) / 2) // eslint-disable-line no-magic-numbers
+      left: Math.round((screenWidth - width) / 2),
+      top: Math.round((screenHeight - height) / 2)
     }
   });
 }
