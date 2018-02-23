@@ -11,7 +11,7 @@ describe('Display ID Validator', () => {
 
   beforeEach(() => fetch.resetBehavior());
 
-  it('validates a display id', ()=>{
+  it('validates a display id', () => {
     fetch.returns(Promise.resolve({
       json() {
         return Promise.resolve({
@@ -24,23 +24,21 @@ describe('Display ID Validator', () => {
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
       .then((resp)=>{
-        console.log(resp);
         assert.equal(resp.item.companyId, 'A');
       });
   });
 
-  it('rejects when validation fetch fails', ()=>{
+  it('rejects when validation fetch fails', () => {
     fetch.returns(Promise.reject(Error()));
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
-      .then(()=>{
-        assert.fail('should fail on rejection');
-      }).catch((err)=>{
+      .then(() => assert.fail('catch should have been called'))
+      .catch((err) => {
         assert.ok(err);
       });
   });
 
-  it('rejects when not validated', ()=>{
+  it('rejects when not validated', () => {
     fetch.returns(Promise.resolve({
       json() {
         return {
@@ -53,14 +51,13 @@ describe('Display ID Validator', () => {
     }));
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
-      .then(() => {
-        assert.fail('should fail on rejection');
-      }).catch((err) => {
+    .then(() => assert.fail('catch should have been called'))
+    .catch((err) => {
         assert.equal(err.message, 'test failure');
       });
   });
 
-  it('rejects when display has been deleted', ()=>{
+  it('rejects when display has been deleted', () => {
     fetch.returns(Promise.resolve({
       json() {
         return {
@@ -70,9 +67,8 @@ describe('Display ID Validator', () => {
     }));
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
-      .then(() => {
-        assert.fail('should fail on rejection');
-      }).catch((err) => {
+      .then(() => assert.fail('catch should have been called'))
+      .catch((err) => {
         assert.equal(err.message, 'Display has been deleted');
       });
   });

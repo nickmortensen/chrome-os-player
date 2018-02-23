@@ -1,26 +1,11 @@
 const validator = require('./display-id-validator');
+const screen = require('./display-id-screen');
 
 function init() {
   const form = document.querySelector('form');
-  form.onsubmit = () => {
-    const displayId = form.querySelector('input').value.toUpperCase();
+  const errorMessageArea = document.getElementById('errorMessage');
 
-    const errorMessage = document.getElementById('errorMessage');
-    if (!displayId) {
-      errorMessage.innerHTML = '<span>Please enter a Display ID</span>';
-      errorMessage.style.display = 'block';
-      return;
-    }
-
-    validator.validateDisplayId(displayId)
-      .then(() => {
-        console.log('Launch viewer');
-      })
-      .catch(() => {
-        errorMessage.innerHTML = `<span>The Display ID <b>${displayId}</b> is not valid or does not exist`;
-        errorMessage.style.display = 'block';
-      });
-  };
+  screen.init(form, errorMessageArea, validator);
 }
 
 document.addEventListener("DOMContentLoaded", init);
