@@ -18,10 +18,10 @@ describe('background script', () => {
     const expectedWindowOptions = {
       id: 'player',
       outerBounds: {
-        width: 600,
-        height: 500,
-        left: 200,
-        top: 250
+        width: 900,
+        height: 900,
+        left: 50,
+        top: 50
       }
     };
 
