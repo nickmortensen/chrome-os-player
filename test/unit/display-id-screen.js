@@ -1,5 +1,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
+const chrome = require('sinon-chrome/apps');
 const screen = require('../../src/display-id-screen');
 
 const sandbox = sinon.createSandbox();
@@ -16,6 +17,8 @@ describe('Display ID Screen', () => {
   const validator = {
     validateDisplayId() {return Promise.resolve();}
   }
+
+  before(() => global.chrome = chrome);
 
   afterEach(() => sandbox.restore());
 
@@ -54,6 +57,20 @@ describe('Display ID Screen', () => {
       .then(() => {
         assert.ok(viewModel.launchViewer.calledOnce);
       });
+  });
+
+  it('stores display ID locally when it is valid', () => {
+    const controller = screen.createController(viewModel, validator);
+
+    return controller.validateDisplayId('valid')
+      .then(() => {
+        assert.ok(chrome.storage.local.set.calledWith({displayId: 'valid'}));
+      });
+  });
+
+  after(() => {
+    chrome.flush();
+    Reflect.deleteProperty(global, 'chrome');
   });
 
 });
