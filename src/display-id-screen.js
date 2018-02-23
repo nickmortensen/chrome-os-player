@@ -37,6 +37,7 @@ function createController(viewModel, validator) {
       }
 
       return validator.validateDisplayId(displayId)
+        .then(() => chrome.storage.local.set({displayId}))
         .then(() => viewModel.launchViewer(displayId))
         .catch(() => viewModel.showInvalidDisplayIdError(displayId));
     }
