@@ -25,6 +25,15 @@ describe('Window Manager', () => {
     assert(chrome.app.window.create.calledWith('player.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 
+  it('should launch viewer', () => {
+    const expectedWindowOptions = {id: 'viewer', hidden: true};
+
+    const displayId = 'displayId';
+    windowManager.launchViewer(displayId);
+
+    assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+  });
+
   after(() => {
     chrome.flush();
     Reflect.deleteProperty(global, 'chrome');

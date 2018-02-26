@@ -1,3 +1,5 @@
+const windowManager = require('./window-manager');
+
 function createViewModel(form, errorMessageArea) {
 
   function showError(message) {
@@ -23,14 +25,7 @@ function createViewModel(form, errorMessageArea) {
     },
 
     launchViewer(displayId) {
-      const url = `http://rvashow.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
-      chrome.app.window.create('webview.html', {id: 'viewer', hidden: true}, (appWin) => {
-          appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
-            const webview = appWin.contentWindow.document.querySelector('webview');
-            webview.src = url;
-            appWin.fullscreen();
-          });
-      });
+      windowManager.launchViewer(displayId)
     }
   }
 }
