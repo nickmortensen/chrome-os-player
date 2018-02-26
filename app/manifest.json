@@ -12,7 +12,8 @@
       "system.display",
       "serial",
       "webview",
-      "storage"
+      "storage",
+      "fullscreen"
     ],
     "minimum_chrome_version": "52",
     "icons": {

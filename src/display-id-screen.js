@@ -1,3 +1,5 @@
+const windowManager = require('./window-manager');
+
 function createViewModel(form, errorMessageArea) {
 
   function showError(message) {
@@ -23,7 +25,7 @@ function createViewModel(form, errorMessageArea) {
     },
 
     launchViewer(displayId) {
-      console.log(`Launch viewer for display ID: ${displayId}`);
+      windowManager.launchViewer(displayId)
     }
   }
 }
