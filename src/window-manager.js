@@ -20,27 +20,20 @@ function launchPlayer() {
 
 function launchViewer(displayId) {
   const url = `http://rvashow2.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
-  createWebViewWindow(url, {id: 'viewer'}).then(appWin => appWin.fullscreen());
+  createWebViewWindow(url, {id: 'viewer', state: 'fullscreen'});
 }
 
 function launchWebView(url) {
-  createWebViewWindow(url).then(appWin => appWin.show());
+  createWebViewWindow(url);
 }
 
 function createWebViewWindow(url, options = {}) {
-  return new Promise((resolve, reject) => {
-    const {top, left, height, width} = chrome.app.window.current().innerBounds;
-    const defaultOptions = {hidden: true, innerBounds: {top, left, height, width}};
-    chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
-      if (chrome.runtime.lastError) {
-        return reject(chrome.runtime.lastError);
-      }
-
-      appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
-        const webview = appWin.contentWindow.document.querySelector('webview');
-        webview.src = url;
-        resolve(appWin);
-      });
+  const {top, left, height, width} = chrome.app.window.current().innerBounds;
+  const defaultOptions = {innerBounds: {top, left, height, width}};
+  chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
+    appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
+      const webview = appWin.contentWindow.document.querySelector('webview');
+      webview.src = url;
     });
   });
 }
