@@ -23,7 +23,14 @@ function createViewModel(form, errorMessageArea) {
     },
 
     launchViewer(displayId) {
-      console.log(`Launch viewer for display ID: ${displayId}`);
+      const url = `http://rvashow.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
+      chrome.app.window.create('webview.html', {id: 'viewer', hidden: true}, (appWin) => {
+          appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
+            const webview = appWin.contentWindow.document.querySelector('webview');
+            webview.src = url;
+            appWin.fullscreen();
+          });
+      });
     }
   }
 }
