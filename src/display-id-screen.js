@@ -1,6 +1,18 @@
 const windowManager = require('./window-manager');
 
-function createViewModel(form, errorMessageArea) {
+function createViewModel(document) {
+
+  const form = document.querySelector('form');
+  const errorMessageArea = document.getElementById('errorMessage');
+  const links = document.querySelectorAll('a')
+
+  links.forEach((link) => {
+    link.addEventListener('click', (ev) => {
+      ev.preventDefault();
+      const url = ev.target.href;
+      windowManager.launchWebView(url);
+    })
+  });
 
   function showError(message) {
     errorMessageArea.innerHTML = `<span>${message}</span>`;
@@ -50,8 +62,8 @@ function createController(viewModel, validator) {
   return controller;
 }
 
-function init(form, errorMessageArea, validator) {
-  const viewModel = createViewModel(form, errorMessageArea);
+function init(document, validator) {
+  const viewModel = createViewModel(document);
   return createController(viewModel, validator);
 }
 
