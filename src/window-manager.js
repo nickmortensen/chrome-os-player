@@ -7,7 +7,7 @@ function launchPlayer() {
   const width = Math.round(screenWidth * 0.9);
   const height = Math.round(screenHeight * 0.9);
 
-  chrome.app.window.create('player.html', {
+  const options = {
     id: 'player',
     outerBounds: {
       width,
@@ -15,6 +15,10 @@ function launchPlayer() {
       left: Math.round((screenWidth - width) / 2),
       top: Math.round((screenHeight - height) / 2)
     }
+  };
+
+  chrome.app.window.create('player.html', options, () => {
+    chrome.power.requestKeepAwake('display');
   });
 }
 

@@ -25,6 +25,14 @@ describe('Window Manager', () => {
     assert(chrome.app.window.create.calledWith('player.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 
+  it('should request keep awake when player is launched', () => {
+    chrome.app.window.create.yield([]);
+
+    windowManager.launchPlayer();
+
+    assert(chrome.power.requestKeepAwake.calledWith('display'), 'chrome.power.requestKeepAwake should have been called');
+  });
+
   it('should launch viewer', () => {
     const innerBounds = {top: 0, left: 0, width: 400, height: 200}
     chrome.app.window.current.returns({innerBounds});
