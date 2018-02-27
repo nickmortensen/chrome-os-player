@@ -17,8 +17,9 @@ function launchPlayer() {
     }
   };
 
-  chrome.app.window.create('player.html', options, () => {
+  chrome.app.window.create('player.html', options, (playerWindow) => {
     chrome.power.requestKeepAwake('display');
+    playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
   });
 }
 
