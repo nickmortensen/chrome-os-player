@@ -26,11 +26,25 @@ describe('Window Manager', () => {
   });
 
   it('should launch viewer', () => {
-    const expectedWindowOptions = {id: 'viewer', hidden: true};
+    const innerBounds = {top: 0, left: 0, width: 400, height: 200}
+    chrome.app.window.current.returns({innerBounds});
+
+    const expectedWindowOptions = {id: 'viewer', state: 'fullscreen', innerBounds};
 
     const displayId = 'displayId';
     windowManager.launchViewer(displayId);
 
+    assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+  });
+
+  it('should launch web view', () => {
+    const innerBounds = {top: 0, left: 0, width: 400, height: 200}
+    chrome.app.window.current.returns({innerBounds});
+
+    const url = 'https://www.risevision.com/terms-service-privacy';
+    windowManager.launchWebView(url);
+
+    const expectedWindowOptions = {innerBounds};
     assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 

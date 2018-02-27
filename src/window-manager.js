@@ -19,17 +19,27 @@ function launchPlayer() {
 }
 
 function launchViewer(displayId) {
-  const url = `http://rvashow.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
-  chrome.app.window.create('webview.html', {id: 'viewer', hidden: true}, (appWin) => {
-      appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
-        const webview = appWin.contentWindow.document.querySelector('webview');
-        webview.src = url;
-        appWin.fullscreen();
-      });
+  const url = `http://rvashow2.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
+  createWebViewWindow(url, {id: 'viewer', state: 'fullscreen'});
+}
+
+function launchWebView(url) {
+  createWebViewWindow(url);
+}
+
+function createWebViewWindow(url, options = {}) {
+  const {top, left, height, width} = chrome.app.window.current().innerBounds;
+  const defaultOptions = {innerBounds: {top, left, height, width}};
+  chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
+    appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
+      const webview = appWin.contentWindow.document.querySelector('webview');
+      webview.src = url;
+    });
   });
 }
 
 module.exports = {
   launchPlayer,
-  launchViewer
+  launchViewer,
+  launchWebView
 }
