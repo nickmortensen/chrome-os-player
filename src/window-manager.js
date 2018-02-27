@@ -32,6 +32,11 @@ function launchWebView(url) {
   createWebViewWindow(url);
 }
 
+function closeAll() {
+  const windows = chrome.app.window.getAll();
+  windows.forEach(win => win.close());
+}
+
 function createWebViewWindow(url, options = {}) {
   const {top, left, height, width} = chrome.app.window.current().innerBounds;
   const defaultOptions = {innerBounds: {top, left, height, width}};
@@ -46,5 +51,6 @@ function createWebViewWindow(url, options = {}) {
 module.exports = {
   launchPlayer,
   launchViewer,
-  launchWebView
+  launchWebView,
+  closeAll
 }

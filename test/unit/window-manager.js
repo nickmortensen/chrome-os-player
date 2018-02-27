@@ -75,6 +75,16 @@ describe('Window Manager', () => {
     assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 
+  it('should close all windows', () => {
+    const stub = {close: sandbox.spy()};
+    const windows = [stub, stub, stub];
+    chrome.app.window.getAll.returns(windows);
+
+    windowManager.closeAll();
+
+    sinon.assert.callCount(stub.close, windows.length);
+  });
+
   after(() => {
     chrome.flush();
     Reflect.deleteProperty(global, 'chrome');
