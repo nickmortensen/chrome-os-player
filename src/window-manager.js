@@ -1,20 +1,9 @@
 /* eslint-disable no-magic-numbers */
 
 function launchPlayer() {
-  // Center window on screen.
-  const screenWidth = screen.availWidth;
-  const screenHeight = screen.availHeight;
-  const width = Math.round(screenWidth * 0.9);
-  const height = Math.round(screenHeight * 0.9);
-
   const options = {
     id: 'player',
-    outerBounds: {
-      width,
-      height,
-      left: Math.round((screenWidth - width) / 2),
-      top: Math.round((screenHeight - height) / 2)
-    }
+    outerBounds: getDefaultScreenBounds()
   };
 
   chrome.app.window.create('player.html', options, (playerWindow) => {
@@ -38,14 +27,27 @@ function closeAll() {
 }
 
 function createWebViewWindow(url, options = {}) {
-  const {top, left, height, width} = chrome.app.window.current().innerBounds;
-  const defaultOptions = {innerBounds: {top, left, height, width}};
+  const defaultOptions = {outerBounds: getDefaultScreenBounds()};
   chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
     appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
       const webview = appWin.contentWindow.document.querySelector('webview');
       webview.src = url;
     });
   });
+}
+
+function getDefaultScreenBounds() {
+  // Center window on screen.
+  const screenWidth = screen.availWidth;
+  const screenHeight = screen.availHeight;
+  const width = Math.round(screenWidth * 0.9);
+  const height = Math.round(screenHeight * 0.9);
+  return {
+    width,
+    height,
+    left: Math.round((screenWidth - width) / 2),
+    top: Math.round((screenHeight - height) / 2)
+  };
 }
 
 module.exports = {
