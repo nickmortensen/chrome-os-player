@@ -1,12 +1,20 @@
 const assert = require('assert');
+const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const windowManager = require('../../src/window-manager');
+
+const sandbox = sinon.createSandbox();
 
 describe('Window Manager', () => {
 
   before(() => {
     global.chrome = chrome;
     global.screen = {availWidth: 1000, availHeight: 1000};
+  });
+
+  afterEach(() => {
+    sandbox.restore();
+    chrome.app.window.create.flush();
   });
 
   it('should launch player', () => {
@@ -23,6 +31,25 @@ describe('Window Manager', () => {
     windowManager.launchPlayer();
 
     assert(chrome.app.window.create.calledWith('player.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+  });
+
+  it('should request keep awake when player is launched', () => {
+    const playerWindow = {onClosed: {addListener() {}}};
+    chrome.app.window.create.yields(playerWindow);
+
+    windowManager.launchPlayer();
+
+    assert(chrome.power.requestKeepAwake.calledWith('display'), 'chrome.power.requestKeepAwake should have been called');
+  });
+
+  it('should release keep awake when player is closed', () => {
+    const playerWindow = {onClosed: {addListener() {}}};
+    sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
+    chrome.app.window.create.yields(playerWindow);
+
+    windowManager.launchPlayer();
+
+    assert(chrome.power.releaseKeepAwake.calledOnce, 'chrome.power.releaseKeepAwake should have been called');
   });
 
   it('should launch viewer', () => {
@@ -46,6 +73,16 @@ describe('Window Manager', () => {
 
     const expectedWindowOptions = {innerBounds};
     assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+  });
+
+  it('should close all windows', () => {
+    const stub = {close: sandbox.spy()};
+    const windows = [stub, stub, stub];
+    chrome.app.window.getAll.returns(windows);
+
+    windowManager.closeAll();
+
+    sinon.assert.callCount(stub.close, windows.length);
   });
 
   after(() => {

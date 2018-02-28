@@ -13,7 +13,8 @@
       "serial",
       "webview",
       "storage",
-      "fullscreen"
+      "fullscreen",
+      "power"
     ],
     "minimum_chrome_version": "52",
     "icons": {

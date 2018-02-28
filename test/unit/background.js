@@ -18,9 +18,21 @@ describe('background script', () => {
 
     assert(chrome.app.runtime.onLaunched.addListener.calledOnce, 'chrome.app.runtime.onLaunched.addListener should have been called');
 
-    chrome.app.runtime.onLaunched.dispatch({})
+    chrome.app.runtime.onLaunched.dispatch({});
 
     assert(windowManager.launchPlayer.calledOnce, 'windowManager.launchPlayer should have been called');
+  });
+
+  it('should close all windows when restart is required', () => {
+    sandbox.stub(windowManager, 'closeAll');
+
+    require('../../src/background'); // eslint-disable-line global-require
+
+    assert(chrome.runtime.onRestartRequired.addListener.calledOnce, 'chrome.runtime.onRestartRequired.addListener should have been called');
+
+    chrome.runtime.onRestartRequired.dispatch();
+
+    assert(windowManager.closeAll.calledOnce, 'windowManager.closeAll should have been called');
   });
 
   after(() => {

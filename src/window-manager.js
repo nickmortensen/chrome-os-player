@@ -7,7 +7,7 @@ function launchPlayer() {
   const width = Math.round(screenWidth * 0.9);
   const height = Math.round(screenHeight * 0.9);
 
-  chrome.app.window.create('player.html', {
+  const options = {
     id: 'player',
     outerBounds: {
       width,
@@ -15,6 +15,11 @@ function launchPlayer() {
       left: Math.round((screenWidth - width) / 2),
       top: Math.round((screenHeight - height) / 2)
     }
+  };
+
+  chrome.app.window.create('player.html', options, (playerWindow) => {
+    chrome.power.requestKeepAwake('display');
+    playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
   });
 }
 
@@ -25,6 +30,11 @@ function launchViewer(displayId) {
 
 function launchWebView(url) {
   createWebViewWindow(url);
+}
+
+function closeAll() {
+  const windows = chrome.app.window.getAll();
+  windows.forEach(win => win.close());
 }
 
 function createWebViewWindow(url, options = {}) {
@@ -41,5 +51,6 @@ function createWebViewWindow(url, options = {}) {
 module.exports = {
   launchPlayer,
   launchViewer,
-  launchWebView
+  launchWebView,
+  closeAll
 }
