@@ -5,6 +5,13 @@ const windowManager = require('../../src/window-manager');
 
 const sandbox = sinon.createSandbox();
 
+const expectedDefaultOuterBounds = {
+  width: 900,
+  height: 900,
+  left: 50,
+  top: 50
+};
+
 describe('Window Manager', () => {
 
   before(() => {
@@ -20,12 +27,7 @@ describe('Window Manager', () => {
   it('should launch player', () => {
     const expectedWindowOptions = {
       id: 'player',
-      outerBounds: {
-        width: 900,
-        height: 900,
-        left: 50,
-        top: 50
-      }
+      outerBounds: expectedDefaultOuterBounds
     };
 
     windowManager.launchPlayer();
@@ -53,10 +55,7 @@ describe('Window Manager', () => {
   });
 
   it('should launch viewer', () => {
-    const innerBounds = {top: 0, left: 0, width: 400, height: 200}
-    chrome.app.window.current.returns({innerBounds});
-
-    const expectedWindowOptions = {id: 'viewer', state: 'fullscreen', innerBounds};
+    const expectedWindowOptions = {id: 'viewer', state: 'fullscreen', outerBounds: expectedDefaultOuterBounds};
 
     const displayId = 'displayId';
     windowManager.launchViewer(displayId);
@@ -65,13 +64,10 @@ describe('Window Manager', () => {
   });
 
   it('should launch web view', () => {
-    const innerBounds = {top: 0, left: 0, width: 400, height: 200}
-    chrome.app.window.current.returns({innerBounds});
-
     const url = 'https://www.risevision.com/terms-service-privacy';
     windowManager.launchWebView(url);
 
-    const expectedWindowOptions = {innerBounds};
+    const expectedWindowOptions = {outerBounds: expectedDefaultOuterBounds};
     assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 

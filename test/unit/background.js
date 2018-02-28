@@ -9,12 +9,12 @@ describe('background script', () => {
 
   before(() => global.chrome = chrome);
 
+  beforeEach(() => require('../../src/background')); // eslint-disable-line global-require
   afterEach(() => sandbox.restore());
 
-  it('should create player window when app is launched', () => {
+  it('should launch player when app is launched', () => {
     sandbox.stub(windowManager, 'launchPlayer');
-
-    require('../../src/background'); // eslint-disable-line global-require
+    chrome.storage.local.get.yields({});
 
     assert(chrome.app.runtime.onLaunched.addListener.calledOnce, 'chrome.app.runtime.onLaunched.addListener should have been called');
 
@@ -23,10 +23,19 @@ describe('background script', () => {
     assert(windowManager.launchPlayer.calledOnce, 'windowManager.launchPlayer should have been called');
   });
 
+  it('should launch viewer when app is launched and there is a saved display id', () => {
+    sandbox.stub(windowManager, 'launchViewer');
+
+    const displayId = 'displayId';
+    chrome.storage.local.get.yields({displayId});
+
+    chrome.app.runtime.onLaunched.dispatch({});
+
+    sinon.assert.calledWith(windowManager.launchViewer, displayId);
+  });
+
   it('should close all windows when restart is required', () => {
     sandbox.stub(windowManager, 'closeAll');
-
-    require('../../src/background'); // eslint-disable-line global-require
 
     assert(chrome.runtime.onRestartRequired.addListener.calledOnce, 'chrome.runtime.onRestartRequired.addListener should have been called');
 
