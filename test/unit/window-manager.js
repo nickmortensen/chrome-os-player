@@ -45,7 +45,7 @@ describe('Window Manager', () => {
   it('should release keep awake when player is closed', () => {
     const playerWindow = {onClosed: {addListener() {}}};
     sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
-    chrome.app.window.create.callsArgWith(2, playerWindow);
+    chrome.app.window.create.yields(playerWindow);
 
     windowManager.launchPlayer();
 
