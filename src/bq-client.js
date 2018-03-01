@@ -11,7 +11,7 @@ const config = {
         insertId: "",
         json: {
           event: "",
-          display_id: "",
+          id: "",
           event_details: "",
           ts: 0
         }
