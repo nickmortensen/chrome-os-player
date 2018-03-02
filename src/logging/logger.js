@@ -41,7 +41,7 @@ function log(event, details) {
         chrome_version: systemInfo.getChromeVersion(),
         ts: new Date().toISOString()
       };
-      return bq.insert(data);
+      return bq.insert(data, 'ChromeOS_Player_Events', 'events');
     })
     .catch(console.error);
 }

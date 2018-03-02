@@ -37,7 +37,7 @@ function refreshToken(nowDate) {
 }
 
 
-function insert(data, dataset = 'ChromeOS_Player_Events', table = 'events') {
+function insert(data, dataset, table) {
   const nowDate = new Date();
 
   return refreshToken(nowDate).then(() => {
