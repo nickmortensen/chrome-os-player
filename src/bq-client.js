@@ -24,7 +24,7 @@ let refreshDate = 0,
   token = '';
 
 function refreshToken(nowDate) {
-  if (nowDate - refreshDate < config.tokenValidity) {
+  if (token && nowDate - refreshDate < config.tokenValidity) {
     return Promise.resolve(token);
   }
 
