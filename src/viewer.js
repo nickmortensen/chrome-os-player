@@ -12,6 +12,9 @@ function init() {
     const data = event.data;
     if (data.from === 'viewer') {
       console.log(`viewer window received message from webview: ${JSON.stringify(data)}`);
+      if (data.message === 'viewer-config') {
+        logger.logClientInfo(data);
+      }
     }
   });
 

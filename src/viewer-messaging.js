@@ -16,6 +16,7 @@ function setUpMessaging() {
 
     if (message.from === 'player' && message.topic === 'hello') {
       sendMessageToApp({from: 'viewer', topic: 'hello'});
+      window.RiseVision.Viewer.Utils.reportViewerConfigToPlayer();
     }
   }
 
