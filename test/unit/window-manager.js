@@ -51,7 +51,7 @@ describe('Window Manager', () => {
     const displayId = 'displayId';
     windowManager.launchViewer(displayId);
 
-    assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+    assert(chrome.app.window.create.calledWith('viewer.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 
   it('should release keep awake when viewer is closed', () => {
