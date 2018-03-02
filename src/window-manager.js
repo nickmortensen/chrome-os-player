@@ -7,14 +7,16 @@ function launchPlayer() {
   };
 
   chrome.app.window.create('player.html', options, (playerWindow) => {
-    chrome.power.requestKeepAwake('display');
     playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
   });
 }
 
 function launchViewer(displayId) {
   const url = `http://rvashow2.appspot.com/Viewer.html?player=true&type=display&id=${displayId}`;
-  createWebViewWindow(url, {id: 'viewer', state: 'fullscreen'});
+  return createWebViewWindow(url, {id: 'viewer', state: 'fullscreen'})
+    .then((viewerWindow) => {
+      viewerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
+    });
 }
 
 function launchWebView(url) {
@@ -28,10 +30,13 @@ function closeAll() {
 
 function createWebViewWindow(url, options = {}) {
   const defaultOptions = {outerBounds: getDefaultScreenBounds()};
-  chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
-    appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
-      const webview = appWin.contentWindow.document.querySelector('webview');
-      webview.src = url;
+  return new Promise((resolve) => {
+    chrome.app.window.create('webview.html', Object.assign(defaultOptions, options), (appWin) => {
+      appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
+        const webview = appWin.contentWindow.document.querySelector('webview');
+        webview.src = url;
+      });
+      resolve(appWin);
     });
   });
 }

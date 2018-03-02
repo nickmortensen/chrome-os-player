@@ -35,15 +35,6 @@ describe('Window Manager', () => {
     assert(chrome.app.window.create.calledWith('player.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
   });
 
-  it('should request keep awake when player is launched', () => {
-    const playerWindow = {onClosed: {addListener() {}}};
-    chrome.app.window.create.yields(playerWindow);
-
-    windowManager.launchPlayer();
-
-    assert(chrome.power.requestKeepAwake.calledWith('display'), 'chrome.power.requestKeepAwake should have been called');
-  });
-
   it('should release keep awake when player is closed', () => {
     const playerWindow = {onClosed: {addListener() {}}};
     sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
@@ -61,6 +52,17 @@ describe('Window Manager', () => {
     windowManager.launchViewer(displayId);
 
     assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+  });
+
+  it('should release keep awake when viewer is closed', () => {
+    const viewerWindow = {onClosed: {addListener() {}}, contentWindow: {addEventListener() {}}};
+    sandbox.stub(viewerWindow.onClosed, 'addListener').yields([]);
+    chrome.app.window.create.yields(viewerWindow);
+
+    const displayId = 'displayId';
+    windowManager.launchViewer(displayId);
+
+    assert(chrome.power.releaseKeepAwake.calledOnce, 'chrome.power.releaseKeepAwake should have been called');
   });
 
   it('should launch web view', () => {
