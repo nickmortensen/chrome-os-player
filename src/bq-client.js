@@ -8,7 +8,6 @@ const config = {
     ignoreUnknownValues: false,
     rows: [
       {
-        insertId: "",
         json: {
           event: "",
           id: "",
@@ -44,7 +43,6 @@ function insert(data) {
   return refreshToken(nowDate).then(() => {
     const insertData = config.insertSchema;
     const row = insertData.rows[0];
-    row.insertId = Math.random().toString(36).substr(2).toUpperCase(); // eslint-disable-line no-magic-numbers
     row.json = data;
 
     const options = {
