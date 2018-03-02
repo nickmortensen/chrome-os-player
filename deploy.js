@@ -20,8 +20,9 @@ function incrementVersion() {
   const dayMinutes = d.getUTCHours() * 60 + d.getUTCMinutes();
   const dayPct = dayMinutes / 1440;
 
+  function partToString(part) { return part.toString().padStart(2, '0') }
   const patch = parseInt(((dayPct) + "").split(".")[1].substr(0,4)) + 1000;
-  manifest.version = (d.getUTCFullYear() - 2000) + "." + (d.getUTCMonth() + 1) + "." +  d.getUTCDate() + "." + patch;
+  manifest.version = (d.getUTCFullYear()) + "." + partToString(d.getUTCMonth() + 1) + "." +  partToString(d.getUTCDate()) + "." + patch;
 
   const publishVersion = manifest.version;
 

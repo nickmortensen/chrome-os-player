@@ -49,6 +49,10 @@ describe('background script', () => {
     assert(windowManager.closeAll.calledOnce, 'windowManager.closeAll should have been called');
   });
 
+  it('should request keep awake', () => {
+    assert(chrome.power.requestKeepAwake.calledWith('display'), 'chrome.power.requestKeepAwake should have been called');
+  });
+
   after(() => {
     chrome.flush();
     Reflect.deleteProperty(global, 'chrome');

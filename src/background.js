@@ -15,3 +15,5 @@ function init(launchData) {
 chrome.app.runtime.onLaunched.addListener(init);
 
 chrome.runtime.onRestartRequired.addListener(() => windowManager.closeAll());
+
+chrome.power.requestKeepAwake('display');
