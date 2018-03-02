@@ -1,7 +1,8 @@
 const windowManager = require('./window-manager');
+const logger = require('./logger');
 
 function init(launchData) {
-  console.log(`Player launched with ${JSON.stringify(launchData)}`);
+  logger.log(`launch from ${launchData.source}`, launchData);
   chrome.storage.local.get((items) => {
     if (items.displayId) {
       windowManager.launchViewer(items.displayId);

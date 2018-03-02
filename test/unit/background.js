@@ -2,6 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const windowManager = require('../../src/window-manager');
+const logger = require('../../src/logger');
 
 const sandbox = sinon.createSandbox();
 
@@ -9,7 +10,11 @@ describe('background script', () => {
 
   before(() => global.chrome = chrome);
 
-  beforeEach(() => require('../../src/background')); // eslint-disable-line global-require
+  beforeEach(() => {
+    require('../../src/background'); // eslint-disable-line global-require
+    sandbox.stub(logger, 'log');
+  });
+
   afterEach(() => sandbox.restore());
 
   it('should launch player when app is launched', () => {
