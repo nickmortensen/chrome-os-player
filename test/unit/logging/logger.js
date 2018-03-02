@@ -1,8 +1,8 @@
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
-const bq = require('../../src/bq-client');
-const systemInfo = require('../../src/system-info');
-const logger = require('../../src/logger');
+const bq = require('../../../src/logging/bq-client');
+const systemInfo = require('../../../src/logging/system-info');
+const logger = require('../../../src/logging/logger');
 
 const sandbox = sinon.createSandbox();
 

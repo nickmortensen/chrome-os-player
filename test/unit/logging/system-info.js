@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
-const systemInfo = require('../../src/system-info');
+const systemInfo = require('../../../src/logging/system-info');
 
 const sandbox = sinon.createSandbox();
 
