@@ -18,7 +18,8 @@ function log(event, details) {
         ts: new Date().toISOString()
       };
       return bq.insert(data);
-    });
+    })
+    .catch(console.error);
 }
 
 module.exports = {
