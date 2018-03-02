@@ -7,6 +7,11 @@
   "globals": {
     "chrome": true
   },
+  "parserOptions": {
+    "ecmaFeatures": {
+      "experimentalObjectRestSpread": true
+    }
+  },
   "extends": "eslint:recommended",
   "rules": {
     "accessor-pairs": "error",

@@ -1,11 +1,11 @@
 const bq = require('./bq-client');
 const systemInfo = require('./system-info');
 
-function logClientInfo(viewerConfig, nowDate = new Date()) {
+function buildPlayerData(viewerConfig) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
     .then(values => {
       const [machineId, displayId, os, ip] = values;
-      const playerData = {
+      return {
         machine_id: machineId,
         display_id: displayId,
         os_description: os,
@@ -16,11 +16,28 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
         local_ip: ip,
         viewer_version: viewerConfig.viewerVersion,
         width: viewerConfig.width,
-        height: viewerConfig.height,
-        ts: nowDate.toISOString()
+        height: viewerConfig.height
       };
+    });
+}
 
-      return bq.insert(playerData, 'Player_Data', 'configuration');
+function readPlayerData() {
+  return new Promise((resolve) => {
+    chrome.storage.local.get((items) => resolve(items.playerData))
+  });
+}
+
+function logClientInfo(viewerConfig, nowDate = new Date()) {
+  return Promise.all([buildPlayerData(viewerConfig), readPlayerData()])
+    .then((values) => {
+      const [newData, savedData] = values;
+      if (JSON.stringify(newData) === JSON.stringify(savedData)) {
+        return savedData;
+      }
+
+      const data = Object.assign({ts: nowDate.toISOString()}, newData);
+      return bq.insert(data, 'Player_Data', 'configuration')
+          .then(() => chrome.storage.local.set({playerData: newData}));
     })
     .catch(console.error);
 }
