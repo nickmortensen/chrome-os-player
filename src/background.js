@@ -1,5 +1,5 @@
 const windowManager = require('./window-manager');
-const logger = require('./logger');
+const logger = require('./logging/logger');
 
 function init(launchData) {
   logger.log(`launch from ${launchData.source}`, launchData);

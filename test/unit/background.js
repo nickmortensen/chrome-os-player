@@ -2,7 +2,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const windowManager = require('../../src/window-manager');
-const logger = require('../../src/logger');
+const logger = require('../../src/logging/logger');
 
 const sandbox = sinon.createSandbox();
 

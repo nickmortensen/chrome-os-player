@@ -47,6 +47,15 @@ function getPlayerVersion() {
   return manifest.version;
 }
 
+function getPlayerName() {
+  const playerName = 'RisePlayerChromeOS';
+  const manifest = chrome.runtime.getManifest();
+  if (manifest.name.includes('Beta')) {
+    return `(Beta) ${playerName}`;
+  }
+  return playerName;
+}
+
 function getIpAddress() {
   return new Promise((resolve) => {
     chrome.system.network.getNetworkInterfaces((interfaces) => {
@@ -68,9 +77,12 @@ function getChromeVersion() {
 }
 
 module.exports = {
+  getMachineId,
+  getDisplayId,
   getId,
   getOS,
   getIpAddress,
   getPlayerVersion,
+  getPlayerName,
   getChromeVersion
 }
