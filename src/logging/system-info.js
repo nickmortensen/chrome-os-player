@@ -59,7 +59,7 @@ function getPlayerName() {
 function getIpAddress() {
   return new Promise((resolve) => {
     chrome.system.network.getNetworkInterfaces((interfaces) => {
-      const v4Ips = interfaces.filter(it => it.address.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/g));
+      const v4Ips = interfaces.filter(it => it.address.match(/(?:[0-9]{1,3}\.){3}[0-9]{1,3}/));
       if (v4Ips.length > 0) {
         resolve(v4Ips[0].address);
       } else {
