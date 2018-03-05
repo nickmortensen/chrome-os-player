@@ -38,12 +38,28 @@ describe('System Info', () => {
       });
   });
 
-  it('should return list of ip addresses', () => {
-    chrome.system.network.getNetworkInterfaces.yields([{address: 'ip'}, {address: 'ip2'}, {address: 'ip3'}]);
+  it('should return the first IP v4 address', () => {
+    chrome.system.network.getNetworkInterfaces.yields([
+      {address: 'fe80::95:69f4:293e:e364,2804:14d:bad4:9e8e:147e:185b:af43:4b1'},
+      {address: '192.168.0.12'},
+      {address: '10.0.0.1'}
+    ]);
 
     return systemInfo.getIpAddress()
-      .then((os) => {
-        assert(os === 'ip,ip2,ip3');
+      .then((ip) => {
+        assert(ip === '192.168.0.12');
+      });
+  });
+
+  it('should return empty when there is no IP v4 address', () => {
+    chrome.system.network.getNetworkInterfaces.yields([
+      {address: 'fe80::95:69f4:293e:e364,2804:14d:bad4:9e8e:147e:185b:af43:4b1'},
+      {address: '2804:14d:bad4:9e8e:5da0:eea4:8902:6d59'}
+    ]);
+
+    return systemInfo.getIpAddress()
+      .then((ip) => {
+        assert(ip === '');
       });
   });
 
