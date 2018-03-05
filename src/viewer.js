@@ -1,5 +1,5 @@
+const viewerInjector = require('./viewer-injector');
 const logger = require('./logging/logger');
-const viewerMessaging = require('./viewer-messaging');
 
 function init() {
   window.addEventListener('message', (event) => {
@@ -20,7 +20,7 @@ function init() {
 
   const webview = document.querySelector('webview');
   webview.addEventListener('contentload', () => {
-    webview.executeScript({code: viewerMessaging.generateMessagingSetupFunction()});
+    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()});
     webview.contentWindow.postMessage({from: 'player', topic: 'hello'}, webview.src);
   });
 }
