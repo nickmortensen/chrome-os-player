@@ -35,6 +35,7 @@ function setUpMessaging() {
     appWindow.postMessage(message, origin)
   }
 
+  window.disableViewerContentFetch = true;
   window.postToPlayer = sendMessageToApp;
 }
 
