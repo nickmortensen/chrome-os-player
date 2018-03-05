@@ -81,6 +81,14 @@ function getChromeVersion() {
   return (/Chrome\/([0-9.]+)/).exec(navigator.appVersion)[1];
 }
 
+function getChromeOSVersion() {
+  const matches = (/CrOS.+\s((?:\d+\S)+\d+)\)/).exec(navigator.appVersion);
+  if (matches && matches.length > 0) {
+    return matches[1];
+  }
+  return '';
+}
+
 module.exports = {
   getMachineId,
   getDisplayId,
@@ -89,5 +97,6 @@ module.exports = {
   getIpAddress,
   getPlayerVersion,
   getPlayerName,
-  getChromeVersion
+  getChromeVersion,
+  getChromeOSVersion
 }

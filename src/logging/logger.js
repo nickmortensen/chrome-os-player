@@ -5,10 +5,11 @@ function buildPlayerData(viewerConfig) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
     .then(values => {
       const [machineId, displayId, os, ip] = values;
+      const chromeOSVersion = systemInfo.getChromeOSVersion();
       return {
         machine_id: machineId,
         display_id: displayId,
-        os_description: os,
+        os_description: chromeOSVersion ? `Chrome OS ${chromeOSVersion}` : os,
         player_name: systemInfo.getPlayerName(),
         player_version: systemInfo.getPlayerVersion(),
         browser_name: 'Chrome',
