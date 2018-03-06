@@ -26,10 +26,9 @@ function setUpMessaging() {
       sendMessageToApp({from: 'viewer', topic: 'hello'});
       window.RiseVision.Viewer.Utils.reportViewerConfigToPlayer();
     } else {
-      const handler = eventHandlers[message.topic];
-      if (handler) {
-        console.log(`found handler for event ${message.topic}`);
-        handler(message);
+      const handlers = eventHandlers[message.topic];
+      if (handlers && handlers.length > 0) {
+        handlers.forEach(handler => handler(message));
       }
     }
   }

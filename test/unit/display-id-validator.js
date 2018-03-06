@@ -1,13 +1,13 @@
 const assert = require('assert');
 const sinon = require('sinon');
-const validator = require('../../src/display-id-validator.js');
+const validator = require('../../src/display-id-validator');
 const fetch = sinon.stub();
 
 describe('Display ID Validator', () => {
 
   before(() => {
     global.fetch = fetch;
-  })
+  });
 
   beforeEach(() => fetch.resetBehavior());
 
