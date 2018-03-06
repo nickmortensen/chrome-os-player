@@ -70,7 +70,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerName();
 
-    assert(playerVersion === 'RisePlayerChromeOS');
+    assert(playerVersion === 'RisePlayer');
   });
 
   it('should return beta player name', () => {
@@ -78,7 +78,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerName();
 
-    assert(playerVersion === '(Beta) RisePlayerChromeOS');
+    assert(playerVersion === '(Beta) RisePlayer');
   });
 
   it('should return player version', () => {
@@ -95,6 +95,14 @@ describe('System Info', () => {
     const playerVersion = systemInfo.getPlayerVersion();
 
     assert(playerVersion === 'beta_version');
+  });
+
+  it('should return player beta version without prefix', () => {
+    chrome.runtime.getManifest.returns({name: 'Rise Player Beta', version: 'version'});
+
+    const playerVersion = systemInfo.getPlayerVersion({includeBetaPrefix: false});
+
+    assert(playerVersion === 'version');
   });
 
   it('should return Chrome version', () => {
