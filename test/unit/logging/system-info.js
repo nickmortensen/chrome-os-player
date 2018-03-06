@@ -107,6 +107,26 @@ describe('System Info', () => {
     Reflect.deleteProperty(global, 'navigator');
   });
 
+  it('should return Chrome OS version', () => {
+    global.navigator = {appVersion: '5.0 (X11; CrOS x86_64 10323.9.0) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3325.35 Safari/537.36'};
+
+    const chromeOSVersion = systemInfo.getChromeOSVersion();
+
+    assert(chromeOSVersion === '10323.9.0');
+
+    Reflect.deleteProperty(global, 'navigator');
+  });
+
+  it('should return empty Chrome OS version when not running on Chrome OS', () => {
+    global.navigator = {appVersion: '5.0 (Macintosh; Intel Mac OS X 10_13_3) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.186 Safari/537.36'};
+
+    const chromeOSVersion = systemInfo.getChromeOSVersion();
+
+    assert(chromeOSVersion === '');
+
+    Reflect.deleteProperty(global, 'navigator');
+  });
+
   it('should return display id', () => {
     chrome.storage.local.get.yields({displayId: 'displayId'});
 

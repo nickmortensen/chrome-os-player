@@ -17,6 +17,7 @@ describe('Logger', () => {
     sandbox.stub(systemInfo, 'getMachineId').returns('machineId');
     sandbox.stub(systemInfo, 'getDisplayId').returns('displayId');
     sandbox.stub(systemInfo, 'getOS').returns('mac/x86-64');
+    sandbox.stub(systemInfo, 'getChromeOSVersion').returns('10323.9.0');
     sandbox.stub(systemInfo, 'getIpAddress').returns('192.168.0.1');
     sandbox.stub(systemInfo, 'getPlayerVersion').returns('beta_0.0.0.0');
     sandbox.stub(systemInfo, 'getPlayerName').returns('(Beta) RisePlayerChromeOS');
@@ -42,7 +43,7 @@ describe('Logger', () => {
     const expectedPlayerData = {
       machine_id: 'machineId',
       display_id: 'displayId',
-      os_description: 'mac/x86-64',
+      os_description: 'Chrome OS 10323.9.0',
       player_name: '(Beta) RisePlayerChromeOS',
       player_version: 'beta_0.0.0.0',
       browser_name: 'Chrome',
@@ -67,7 +68,7 @@ describe('Logger', () => {
     const expectedPlayerData = {
       machine_id: 'machineId',
       display_id: 'displayId',
-      os_description: 'mac/x86-64',
+      os_description: 'Chrome OS 10323.9.0',
       player_name: '(Beta) RisePlayerChromeOS',
       player_version: 'beta_0.0.0.0',
       browser_name: 'Chrome',
@@ -93,7 +94,7 @@ describe('Logger', () => {
     const expectedPlayerData = {
       machine_id: 'machineId',
       display_id: 'displayId',
-      os_description: 'mac/x86-64',
+      os_description: 'Chrome OS 10323.9.0',
       player_name: '(Beta) RisePlayerChromeOS',
       player_version: 'beta_0.0.0.0',
       browser_name: 'Chrome',
