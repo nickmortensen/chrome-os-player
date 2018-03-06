@@ -18,7 +18,7 @@ describe('Viewer Message Handler', () => {
 
   afterEach(() => sandbox.restore());
 
-  it('should log client info when recieves viewer-config', () => {
+  it('should log client info when receives viewer-config', () => {
 
     sandbox.stub(logger, 'logClientInfo');
 
@@ -29,7 +29,7 @@ describe('Viewer Message Handler', () => {
     sinon.assert.calledWith(logger.logClientInfo, data);
   });
 
-  it('should fetch content data when recieves data-handler-registered', () => {
+  it('should fetch content data when receives data-handler-registered', () => {
 
     sandbox.stub(gcsClient, 'fetchJson').returns(Promise.resolve());
 
