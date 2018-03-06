@@ -1,13 +1,6 @@
 const logger = require('./logging/logger');
-const gcsClient = require('./gcs-client');
 
-let sendMessage = () => {}; // eslint-disable-line func-style
-
-function init(webview) {
-  sendMessage = (message) => {
-    webview.contentWindow.postMessage(Object.assign({from: 'player'}, message), webview.src);
-  }
-}
+const dataHandlerRegisteredObserver = {resolve: () => {}, messageReceived: false};
 
 function handleMessage(data) {
   if (data.from !== 'viewer') {
@@ -17,16 +10,21 @@ function handleMessage(data) {
   if (data.message === 'viewer-config') {
     logger.logClientInfo(data);
   } else if (data.message === 'data-handler-registered') {
-    chrome.storage.local.get((items) => {
-      const bucketName = 'risevision-display-notifications';
-      const filePath = `${items.displayId}/content.json`;
-      gcsClient.fetchJson(bucketName, filePath)
-        .then((contentData) => sendMessage({topic: 'content-update', newContent: contentData}));
-    });
+    dataHandlerRegisteredObserver.messageReceived = true;
+    dataHandlerRegisteredObserver.resolve();
   }
 }
 
+function viewerCanReceiveContent() {
+  return new Promise(resolve => {
+    dataHandlerRegisteredObserver.resolve = resolve;
+    if (dataHandlerRegisteredObserver.messageReceived) {
+      resolve();
+    }
+  });
+}
+
 module.exports = {
-  init,
-  handleMessage
+  handleMessage,
+  viewerCanReceiveContent
 }

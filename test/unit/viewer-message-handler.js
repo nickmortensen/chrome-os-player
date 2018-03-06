@@ -1,7 +1,6 @@
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const logger = require('../../src/logging/logger');
-const gcsClient = require('../../src/gcs-client');
 
 const messageHandler = require('../../src/viewer-message-handler');
 
@@ -29,17 +28,20 @@ describe('Viewer Message Handler', () => {
     sinon.assert.calledWith(logger.logClientInfo, data);
   });
 
-  it('should fetch content data when receives data-handler-registered', () => {
-
-    sandbox.stub(gcsClient, 'fetchJson').returns(Promise.resolve());
-
-    chrome.storage.local.get.yields({displayId: 'displayId'});
+  it('should indicate viewer can receive content when it receives data-handler-registered', () => {
+    const promise = messageHandler.viewerCanReceiveContent();
 
     const data = {from: 'viewer', message: 'data-handler-registered'};
-
     messageHandler.handleMessage(data);
 
-    sinon.assert.calledWith(gcsClient.fetchJson, 'risevision-display-notifications', 'displayId/content.json');
+    return promise;
+  });
+
+  it('should indicate viewer can receive content if it has already received data-handler-registered', () => {
+    const data = {from: 'viewer', message: 'data-handler-registered'};
+    messageHandler.handleMessage(data);
+
+    return messageHandler.viewerCanReceiveContent();
   });
 
 });
