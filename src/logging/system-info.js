@@ -39,16 +39,16 @@ function getId() {
   });
 }
 
-function getPlayerVersion() {
+function getPlayerVersion(options = {includeBetaPrefix: true}) {
   const manifest = chrome.runtime.getManifest();
-  if (manifest.name.includes('Beta')) {
+  if (options.includeBetaPrefix && manifest.name.includes('Beta')) {
     return `beta_${manifest.version}`;
   }
   return manifest.version;
 }
 
 function getPlayerName() {
-  const playerName = 'RisePlayerChromeOS';
+  const playerName = 'RisePlayer';
   const manifest = chrome.runtime.getManifest();
   if (manifest.name.includes('Beta')) {
     return `(Beta) ${playerName}`;

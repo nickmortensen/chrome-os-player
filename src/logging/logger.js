@@ -11,7 +11,7 @@ function buildPlayerData(viewerConfig) {
         display_id: displayId,
         os_description: chromeOSVersion ? `Chrome OS ${chromeOSVersion}` : os,
         player_name: systemInfo.getPlayerName(),
-        player_version: systemInfo.getPlayerVersion(),
+        player_version: systemInfo.getPlayerVersion({includeBetaPrefix: false}),
         browser_name: 'Chrome',
         browser_version: systemInfo.getChromeVersion(),
         local_ip: ip,
