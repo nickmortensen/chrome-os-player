@@ -1,27 +1,28 @@
-const logger = require('./logging/logger');
-const viewerMessaging = require('./viewer-messaging');
+const viewerInjector = require('./viewer-injector');
+const viewerMessaging = require('./viewer-message-handler');
+const contentLoader = require('./content-loader');
 
 function init() {
   window.addEventListener('message', (event) => {
-    console.log(event);
     if (!event.data) {
       return;
     }
 
     event.preventDefault();
-    const data = event.data;
-    if (data.from === 'viewer') {
-      console.log(`viewer window received message from webview: ${JSON.stringify(data)}`);
-      if (data.message === 'viewer-config') {
-        logger.logClientInfo(data);
-      }
-    }
+
+    console.log(`viewer window received message from webview: ${JSON.stringify(event.data)}`);
+    viewerMessaging.handleMessage(event.data);
   });
 
   const webview = document.querySelector('webview');
   webview.addEventListener('contentload', () => {
-    webview.executeScript({code: viewerMessaging.generateMessagingSetupFunction()});
+    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()});
     webview.contentWindow.postMessage({from: 'player', topic: 'hello'}, webview.src);
+  });
+
+  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    const [contentData] = values;
+    webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
   });
 }
 

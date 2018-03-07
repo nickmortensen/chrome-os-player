@@ -1,4 +1,6 @@
+/* eslint-disable max-statements */
 function setUpMessaging() {
+  const eventHandlers = {};
   let appWindow = null;
   let appOrigin = null;
 
@@ -14,9 +16,20 @@ function setUpMessaging() {
     const message = event.data;
     console.log(`webview received message: ${JSON.stringify(message)}`);
 
-    if (message.from === 'player' && message.topic === 'hello') {
+    if (message.from === 'player') {
+      handlePlayerMessage(message);
+    }
+  }
+
+  function handlePlayerMessage(message) {
+    if (message.topic === 'hello') {
       sendMessageToApp({from: 'viewer', topic: 'hello'});
       window.RiseVision.Viewer.Utils.reportViewerConfigToPlayer();
+    } else {
+      const handlers = eventHandlers[message.topic];
+      if (handlers && handlers.length > 0) {
+        handlers.forEach(handler => handler(message));
+      }
     }
   }
 
@@ -35,8 +48,18 @@ function setUpMessaging() {
     appWindow.postMessage(message, origin)
   }
 
+  function registerMessageHandler(eventName, handler) {
+    console.log(`registering handler for event ${eventName}`);
+    if (!eventHandlers[eventName]) {
+      eventHandlers[eventName] = [];
+    }
+
+    eventHandlers[eventName].push(handler);
+  }
+
   window.disableViewerContentFetch = true;
   window.postToPlayer = sendMessageToApp;
+  window.receiveFromPlayer = registerMessageHandler;
 }
 
 function generateScriptText(fn) {
