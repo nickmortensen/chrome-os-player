@@ -10,7 +10,14 @@ function init(launchData) {
       windowManager.launchPlayer();
     }
   });
+
+  chrome.runtime.requestUpdateCheck((status, details) => logger.log(`update check result: ${status}`, details));
 }
+
+chrome.runtime.onUpdateAvailable.addListener((details) => {
+  logger.log('update is availeble', details);
+  chrome.runtime.reload();
+});
 
 chrome.app.runtime.onLaunched.addListener(init);
 
