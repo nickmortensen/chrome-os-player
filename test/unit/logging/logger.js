@@ -28,9 +28,22 @@ describe('Logger', () => {
   afterEach(() => sandbox.restore());
 
   it('should log to big query', () => {
-    return logger.log('test', {details: 'some detail'})
+    const eventName = 'test';
+    const eventDetails = {details: 'some detail'};
+    const nowDate = new Date();
+
+    const expetedData = {
+      event: eventName,
+      id: 'displayId',
+      os: 'mac/x86-64',
+      ip: '192.168.0.1',
+      player_version: '0.0.0.0',
+      event_details: JSON.stringify(eventDetails),
+      chrome_version: '64.0.3282.186'
+    };
+    return logger.log('test', {details: 'some detail'}, nowDate)
       .then(() => {
-        sinon.assert.calledOnce(bq.insert);
+        sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
       });
   });
 
