@@ -8,7 +8,7 @@ const sandbox = sinon.createSandbox();
 
 describe('Logger', () => {
 
-  before(() => global.chrome = chrome);
+  after(() => chrome.flush());
 
   beforeEach(() => {
     sandbox.stub(bq, 'insert').returns(Promise.resolve());
@@ -126,11 +126,6 @@ describe('Logger', () => {
         sinon.assert.calledWith(bq.insert, {...expectedPlayerData, ts: nowDate.toISOString()}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});
       });
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
   });
 
 });

@@ -7,7 +7,7 @@ const sandbox = sinon.createSandbox();
 
 describe('System Info', () => {
 
-  before(() => global.chrome = chrome);
+  after(() => chrome.flush());
 
   afterEach(() => sandbox.restore());
 
@@ -170,11 +170,6 @@ describe('System Info', () => {
         Reflect.deleteProperty(global, 'crypto');
         throw err;
       });
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
   });
 
 });

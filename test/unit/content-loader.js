@@ -8,12 +8,7 @@ const sandbox = sinon.createSandbox();
 
 describe('Content Loader', () => {
 
-  before(() => global.chrome = chrome);
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
-  });
+  after(() => chrome.flush());
 
   afterEach(() => sandbox.restore());
 

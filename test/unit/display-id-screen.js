@@ -18,7 +18,7 @@ describe('Display ID Screen', () => {
     validateDisplayId() {return Promise.resolve();}
   }
 
-  before(() => global.chrome = chrome);
+  after(() => chrome.flush());
 
   afterEach(() => sandbox.restore());
 
@@ -66,11 +66,6 @@ describe('Display ID Screen', () => {
       .then(() => {
         assert.ok(chrome.storage.local.set.calledWith({displayId: 'valid'}));
       });
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
   });
 
 });

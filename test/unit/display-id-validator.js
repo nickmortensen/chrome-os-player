@@ -5,9 +5,9 @@ const fetch = sinon.stub();
 
 describe('Display ID Validator', () => {
 
-  before(() => {
-    global.fetch = fetch;
-  });
+  before(() => global.fetch = fetch);
+
+  after(() => Reflect.deleteProperty(global, 'fetch'));
 
   beforeEach(() => fetch.resetBehavior());
 
@@ -72,9 +72,5 @@ describe('Display ID Validator', () => {
         assert.equal(err.message, 'Display has been deleted');
       });
   });
-
-  after(() => {
-    Reflect.deleteProperty(global, 'fetch');
-  })
 
 });

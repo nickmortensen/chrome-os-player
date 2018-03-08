@@ -14,9 +14,11 @@ const expectedDefaultOuterBounds = {
 
 describe('Window Manager', () => {
 
-  before(() => {
-    global.chrome = chrome;
-    global.screen = {availWidth: 1000, availHeight: 1000};
+  before(() => global.screen = {availWidth: 1000, availHeight: 1000});
+
+  after(() => {
+    chrome.flush();
+    Reflect.deleteProperty(global, 'screen');
   });
 
   afterEach(() => {
@@ -81,12 +83,6 @@ describe('Window Manager', () => {
     windowManager.closeAll();
 
     sinon.assert.callCount(stub.close, windows.length);
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
-    Reflect.deleteProperty(global, 'screen');
   });
 
 });
