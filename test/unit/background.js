@@ -52,6 +52,22 @@ describe('background script', () => {
     sinon.assert.calledWith(chrome.power.requestKeepAwake, 'display');
   });
 
+  it('should check for updates when app is launched', () => {
+    chrome.runtime.requestUpdateCheck.flush();
+    sandbox.stub(windowManager, 'launchPlayer');
+    chrome.storage.local.get.yields({});
+
+    chrome.app.runtime.onLaunched.dispatch({});
+
+    sinon.assert.calledOnce(chrome.runtime.requestUpdateCheck);
+  });
+
+  it('should reload when update is available', () => {
+    chrome.runtime.onUpdateAvailable.dispatch({});
+
+    sinon.assert.calledOnce(chrome.runtime.reload);
+  });
+
   after(() => {
     chrome.flush();
     Reflect.deleteProperty(global, 'chrome');
