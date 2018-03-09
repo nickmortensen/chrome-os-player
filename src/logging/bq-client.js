@@ -37,13 +37,29 @@ function refreshToken(nowDate) {
 }
 
 
+/**
+ * @param {object} data
+ * @param {string} dataset
+ * @param {string} table
+ */
 function insert(data, dataset, table) {
+  return insertMultiple([data], dataset, table);
+}
+
+/**
+ * @param {array} entries
+ * @param {string} dataset
+ * @param {string} table
+ * @returns {Promise<Response>}
+ */
+function insertMultiple(entries, dataset, table) {
   const nowDate = new Date();
 
   return refreshToken(nowDate).then(() => {
     const insertData = config.insertSchema;
-    const row = insertData.rows[0];
-    row.json = data;
+    insertData.rows = entries.map(entry => {
+      return {json: entry, insertId: entry.ts};
+    });
 
     const options = {
       method: 'POST',
@@ -65,5 +81,6 @@ function insert(data, dataset, table) {
 }
 
 module.exports = {
-  insert
+  insert,
+  insertMultiple
 }

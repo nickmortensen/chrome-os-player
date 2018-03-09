@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
-const bq = require('../../../src/logging/bq-client');
+const bq = require('../../../src/logging/bq-retry');
 const systemInfo = require('../../../src/logging/system-info');
 const logger = require('../../../src/logging/logger');
 

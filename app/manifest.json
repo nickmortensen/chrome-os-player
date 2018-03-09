@@ -15,7 +15,8 @@
       "webview",
       "storage",
       "fullscreen",
-      "power"
+      "power",
+      "alarms"
     ],
     "minimum_chrome_version": "52",
     "icons": {
