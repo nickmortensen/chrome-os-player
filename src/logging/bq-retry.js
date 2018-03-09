@@ -12,7 +12,7 @@ let delayInMinutes = 10;
  * @param {string} dataset
  * @param {string} table
  */
-function insert(data, dataset, table, nowDate = new Date()) { // eslint-disable-line max-params
+function insert(data, dataset, table, nowDate = new Date()) {
   return bq.insert(data, dataset, table)
     .catch((error) => {
       console.error(error);
