@@ -92,7 +92,7 @@ describe('BQ Retry', () => {
 
     const nowDate = new Date();
     const newEntryTimeStamp = Number(nowDate);
-    const existingEntries = [...Array(5)].map((_, i) => {return {ts: newEntryTimeStamp - i * 10000000}}); // eslint-disable-line
+    const existingEntries = [...Array(5)].map((_, i) => ({ts: newEntryTimeStamp - i * 10000000})); // eslint-disable-line
 
     chrome.storage.local.get.yields({failedLogEntries: {'ChromeOS_Player_Events/events': existingEntries, 'Player_Data/configuration': [{}]}});
     chrome.storage.local.set.yields();
@@ -109,7 +109,7 @@ describe('BQ Retry', () => {
 
     const nowDate = new Date();
     const newEntryTimeStamp = Number(nowDate);
-    const existingEntries = [...Array(5)].map((_, i) => {return {ts: newEntryTimeStamp - i * 10000000}}); // eslint-disable-line
+    const existingEntries = [...Array(5)].map((_, i) => ({ts: newEntryTimeStamp - i * 10000000})); // eslint-disable-line
 
     const existingData = {failedLogEntries: {'ChromeOS_Player_Events/events': existingEntries, 'Player_Data/configuration': [{}]}};
     chrome.storage.local.get.yields(existingData);

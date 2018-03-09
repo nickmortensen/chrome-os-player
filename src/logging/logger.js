@@ -46,7 +46,7 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
 /**
  * @param {string} event
  * @param {object} [details]
- * @param {Date} [nowDate=new Date()]
+ * @param {Date} [nowDate]
  */
 function log(event, details, nowDate = new Date()) {
   console.log(event, details);
