@@ -1,0 +1,79 @@
+/**
+ * Creates a new directory under root.
+ * @param {string} name
+ * @returns {Promise.<DirectoryEntry>}
+ */
+function createDirectory(name) {
+  return requestFileSystem()
+    .then((fs) => getDirectory(fs, name, {create: true}));
+}
+
+/**
+ * Returns the available space in bytes
+ * @returns {Promise.<number>}
+ */
+function getAvailableSpace() {
+  return new Promise((resolve, reject) => {
+    navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => resolve(grantedBytes - usedBytes), reject);
+  });
+}
+
+/**
+ * @param {string} fileName
+ * @param {ReadableStream} contentStream
+ * @param {string} dirName
+ * @returns {Promise.<FileEntry>}
+ */
+function writeFileToDirectory(fileName, contentStream, dirName) {
+  return requestFileSystem()
+    .then(fs => createDirectory(fs, dirName))
+    .then(dirEntry => createFile(dirEntry, fileName))
+    .then(fileEntry => writeFile(fileEntry, contentStream));
+}
+
+function requestFileSystem() {
+  return new Promise((resolve, reject) => {
+    const FIVE_MEGA = 5 * 1024 * 1024; // eslint-disable-line no-magic-numbers
+    window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MEGA, resolve, reject);
+  });
+}
+
+function getDirectory(fs, name, options = {create: false}) {
+  return new Promise((resolve, reject) => {
+    fs.root.getDirectory(name, options, resolve, reject);
+  });
+}
+
+function createFile(dir, name) {
+  return new Promise((resolve, reject) => dir.getFile(name, {create: true}, resolve, reject));
+}
+
+function writeFile(fileEntry, contentStream) {
+  return new Promise((resolve, reject) => {
+    fileEntry.createWriter((fileWriter) => {
+      processChunkedContents(contentStream, fileWriter)
+        .then(() => resolve(fileEntry))
+        .catch(reject);
+    });
+  });
+}
+
+function processChunkedContents(contentStream, fileWriter) {
+  const fileWriteableStream = new WritableStream({
+    write(chunk) {
+      return new Promise((resolve, reject) => {
+        fileWriter.seek(fileWriter.length);
+        fileWriter.onwriteend = resolve
+        fileWriter.onerror = reject
+        fileWriter.write(new Blob([chunk]));
+      });
+    }
+  });
+  return contentStream.pipeTo(fileWriteableStream);
+}
+
+module.exports = {
+  createDirectory,
+  getAvailableSpace,
+  writeFileToDirectory
+}
