@@ -7,14 +7,15 @@ const sandbox = sinon.createSandbox();
 
 describe('background script', () => {
 
-  before(() => global.chrome = chrome);
-
   beforeEach(() => {
-    require('../../src/background'); // eslint-disable-line global-require
     sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'logClientInfo');
+    require('../../src/background'); // eslint-disable-line global-require
   });
 
   afterEach(() => sandbox.restore());
+
+  after(() => chrome.flush());
 
   it('should launch player when app is launched', () => {
     sandbox.stub(windowManager, 'launchPlayer');
@@ -66,11 +67,6 @@ describe('background script', () => {
     chrome.runtime.onUpdateAvailable.dispatch({});
 
     sinon.assert.calledOnce(chrome.runtime.reload);
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
   });
 
 });

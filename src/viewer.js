@@ -1,6 +1,7 @@
 const viewerInjector = require('./viewer-injector');
 const viewerMessaging = require('./viewer-message-handler');
 const contentLoader = require('./content-loader');
+const logger = require('./logging/logger');
 
 function init() {
   window.addEventListener('message', (event) => {
@@ -21,6 +22,7 @@ function init() {
   });
 
   Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    logger.log('sending content to viewer');
     const [contentData] = values;
     webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
   });

@@ -1,6 +1,6 @@
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
-const bq = require('../../../src/logging/bq-client');
+const bq = require('../../../src/logging/bq-retry');
 const systemInfo = require('../../../src/logging/system-info');
 const logger = require('../../../src/logging/logger');
 
@@ -8,7 +8,7 @@ const sandbox = sinon.createSandbox();
 
 describe('Logger', () => {
 
-  before(() => global.chrome = chrome);
+  after(() => chrome.flush());
 
   beforeEach(() => {
     sandbox.stub(bq, 'insert').returns(Promise.resolve());
@@ -28,9 +28,22 @@ describe('Logger', () => {
   afterEach(() => sandbox.restore());
 
   it('should log to big query', () => {
-    return logger.log('test', {details: 'some detail'})
+    const eventName = 'test';
+    const eventDetails = {details: 'some detail'};
+    const nowDate = new Date();
+
+    const expetedData = {
+      event: eventName,
+      id: 'displayId',
+      os: 'mac/x86-64',
+      ip: '192.168.0.1',
+      player_version: '0.0.0.0',
+      event_details: JSON.stringify(eventDetails),
+      chrome_version: '64.0.3282.186'
+    };
+    return logger.log('test', {details: 'some detail'}, nowDate)
       .then(() => {
-        sinon.assert.calledOnce(bq.insert);
+        sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
       });
   });
 
@@ -113,11 +126,6 @@ describe('Logger', () => {
         sinon.assert.calledWith(bq.insert, {...expectedPlayerData, ts: nowDate.toISOString()}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});
       });
-  });
-
-  after(() => {
-    chrome.flush();
-    Reflect.deleteProperty(global, 'chrome');
   });
 
 });

@@ -1,4 +1,4 @@
-const bq = require('./bq-client');
+const bq = require('./bq-retry');
 const systemInfo = require('./system-info');
 
 function buildPlayerData(viewerConfig) {
@@ -37,13 +37,18 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
       }
 
       const data = Object.assign({ts: nowDate.toISOString()}, newData);
-      return bq.insert(data, 'Player_Data', 'configuration')
+      return bq.insert(data, 'Player_Data', 'configuration', nowDate)
           .then(() => chrome.storage.local.set({playerData: newData}));
     })
     .catch(console.error);
 }
 
-function log(event, details) {
+/**
+ * @param {string} event
+ * @param {object} [details]
+ * @param {Date} [nowDate]
+ */
+function log(event, details, nowDate = new Date()) {
   console.log(event, details);
 
   return Promise.all([systemInfo.getId(), systemInfo.getOS(), systemInfo.getIpAddress()])
@@ -57,9 +62,9 @@ function log(event, details) {
         player_version: systemInfo.getPlayerVersion(),
         event_details: JSON.stringify(details),
         chrome_version: systemInfo.getChromeVersion(),
-        ts: new Date().toISOString()
+        ts: nowDate.toISOString()
       };
-      return bq.insert(data, 'ChromeOS_Player_Events', 'events');
+      return bq.insert(data, 'ChromeOS_Player_Events', 'events', nowDate);
     })
     .catch(console.error);
 }
