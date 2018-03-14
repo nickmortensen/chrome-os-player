@@ -33,6 +33,7 @@ function writeFileToDirectory(fileName, contentStream, dirName) {
 
 function requestFileSystem() {
   return new Promise((resolve, reject) => {
+    // Requesting only 5MB but is not relevant because we have unlimitedStorage permission
     const FIVE_MEGA = 5 * 1024 * 1024; // eslint-disable-line no-magic-numbers
     window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MEGA, resolve, reject);
   });
