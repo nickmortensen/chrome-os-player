@@ -2,6 +2,7 @@ const viewerInjector = require('./viewer-injector');
 const viewerMessaging = require('./viewer-message-handler');
 const contentLoader = require('./content-loader');
 const logger = require('./logging/logger');
+const messaging = require('./messaging/messaging-service-client');
 
 function init() {
   window.addEventListener('message', (event) => {
@@ -26,6 +27,8 @@ function init() {
     const [contentData] = values;
     webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
   });
+
+  messaging.init();
 }
 
 document.addEventListener("DOMContentLoaded", init);
