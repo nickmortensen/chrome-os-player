@@ -1,5 +1,6 @@
 const bq = require('./bq-retry');
 const systemInfo = require('./system-info');
+const isEqual = require('lodash.isequal');
 
 function buildPlayerData(viewerConfig) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
@@ -32,7 +33,7 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
   return Promise.all([buildPlayerData(viewerConfig), readPlayerData()])
     .then((values) => {
       const [newData, savedData] = values;
-      if (JSON.stringify(newData) === JSON.stringify(savedData)) {
+      if (isEqual(newData, savedData)) {
         return savedData;
       }
 

@@ -43,5 +43,7 @@
     "sinon-chrome": "^2.2.4",
     "webpack": "^3.11.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "lodash.isequal": "^4.5.0"
+  }
 }
