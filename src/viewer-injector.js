@@ -18,6 +18,8 @@ function setUpMessaging() {
 
     if (message.from === 'player') {
       handlePlayerMessage(message);
+    } else if (message.from === 'local-messaging') {
+      handleLocalMessagingMessage(message);
     }
   }
 
@@ -30,6 +32,13 @@ function setUpMessaging() {
       if (handlers && handlers.length > 0) {
         handlers.forEach(handler => handler(message));
       }
+    }
+  }
+
+  function handleLocalMessagingMessage(message) {
+    const handlers = eventHandlers['local-messaging'];
+    if (handlers && handlers.length > 0) {
+      handlers.forEach(handler => handler(message));
     }
   }
 

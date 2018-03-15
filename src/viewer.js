@@ -15,7 +15,10 @@ function fetchContent(webview) {
   });
 }
 
-function init() {
+function setUpMessaging() {
+  const webview = document.querySelector('webview');
+  viewerMessaging.init(webview);
+
   window.addEventListener('message', (event) => {
     if (!event.data) {
       return;
@@ -27,16 +30,32 @@ function init() {
     viewerMessaging.handleMessage(event.data);
   });
 
-  const webview = document.querySelector('webview');
   webview.addEventListener('contentload', () => {
     webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()});
-    webview.contentWindow.postMessage({from: 'player', topic: 'hello'}, webview.src);
+    viewerMessaging.sendMessage({from: 'player', topic: 'hello'});
   });
+}
 
   fetchContent(webview);
+function fetchContent() {
+  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    logger.log('sending content to viewer');
+    const [contentData] = values;
+    const regex = new RegExp('http://s3.amazonaws.com/widget-image/0.1.1/dist/widget.html', 'g');
+    const rewriteUrl = 'http://widgets.risevision.com/image/widget.html';
+
+    contentData.content.presentations.forEach((presentation) => presentation.layout = presentation.layout.replace(regex, rewriteUrl))
+
+    viewerMessaging.sendMessage({from: 'player', topic: 'content-update', newContent: contentData});
+  });
 
   messaging.init().then(() => storage.init());
   messaging.on('content-update', () => fetchContent(webview));
+}
+
+function init() {
+  setUpMessaging();
+  fetchContent();
 }
 
 document.addEventListener("DOMContentLoaded", init);
