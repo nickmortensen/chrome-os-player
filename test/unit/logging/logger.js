@@ -79,8 +79,8 @@ describe('Logger', () => {
     const nowDate = new Date();
 
     const expectedPlayerData = {
-      machine_id: 'machineId',
       display_id: 'displayId',
+      machine_id: 'machineId',
       os_description: 'Chrome OS 10323.9.0',
       player_name: '(Beta) RisePlayer',
       player_version: '0.0.0.0',
