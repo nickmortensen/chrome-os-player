@@ -2,5 +2,5 @@ node_modules/**
 app/*.bundle.js
 app/local-viewer/**
 deploy.js
-src/lib/*.js
+src/messaging/primus.js
 webpack.config.js
