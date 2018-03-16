@@ -11,7 +11,7 @@ describe('Logger', () => {
   after(() => chrome.flush());
 
   beforeEach(() => {
-    sandbox.stub(bq, 'insert').returns(Promise.resolve());
+    sandbox.stub(bq, 'insert').resolves();
 
     sandbox.stub(systemInfo, 'getId').returns('displayId');
     sandbox.stub(systemInfo, 'getMachineId').returns('machineId');

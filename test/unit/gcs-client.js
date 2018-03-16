@@ -16,7 +16,7 @@ describe('GCS Client', () => {
 
   it('should fetch json', () => {
     const expectedContent = {};
-    fetch.returns(Promise.resolve({json() {return Promise.resolve(expectedContent);}}))
+    fetch.resolves({json() {return Promise.resolve(expectedContent);}});
 
     const bucketName = 'risevision-display-notifications';
     const filePath = 'DISPLAYID/content.json';

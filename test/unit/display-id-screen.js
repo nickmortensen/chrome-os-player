@@ -23,7 +23,7 @@ describe('Display ID Screen', () => {
   afterEach(() => sandbox.restore());
 
   it('shows invalid display ID error', () => {
-    sandbox.stub(validator, 'validateDisplayId').returns(Promise.reject(Error('Invalid display id')));
+    sandbox.stub(validator, 'validateDisplayId').rejects(Error('Invalid display id'));
 
     sandbox.spy(viewModel, 'showInvalidDisplayIdError');
 

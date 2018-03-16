@@ -26,7 +26,7 @@ describe('BQ Retry', () => {
 
   it('should log to big query', () => {
 
-    sandbox.stub(bqClient, 'insert').returns(Promise.resolve());
+    sandbox.stub(bqClient, 'insert').resolves();
 
     return bqRetry.insert(data, 'ChromeOS_Player_Events', 'events')
       .then(() => {
@@ -36,7 +36,7 @@ describe('BQ Retry', () => {
 
   it('should schedule retry', () => {
 
-    sandbox.stub(bqClient, 'insert').returns(Promise.reject(Error('Testing')));
+    sandbox.stub(bqClient, 'insert').rejects(Error('Testing'));
 
     chrome.storage.local.get.yields({});
     chrome.storage.local.set.yields();
@@ -49,7 +49,7 @@ describe('BQ Retry', () => {
 
   it('should save failed log entry', () => {
 
-    sandbox.stub(bqClient, 'insert').returns(Promise.reject(Error('Testing')));
+    sandbox.stub(bqClient, 'insert').rejects(Error('Testing'));
 
     chrome.storage.local.get.yields({});
     chrome.storage.local.set.yields();
@@ -68,7 +68,7 @@ describe('BQ Retry', () => {
 
   it('should remove old entries', () => {
 
-    sandbox.stub(bqClient, 'insert').returns(Promise.reject(Error('Testing')));
+    sandbox.stub(bqClient, 'insert').rejects(Error('Testing'));
 
     const nowDate = new Date();
     const newEntryTimeStamp = Number(nowDate);
@@ -88,7 +88,7 @@ describe('BQ Retry', () => {
   });
 
   it('should insert failed entries', () => {
-    sandbox.stub(bqClient, 'insertMultiple').returns(Promise.resolve());
+    sandbox.stub(bqClient, 'insertMultiple').resolves();
 
     const nowDate = new Date();
     const newEntryTimeStamp = Number(nowDate);
@@ -105,7 +105,7 @@ describe('BQ Retry', () => {
   });
 
   it('should schedule a new retry when it fails inserting failed entries', () => {
-    sandbox.stub(bqClient, 'insertMultiple').returns(Promise.reject(Error('Testing')));
+    sandbox.stub(bqClient, 'insertMultiple').rejects(Error('Testing'));
 
     const nowDate = new Date();
     const newEntryTimeStamp = Number(nowDate);

@@ -12,7 +12,7 @@ describe('Display ID Validator', () => {
   beforeEach(() => fetch.resetBehavior());
 
   it('validates a display id', () => {
-    fetch.returns(Promise.resolve({
+    fetch.resolves({
       json() {
         return Promise.resolve({
           item: {
@@ -20,7 +20,7 @@ describe('Display ID Validator', () => {
           }
         });
       }
-    }));
+    });
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
       .then((resp)=>{
@@ -29,7 +29,7 @@ describe('Display ID Validator', () => {
   });
 
   it('rejects when validation fetch fails', () => {
-    fetch.returns(Promise.reject(Error()));
+    fetch.rejects(Error());
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
       .then(() => assert.fail('catch should have been called'))
@@ -39,7 +39,7 @@ describe('Display ID Validator', () => {
   });
 
   it('rejects when not validated', () => {
-    fetch.returns(Promise.resolve({
+    fetch.resolves({
       json() {
         return {
           error: {
@@ -48,7 +48,7 @@ describe('Display ID Validator', () => {
           }
         };
       }
-    }));
+    });
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
     .then(() => assert.fail('catch should have been called'))
@@ -58,13 +58,13 @@ describe('Display ID Validator', () => {
   });
 
   it('rejects when display has been deleted', () => {
-    fetch.returns(Promise.resolve({
+    fetch.resolves({
       json() {
         return {
           size: '2'
         };
       }
-    }));
+    });
 
     return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
       .then(() => assert.fail('catch should have been called'))
