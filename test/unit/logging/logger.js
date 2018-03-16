@@ -41,7 +41,29 @@ describe('Logger', () => {
       event_details: JSON.stringify(eventDetails),
       chrome_version: '64.0.3282.186'
     };
-    return logger.log('test', {details: 'some detail'}, nowDate)
+    return logger.log(eventName, {details: 'some detail'}, nowDate)
+      .then(() => {
+        sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
+      });
+  });
+
+  it('should log error to big query', () => {
+    const eventName = 'Error on something';
+    const error = Error('testing');
+    const eventDetails = {message: error.message, stack: error.stack};
+
+    const nowDate = new Date();
+
+    const expetedData = {
+      event: eventName,
+      id: 'displayId',
+      os: 'mac/x86-64',
+      ip: '192.168.0.1',
+      player_version: '0.0.0.0',
+      event_details: JSON.stringify(eventDetails),
+      chrome_version: '64.0.3282.186'
+    };
+    return logger.error(eventName, error, nowDate)
       .then(() => {
         sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
       });

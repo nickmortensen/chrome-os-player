@@ -48,6 +48,7 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
  * @param {string} event
  * @param {object} [details]
  * @param {Date} [nowDate]
+ * @returns {Promise}
  */
 function log(event, details, nowDate = new Date()) {
   console.log(event, details);
@@ -70,7 +71,25 @@ function log(event, details, nowDate = new Date()) {
     .catch(console.error);
 }
 
+/**
+ * @param {string} event
+ * @param {Error} [err]
+ * @param {Date} [nowDate]
+ * @returns {Promise}
+ */
+function error(event, err, nowDate = new Date()) {
+  console.error(event, err);
+
+  const details = {};
+  if (err) {
+    details.message = err.message;
+    details.stack = err.stack;
+  }
+  return log(event, details, nowDate);
+}
+
 module.exports = {
   log,
-  logClientInfo
+  logClientInfo,
+  error
 }
