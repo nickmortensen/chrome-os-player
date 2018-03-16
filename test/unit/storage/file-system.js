@@ -1,7 +1,7 @@
 const assert = require('assert');
 const sinon = require('sinon');
 
-const fileSystem = require('../../src/file-system');
+const fileSystem = require('../../../src/storage/file-system');
 
 const sandbox = sinon.createSandbox();
 const window = {webkitRequestFileSystem() {}, PERSISTENT: 1};
