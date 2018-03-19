@@ -74,5 +74,34 @@ describe('Messaging Service Client', () => {
     });
   });
 
+  it('should invoke handlers when message is received as string', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = 'screenshot-request';
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('screenshot-request', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(handler, message);
+    });
+  });
+
+
+  it('should not invoke handlers when message is not a string and has no topic', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = {};
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('screenshot-request', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.notCalled(handler);
+    });
+  });
+
 
 });

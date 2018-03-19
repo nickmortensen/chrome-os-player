@@ -21,10 +21,12 @@ function connect(displayId, machineId) {
   connection.on('data', (data) => {
     console.log(`MS received data: ${JSON.stringify(data)}`);
 
-    const message = data.topic || data;
-    const handlers = messageHandlers[message.toLowerCase()];
-    if (handlers && handlers.length > 0) {
-      handlers.forEach(handler => handler(data));
+    const key = data.topic || data;
+    if (typeof key === 'string') {
+      const handlers = messageHandlers[key.toLowerCase()];
+      if (handlers && handlers.length > 0) {
+        handlers.forEach(handler => handler(data));
+      }
     }
   });
 
