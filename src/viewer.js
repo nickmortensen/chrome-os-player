@@ -3,6 +3,7 @@ const viewerMessaging = require('./viewer-message-handler');
 const contentLoader = require('./content-loader');
 const logger = require('./logging/logger');
 const messaging = require('./messaging/messaging-service-client');
+const storage = require('./storage/storage');
 
 function init() {
   window.addEventListener('message', (event) => {
@@ -28,7 +29,7 @@ function init() {
     webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
   });
 
-  messaging.init();
+  messaging.init().then(() => storage.init());
 }
 
 document.addEventListener("DOMContentLoaded", init);
