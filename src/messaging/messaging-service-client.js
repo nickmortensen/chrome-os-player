@@ -19,11 +19,20 @@ function connect(displayId, machineId) {
   connection.on('data', (data) => console.log(`MS received data: ${JSON.stringify(data)}`));
 
   connection.open();
+
+  return new Promise((resolve, reject) => {
+    connection.on('open', resolve);
+    connection.on('error', reject);
+  });
+}
+
+function readDisplayAndMachineIds() {
+  return new Promise((resolve) => chrome.storage.local.get(resolve));
 }
 
 function init() {
-  chrome.storage.local.get((items) => {
-    connect(items.displayId, items.machineId);
+  return readDisplayAndMachineIds().then((items) => {
+    return connect(items.displayId, items.machineId);
   });
 }
 

@@ -26,14 +26,15 @@ describe('Messaging Service Client', () => {
   });
 
   it('should connect to messaging service', () => {
-
-    messagingServiceClient.init();
+    sandbox.stub(connection, 'on').withArgs('open').yields();
 
     const expectedMSUrl = 'https://services.risevision.com/messaging/primus/?displayId=displayId&machineId=machineId';
     const expectedPrimusOptions = {reconnect: {max: 1800000, min: 2000, retries: Infinity}, manual: true};
 
-    sinon.assert.calledWith(Primus.connect, expectedMSUrl, expectedPrimusOptions);
-    sinon.assert.calledOnce(connection.open);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(Primus.connect, expectedMSUrl, expectedPrimusOptions);
+      sinon.assert.calledOnce(connection.open);
+    });
   });
 
   it('should log connection opened event', () => {
@@ -41,9 +42,9 @@ describe('Messaging Service Client', () => {
 
     const event = 'MS connection opened';
 
-    messagingServiceClient.init();
-
-    sinon.assert.calledWith(logger.log, event);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(logger.log, event);
+    });
   });
 
   it('should log connection error event', () => {
@@ -54,9 +55,9 @@ describe('Messaging Service Client', () => {
 
     const event = 'MS connection error';
 
-    messagingServiceClient.init();
-
-    sinon.assert.calledWith(logger.error, event, error);
+    return messagingServiceClient.init().catch(() => {
+      sinon.assert.calledWith(logger.error, event, error);
+    });
   });
 
 
