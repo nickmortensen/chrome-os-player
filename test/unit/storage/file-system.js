@@ -1,3 +1,4 @@
+/* eslint-disable no-magic-numbers */
 const assert = require('assert');
 const sinon = require('sinon');
 
@@ -39,13 +40,39 @@ describe('File System', () => {
   });
 
   it('should return available space', () => {
-    const grantedBytes = 50 * 1024 * 1024; // eslint-disable-line no-magic-numbers
-    const usedBytes = 5 * 1024 * 1024; // eslint-disable-line no-magic-numbers
+    const grantedBytes = 50 * 1024 * 1024;
+    const usedBytes = 5 * 1024 * 1024;
 
     sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota').yields(usedBytes, grantedBytes);
 
     return fileSystem.getAvailableSpace().then((spaceLeft) => {
       assert.equal(spaceLeft, grantedBytes - usedBytes);
+    });
+  });
+
+  it('should check for available space', () => {
+    const grantedBytes = 50 * 1024 * 1024;
+    const usedBytes = 5 * 1024 * 1024;
+
+    sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota').yields(usedBytes, grantedBytes);
+
+    const fileSize = 1 * 1024 * 1024;
+
+    return fileSystem.checkAvailableDiskSpace(fileSize).then((isAvailable) => {
+      assert.equal(isAvailable, true);
+    });
+  });
+
+  it('should check for available space when file size exceeds free space', () => {
+    const grantedBytes = 50 * 1024 * 1024;
+    const usedBytes = 5 * 1024 * 1024;
+
+    sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota').yields(usedBytes, grantedBytes);
+
+    const fileSize = 46 * 1024 * 1024;
+
+    return fileSystem.checkAvailableDiskSpace(fileSize).then((isAvailable) => {
+      assert.equal(isAvailable, false);
     });
   });
 

@@ -19,6 +19,17 @@ function getAvailableSpace() {
 }
 
 /**
+ * Returns a boolean indicating if there's enough space to save the file size passed as param
+ * @param {number} fileSize
+ * @returns {Promise.<boolean>}
+ */
+function checkAvailableDiskSpace(fileSize = 0) {
+  return getAvailableSpace().then(freeSpace => {
+    return freeSpace - fileSize > 0;
+  });
+}
+
+/**
  * @param {string} fileName
  * @param {ReadableStream} contentStream
  * @param {string} dirName
@@ -76,5 +87,6 @@ function processChunkedContents(contentStream, fileWriter) {
 module.exports = {
   createDirectory,
   getAvailableSpace,
+  checkAvailableDiskSpace,
   writeFileToDirectory
 }
