@@ -158,7 +158,7 @@ describe('System Info', () => {
     const crypto = {subtle: {digest() {}}};
     global.crypto = crypto;
 
-    sandbox.stub(crypto.subtle, 'digest').returns(Promise.resolve(new Uint8Array(1, 2, 3))); // eslint-disable-line no-magic-numbers
+    sandbox.stub(crypto.subtle, 'digest').resolves(new Uint8Array(1, 2, 3)); // eslint-disable-line no-magic-numbers
 
     return systemInfo.getMachineId()
       .then((id) => {

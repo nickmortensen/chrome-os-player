@@ -14,7 +14,7 @@ describe('Content Loader', () => {
 
   it('should fetch content from GCS', () => {
     chrome.storage.local.get.yields({displayId: 'displayId'});
-    sandbox.stub(gcsClient, 'fetchJson').returns(Promise.resolve());
+    sandbox.stub(gcsClient, 'fetchJson').resolves();
 
     return contentLoader.fetchContent().then(() => {
       sinon.assert.calledWith(gcsClient.fetchJson, 'risevision-display-notifications', 'displayId/content.json');

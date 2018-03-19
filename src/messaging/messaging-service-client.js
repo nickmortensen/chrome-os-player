@@ -1,4 +1,5 @@
 const Primus = require('./primus');
+const logger = require('../logging/logger');
 
 function connect(displayId, machineId) {
   const url = `https://services.risevision.com/messaging/primus/?displayId=${displayId}&machineId=${machineId}`;
@@ -11,10 +12,10 @@ function connect(displayId, machineId) {
     manual: true
   });
 
-  connection.on('open', () => console.log('MS connected'));
+  connection.on('open', () => logger.log('MS connection opened'));
   connection.on('close', () => console.log('MS connection closed'));
   connection.on('end', () => console.log('MS disconnected'));
-  connection.on('error', (error) => console.log('MS error', error.stack));
+  connection.on('error', (error) => logger.error('MS connection error', error));
   connection.on('data', (data) => console.log(`MS received data: ${JSON.stringify(data)}`));
 
   connection.open();
