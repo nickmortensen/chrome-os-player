@@ -26,14 +26,15 @@ describe('Messaging Service Client', () => {
   });
 
   it('should connect to messaging service', () => {
-
-    messagingServiceClient.init();
+    sandbox.stub(connection, 'on').withArgs('open').yields();
 
     const expectedMSUrl = 'https://services.risevision.com/messaging/primus/?displayId=displayId&machineId=machineId';
     const expectedPrimusOptions = {reconnect: {max: 1800000, min: 2000, retries: Infinity}, manual: true};
 
-    sinon.assert.calledWith(Primus.connect, expectedMSUrl, expectedPrimusOptions);
-    sinon.assert.calledOnce(connection.open);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(Primus.connect, expectedMSUrl, expectedPrimusOptions);
+      sinon.assert.calledOnce(connection.open);
+    });
   });
 
   it('should log connection opened event', () => {
@@ -41,9 +42,9 @@ describe('Messaging Service Client', () => {
 
     const event = 'MS connection opened';
 
-    messagingServiceClient.init();
-
-    sinon.assert.calledWith(logger.log, event);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(logger.log, event);
+    });
   });
 
   it('should log connection error event', () => {
@@ -54,9 +55,52 @@ describe('Messaging Service Client', () => {
 
     const event = 'MS connection error';
 
-    messagingServiceClient.init();
+    return messagingServiceClient.init().catch(() => {
+      sinon.assert.calledWith(logger.error, event, error);
+    });
+  });
 
-    sinon.assert.calledWith(logger.error, event, error);
+  it('should invoke handlers when message is received', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = {filePath: 'path', version: 'version', type: 'ADD', topic: 'MSFILEUPDATE'};
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('MSFILEUPDATE', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(handler, message);
+    });
+  });
+
+  it('should invoke handlers when message is received as string', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = 'screenshot-request';
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('screenshot-request', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(handler, message);
+    });
+  });
+
+
+  it('should not invoke handlers when message is not a string and has no topic', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = {};
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('screenshot-request', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.notCalled(handler);
+    });
   });
 
 
