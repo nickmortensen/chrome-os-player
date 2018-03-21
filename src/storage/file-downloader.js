@@ -29,7 +29,8 @@ function download(entry) {
       const fileName = `${filePath}${version}`;
       const dirName = 'downloads';
       return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
-    });
+    })
+    .then((fileEntry) => fileSystem.moveFileToDirectory(fileEntry, 'files'));
 }
 
 function requestFile(signedUrl, retries = 2) { // eslint-disable-line no-magic-numbers

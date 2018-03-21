@@ -95,4 +95,20 @@ describe('File System', () => {
     });
   });
 
+  it('should move file to directory', () => {
+    const fileEntryToMove = {moveTo() {}};
+    sandbox.stub(fileEntryToMove, 'moveTo').yields(fileEntryToMove);
+
+    const mockedDir = {getFile() {}};
+    const fs = {root: {getDirectory() {}}};
+    sandbox.stub(fs.root, 'getDirectory').yields(mockedDir);
+    sandbox.stub(window, 'webkitRequestFileSystem').yields(fs);
+
+    const dirName = 'files';
+
+    return fileSystem.moveFileToDirectory(fileEntryToMove, dirName).then(fileEntry => {
+      assert.equal(fileEntry, fileEntryToMove);
+    });
+  });
+
 });
