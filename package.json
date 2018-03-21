@@ -51,5 +51,8 @@
       "test/**",
       "src/messaging/primus.js"
     ]
+  },
+  "engines": {
+    "node" : ">=8.6.0"
   }
 }
