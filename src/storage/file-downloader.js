@@ -27,9 +27,10 @@ function download(entry) {
     .then(response => validateResponse(response))
     .then(response => {
       const fileName = `${filePath}${version}`;
-      const dirName = 'downloads';
+      const dirName = 'download';
       return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
-    });
+    })
+    .then((fileEntry) => fileSystem.moveFileToDirectory(fileEntry, 'cache'));
 }
 
 function requestFile(signedUrl, retries = 2) { // eslint-disable-line no-magic-numbers

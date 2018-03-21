@@ -42,6 +42,19 @@ function writeFileToDirectory(fileName, contentStream, dirName) {
     .then(fileEntry => writeFile(fileEntry, contentStream));
 }
 
+/**
+ * @param {FileEntry} fileEntry
+ * @param {string} dirName
+ * @returns {Promise.<FileEntry>}
+ */
+function moveFileToDirectory(fileEntry, dirName) {
+  return requestFileSystem()
+    .then(fs => createDirectory(fs, dirName))
+    .then(dirEntry => {
+      return new Promise((resolve, reject) => fileEntry.moveTo(dirEntry, resolve, reject));
+    });
+}
+
 function requestFileSystem() {
   return new Promise((resolve, reject) => {
     // Requesting only 5MB but is not relevant because we have unlimitedStorage permission
@@ -88,5 +101,6 @@ module.exports = {
   createDirectory,
   getAvailableSpace,
   checkAvailableDiskSpace,
-  writeFileToDirectory
+  writeFileToDirectory,
+  moveFileToDirectory
 }

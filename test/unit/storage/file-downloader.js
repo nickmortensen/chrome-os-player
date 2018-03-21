@@ -33,6 +33,7 @@ describe('File Downloader', () => {
     const expectedFileEntry = {};
 
     sandbox.stub(fileSystem, 'writeFileToDirectory').resolves(expectedFileEntry);
+    sandbox.stub(fileSystem, 'moveFileToDirectory').resolves(expectedFileEntry);
     sandbox.stub(fileSystem, 'checkAvailableDiskSpace').resolves(true);
     sandbox.stub(urlProvider, 'getUrl').resolves('http://risevision.com/test/file');
     fetch.resolves({ok: true, status: 200, headers: {get() {}}});
