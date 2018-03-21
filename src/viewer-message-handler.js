@@ -1,5 +1,5 @@
 const logger = require('./logging/logger');
-// const localStorage = require('./local-storage');
+const storage = require('./storage/storage');
 
 const dataHandlerRegisteredObserver = {resolve: () => {}, messageReceived: false};
 
@@ -38,7 +38,7 @@ function handleLocalMessagingMessage(data) {
     const message = {from: 'local-messaging', topic: 'client-list', installedClients, clients: installedClients};
     sendMessage(message);
   } else if (data.topic === 'WATCH') {
-    // localStorage.watch(data.filePath).then((result) => sendMessage(result));
+    storage.watch(data.filePath).then((result) => sendMessage(result));
   }
 }
 
