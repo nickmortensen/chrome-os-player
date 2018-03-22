@@ -32,10 +32,12 @@ jobs:
 
 workflows:
   version: 2
-  workflow1:
+  test_and_deploy:
     jobs:
       - "test"
       - "deploy":
+          requires:
+            - test
           filters:
             branches:
               only:
