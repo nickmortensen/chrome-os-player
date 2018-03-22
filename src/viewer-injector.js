@@ -66,6 +66,7 @@ function setUpMessaging() {
     eventHandlers[eventName].push(handler);
   }
 
+  window.useWindowMessagingForLocalMessaging = true;
   window.disableViewerContentFetch = true;
   window.postToPlayer = sendMessageToApp;
   window.receiveFromPlayer = registerMessageHandler;
