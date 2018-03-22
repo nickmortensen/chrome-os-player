@@ -54,7 +54,7 @@ describe('Reboot Scheduler', () => {
     const mm = `${restartDate.getMinutes()}`.padStart(2, '0');
     const content = {display: {restartEnabled: true, restartTime: `${hh}:${mm}`}};
 
-    rebootScheduler.scheduleRebootFromViewerContents(content);
+    rebootScheduler.scheduleRebootFromViewerContents(content, nowDate);
 
     sinon.assert.calledWith(chrome.runtime.restartAfterDelay, 3600);
   });

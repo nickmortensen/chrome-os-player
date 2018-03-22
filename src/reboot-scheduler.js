@@ -1,6 +1,8 @@
 
 const logger = require('./logging/logger');
 
+const MILLISECONDS = 1000;
+
 function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   if (!(content && content.display && content.display.restartEnabled)) {
     return;
@@ -12,7 +14,7 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   }
 
   const rebootDate = parseRebootDate(content.display.restartTime);
-  const seconds = (rebootDate - nowDate) / 1000; // eslint-disable-line no-magic-numbers
+  const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
 
   console.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
   chrome.runtime.restartAfterDelay(seconds);
