@@ -21,7 +21,7 @@ function connect(displayId, machineId) {
   connection.on('data', (data) => {
     console.log(`MS received data: ${JSON.stringify(data)}`);
 
-    const key = data.topic || data;
+    const key = data.topic || data.msg || data;
     if (typeof key === 'string') {
       const handlers = messageHandlers[key.toLowerCase()];
       if (handlers && handlers.length > 0) {

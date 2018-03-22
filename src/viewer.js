@@ -4,6 +4,16 @@ const contentLoader = require('./content-loader');
 const logger = require('./logging/logger');
 const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
+const rebootScheduler = require('./reboot-scheduler');
+
+function fetchContent(webview) {
+  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    logger.log('sending content to viewer');
+    const [contentData] = values;
+    webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
+    rebootScheduler.scheduleRebootFromViewerContents(contentData);
+  });
+}
 
 function init() {
   window.addEventListener('message', (event) => {
@@ -23,13 +33,10 @@ function init() {
     webview.contentWindow.postMessage({from: 'player', topic: 'hello'}, webview.src);
   });
 
-  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
-    logger.log('sending content to viewer');
-    const [contentData] = values;
-    webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
-  });
+  fetchContent(webview);
 
   messaging.init().then(() => storage.init());
+  messaging.on('content-update', () => fetchContent(webview));
 }
 
 document.addEventListener("DOMContentLoaded", init);

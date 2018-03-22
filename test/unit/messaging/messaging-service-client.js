@@ -88,6 +88,19 @@ describe('Messaging Service Client', () => {
     });
   });
 
+  it('should invoke handlers when message is received with msg string', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    const message = {msg: 'content-update'};
+    on.withArgs('data').yields(message);
+
+    const handler = sandbox.spy();
+    messagingServiceClient.on('content-update', handler);
+    return messagingServiceClient.init().then(() => {
+      sinon.assert.calledWith(handler, message);
+    });
+  });
 
   it('should not invoke handlers when message is not a string and has no topic', () => {
     const on = sandbox.stub(connection, 'on');
