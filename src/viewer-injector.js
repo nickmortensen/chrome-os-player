@@ -4,6 +4,8 @@ function setUpMessaging() {
   let appWindow = null;
   let appOrigin = null;
 
+  window.addEventListener('message', receiveMessage);
+
   function receiveMessage(event) {
     if (!appWindow || !appOrigin) {
       appWindow = event.source;
@@ -41,8 +43,6 @@ function setUpMessaging() {
       handlers.forEach(handler => handler(message));
     }
   }
-
-  window.addEventListener('message', receiveMessage);
 
   function sendMessageToApp(message, origin = appOrigin) {
     if (!appWindow) {

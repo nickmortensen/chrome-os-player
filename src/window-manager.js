@@ -12,7 +12,7 @@ function launchPlayer() {
 }
 
 function launchViewer(displayId) {
-  const url = `http://local-viewer.risevision.com/?player=true&webSocketMessaging=false&type=display&id=${displayId}`;
+  const url = `http://viewer-test.risevision.com/Viewer.html?player=true&type=display&id=${displayId}`;
   return createWebViewWindow('viewer.html', url, {id: 'viewer', state: 'fullscreen'})
     .then((viewerWindow) => {
       viewerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
