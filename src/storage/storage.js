@@ -25,6 +25,12 @@ function init() {
   messagingServiceClient.on('MSFILEUPDATE', message => handleMSFileUpdate(message));
 }
 
+function watch(message) {
+  console.log('handle watch', message);
+  return Promise.resolve({});
+}
+
 module.exports = {
-  init
+  init,
+  watch
 }

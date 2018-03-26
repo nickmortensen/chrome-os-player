@@ -4,6 +4,8 @@ function setUpMessaging() {
   let appWindow = null;
   let appOrigin = null;
 
+  window.addEventListener('message', receiveMessage);
+
   function receiveMessage(event) {
     if (!appWindow || !appOrigin) {
       appWindow = event.source;
@@ -18,6 +20,8 @@ function setUpMessaging() {
 
     if (message.from === 'player') {
       handlePlayerMessage(message);
+    } else if (message.from === 'local-messaging') {
+      handleLocalMessagingMessage(message);
     }
   }
 
@@ -33,7 +37,12 @@ function setUpMessaging() {
     }
   }
 
-  window.addEventListener('message', receiveMessage);
+  function handleLocalMessagingMessage(message) {
+    const handlers = eventHandlers['local-messaging'];
+    if (handlers && handlers.length > 0) {
+      handlers.forEach(handler => handler(message));
+    }
+  }
 
   function sendMessageToApp(message, origin = appOrigin) {
     if (!appWindow) {
@@ -57,6 +66,7 @@ function setUpMessaging() {
     eventHandlers[eventName].push(handler);
   }
 
+  window.useWindowMessagingForLocalMessaging = true;
   window.disableViewerContentFetch = true;
   window.postToPlayer = sendMessageToApp;
   window.receiveFromPlayer = registerMessageHandler;

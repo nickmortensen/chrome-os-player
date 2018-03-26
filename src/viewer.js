@@ -6,16 +6,10 @@ const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
 const rebootScheduler = require('./reboot-scheduler');
 
-function fetchContent(webview) {
-  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
-    logger.log('sending content to viewer');
-    const [contentData] = values;
-    webview.contentWindow.postMessage({from: 'player', topic: 'content-update', newContent: contentData}, webview.src);
-    rebootScheduler.scheduleRebootFromViewerContents(contentData);
-  });
-}
+function setUpMessaging() {
+  const webview = document.querySelector('webview');
+  viewerMessaging.init(webview);
 
-function init() {
   window.addEventListener('message', (event) => {
     if (!event.data) {
       return;
@@ -27,16 +21,26 @@ function init() {
     viewerMessaging.handleMessage(event.data);
   });
 
-  const webview = document.querySelector('webview');
   webview.addEventListener('contentload', () => {
     webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()});
-    webview.contentWindow.postMessage({from: 'player', topic: 'hello'}, webview.src);
+    viewerMessaging.sendMessage({from: 'player', topic: 'hello'});
   });
 
-  fetchContent(webview);
+  return messaging.init();
+}
 
-  messaging.init().then(() => storage.init());
-  messaging.on('content-update', () => fetchContent(webview));
+function fetchContent() {
+  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    logger.log('sending content to viewer');
+    const [contentData] = values;
+    viewerMessaging.sendMessage({from: 'player', topic: 'content-update', newContent: contentData});
+    rebootScheduler.scheduleRebootFromViewerContents(contentData);
+  });
+}
+
+function init() {
+  setUpMessaging().then(storage.init);
+  fetchContent();
 }
 
 document.addEventListener("DOMContentLoaded", init);
