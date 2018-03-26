@@ -1,8 +1,10 @@
 const windowManager = require('./window-manager');
 const logger = require('./logging/logger');
+const launchEnvs = require("./launch-environment");
 
 function init(launchData) {
   logger.log(`launch from ${launchData.source}`, launchData);
+  launchEnvs.set(launchData);
   chrome.storage.local.get((items) => {
     if (items.displayId) {
       windowManager.launchViewer(items.displayId);
