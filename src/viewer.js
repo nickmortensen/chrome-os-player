@@ -26,6 +26,8 @@ function setUpMessaging() {
     viewerMessaging.sendMessage({from: 'player', topic: 'hello'});
   });
 
+  messaging.on('content-update', fetchContent);
+
   return messaging.init();
 }
 
