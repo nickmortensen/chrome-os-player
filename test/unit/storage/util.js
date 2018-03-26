@@ -29,7 +29,7 @@ describe('Storage Util', () => {
     assert.equal(uri, '/file');
   });
 
-  it('should not parse POST URI without query string', () => {
+  it('should not parse POST URI', () => {
     const requestText =
       `POST / HTTP/1.1
       Host: localhost:8989

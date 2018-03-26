@@ -43,39 +43,24 @@ function onAccept(acceptInfo) {
 }
 
 function onReceive({data, socketId}) {
-  if (!sockets.has(socketId)) {
-    return;
-  }
+  if (!sockets.has(socketId)) {return;}
 
   const string = util.arrayBufferToString(data);
   console.log(`request received: ${string}`);
-  if (string.indexOf('GET ') !== 0) {
-    return destroySocketById(socketId);
-  }
 
   const uri = util.parseUri(string);
-  if (!uri) {
-    return;
-  }
-
   console.log(`read file from uri ${uri}`);
   const keepAlive = string.indexOf('Connection: keep-alive') > 0;
-  writeSuccessResponse(socketId, uri, keepAlive);
-}
-
-function writeSuccessResponse(socketId, uri, keepAlive) {
-  console.log('write success response', socketId, uri, keepAlive);
-
-  const buffer = getResponseHeader(keepAlive);
+  const buffer = getResponseHeader(uri, keepAlive);
   sendResponse(socketId, buffer, keepAlive);
 }
 
-function getResponseHeader(keepAlive) {
-  const httpStatus = 'HTTP/1.0 200 OK';
+function getResponseHeader(uri, keepAlive) {
+  const httpStatus = uri ? '200 OK' : '400 Bad Request';
   const contentType = 'text/plain';
   const contentLength = 0;
   const lines = [
-    httpStatus,
+    `HTTP/1.0 ${httpStatus}`,
     `Content-Length: ${contentLength}`,
     `Content-Type: ${contentType}`
   ];
