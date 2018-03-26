@@ -1,10 +1,8 @@
 /* eslint-disable no-magic-numbers */
 const sinon = require('sinon');
-
 const logger = require('../../src/logging/logger');
-
+const envVars = require(`../../src/launch-environment`);
 const rebootScheduler = require('../../src/reboot-scheduler');
-
 const sandbox = sinon.createSandbox();
 
 describe('Reboot Scheduler', () => {
@@ -14,12 +12,14 @@ describe('Reboot Scheduler', () => {
   afterEach(() => sandbox.restore());
 
   it('should not schedule reboot when content is empty', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
     rebootScheduler.scheduleRebootFromViewerContents();
 
     sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
   });
 
   it('should not schedule reboot when display is empty', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
     const content = {};
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
@@ -28,6 +28,7 @@ describe('Reboot Scheduler', () => {
   });
 
   it('should not schedule reboot when restart is not enable', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
     const content = {display: {restartEnabled: false}};
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
@@ -35,7 +36,17 @@ describe('Reboot Scheduler', () => {
     sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
   });
 
+  it('should not schedule reboot when not in kiosk mode', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(false);
+    const content = {display: {restartEnabled: false, restartTime: 'tomorrow'}};
+
+    rebootScheduler.scheduleRebootFromViewerContents(content);
+
+    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+  });
+
   it('should not schedule reboot and log error when restart time is not valid', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
     sandbox.stub(logger, 'log');
 
     const content = {display: {restartEnabled: true, restartTime: 'tomorrow'}};
@@ -47,6 +58,7 @@ describe('Reboot Scheduler', () => {
   });
 
   it('should schedule reboot successfully', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
     const nowDate = Date.now();
     const oneHour = 60 * 60 * 1000;
     const restartDate = new Date(nowDate + oneHour);

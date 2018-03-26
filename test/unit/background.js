@@ -1,6 +1,7 @@
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const windowManager = require('../../src/window-manager');
+const launchEnvs = require('../../src/launch-environment');
 const logger = require('../../src/logging/logger');
 
 const sandbox = sinon.createSandbox();
@@ -10,6 +11,7 @@ describe('background script', () => {
   beforeEach(() => {
     sandbox.stub(logger, 'log');
     sandbox.stub(logger, 'logClientInfo');
+    sandbox.stub(launchEnvs, "set");
     require('../../src/background'); // eslint-disable-line global-require
   });
 

@@ -1,17 +1,25 @@
-
+const launchEnvs = require("./launch-environment");
 const logger = require('./logging/logger');
 
 const MILLISECONDS = 1000;
 
-function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
+function shouldSchedule(content) {
   if (!(content && content.display && content.display.restartEnabled)) {
-    return;
+    return false;
   }
+
+  if (!launchEnvs.isKioskSession()) {return false;}
 
   if (!(content.display.restartTime && content.display.restartTime.includes(':'))) {
     logger.log('scheduled reboot error', `invalid reboot schedule time: ${content.display.restartTime}`);
-    return;
+    return false;
   }
+
+  return true;
+}
+
+function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
+  if (!shouldSchedule(content)) {return;}
 
   const rebootDate = parseRebootDate(content.display.restartTime);
   const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
