@@ -18,6 +18,15 @@
       "power",
       "alarms"
     ],
+    "content_scripts": 
+    [
+        {
+            "matches":["http://website*"],
+            "js":["jquery-3.3.1.min.js", "prototype.js"],
+            "css": ["css/bootstrap-grid.min.css", "css/player_revised.css"],
+            "run_at": "document_end"
+        }
+    ],
     "minimum_chrome_version": "52",
     "icons": {
       "16": "icon_16.png",

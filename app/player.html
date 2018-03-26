@@ -3,45 +3,494 @@
 
 <head>
   <meta charset="utf-8">
-  <link href="css/reset.css" rel="stylesheet" />
-  <link href="css/player.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" />
+  <link rel="stylesheet" href="css/player_revised.css" />
+  <script src="jquery-3.3.1.min.js"></script>
   <script src="player.bundle.js"></script>
+  <script src="prototype.js"></script>
   <title>Rise Vision Player</title>
 </head>
 
 <body>
 
-  <img class="logo" src="img/logo.svg">
 
-  <main>
-    <div class="display-id-group">
-      <h1>
-        <label for="displayIdInput">Enter your Display ID</label>
-      </h1>
 
-      <div id="errorMessage" class="alert alert-danger text-center display-id-error"></div>
 
-      <form id="displayId">
-        <input id="displayIdInput" type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
-      </form>
-      <div class="greenbox">
-        <h4>Where do I get my Display ID?</h4>
-        <div class="text-muted half-top"> You can find your Display ID from the Display Settings page. You can access your Displays or create a new one at
-          <a target="_blank" tabindex="2" href="https://displays.risevision.com">https://displays.risevision.com</a>.</div>
+  <!-- START PAGE 1 - MODE SELECT -->
+  <div id="proto_page001" class="wrapper prototype-show prototype-show-on-ready">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
       </div>
-      <button type="submit" class="btn-continue btn btn-primary" form="displayId">Continue</button>
-      <div class="terms"> By continuing you agree to the
-        <a target="_blank" href="https://www.risevision.com/terms-service-privacy">Terms &amp; Conditions</a>
+      <div class="header-title">
+        <span>Install Rise Player</span>
       </div>
-    </div>
-  </main>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
 
-  <footer>
-    <h4>Need Help?</h4>
-    <p>Check out the Help Center at
-      <a target="_blank" href="https://help.risevision.com">https://help.risevision.com</a>
-    </p>
-  </footer>
+    <main>
+      <h1 class="text-center">How will you be using Rise Player?</h1>
+
+      <div class="panel-row">
+        <div class="panel">
+          <img src="img/tv-screen.svg">
+          <p> Select
+            <b>Dedicated Mode</b> if you are installing Rise Player on a Media Player that is connected to the screen you want
+            to continuously show content on.</p>
+        </div>
+        <div class="panel">
+          <img src="img/personal-computer.svg">
+          <p>Select
+            <b>Evaluation Mode</b> if you are installing Rise Player on your personal computer PC for evaluation or testing
+            purposes.
+          </p>
+        </div>
+      </div>
+
+
+      <br/>
+      <div class="alert alert-info">We strongly recommend not using Dedicated Mode on your personal computer. It will disable the screensaver, screen timeouts
+        and start automatically after reboots. Use Evaluation Mode if you’re not sure. You can switch to Dedicated Mode later.
+      </div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Cancel </button>
+        <button class="btn btn-primary prototype-next-state"> Continue </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 2 - INSTALL SUCCESS -->
+  <div id="proto_page002" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Start Rise Player</span>
+      </div>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
+
+    <main>
+      <img src="img/success.svg">
+      <h3 class="text-center">Success!</h3>
+      <div>Rise Player installation has completed.</div>
+
+      <br/>
+      <div class="alert alert-info">Tip! Press
+        <b> CTRL + SHIFT + Q </b> at any time to stop Rise Player once started.</div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Exit </button>
+        <button class="btn btn-primary prototype-next-state"> Start Rise Player </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 3 - ENTER DISPLAY ID -->
+  <div id="proto_page003" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Install Rise Player</span>
+      </div>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
+
+    <main>
+      <div class="terms-conditions">By installing Rise Player you agree to the
+        <a href="#">Terms and Conditions</a>
+      </div>
+      <h3 class="text-center">Enter Your Display ID</h3>
+      <h4 class="text-center">( or use your
+        <a href="#">Claim ID</a> )</h4>
+      <div class="form-group">
+        <label class="secondary-label" for="id1">Display ID</label>
+        <input type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false"
+          id="id1" placeholder="000000000000" />
+        <div class="text-right">
+          <a href="#" target="_blank">
+            <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
+            <label>What is a Display ID?</label>
+          </a>
+        </div>
+      </div>
+      <br/>
+      <br/>
+      <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
+        reboots, your device must be configured to run in kiosk mode. For more information, visit
+        <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/ .</a>
+      </div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Cancel </button>
+        <button class="btn btn-primary prototype-next-state"> Continue </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 4 - LOADING SPINNER -->
+  <div id="proto_page004" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Installing Rise Player</span>
+      </div>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
+
+    <main>
+      <h4 class="text-center">Please wait while the installer tests the network. </h4>
+      <img class="loading-icon" src="img/loading-icon.gif">
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default prototype-next-state"> Cancel </button>
+
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+
+  <!-- START PAGE 5 - NETWORK ERROR -->
+  <div id="proto_page005" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Rise Player Error</span>
+      </div>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
+
+    <main>
+      <img src="img/error.svg">
+      <h3 class="text-center">Network Error!</h3>
+      <div>Please check your network connection. Rise Player is unable to connect to the Internet. </div>
+      <div>Your content will begin playing as soon as network has been restored.</div>
+      <br/>
+      <br/>
+      <div class="alert alert-info">Tip! Press
+        <b> CTRL + SHIFT + Q </b> at any time to stop Rise Player once started.
+      </div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Try Again </button>
+        <button class="btn btn-primary prototype-next-state"> Continue Anyway </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 5 - FIREWALL ERROR -->
+  <div id="proto_page005b" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Rise Player Error</span>
+      </div>
+      <!-- <div class="close">
+          <button class="btn btn-close">
+            <i class="fa fa-times"></i>
+          </button>
+        </div> -->
+    </header>
+
+    <main>
+      <img src="img/error.svg">
+      <h3 class="text-center">Network Error!</h3>
+      <br/>
+      <div>Rise Player is not able to connect to the URLs below, </div>
+      <div>and may not be able to show your content properly.</div>
+      <br/>
+      <h4>https://services.risevision.com</h4>
+      <h4>https://viewer.risevision.com</h4>
+      <br/>
+      <a href="#" target="_blank">
+        <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
+        <label>What are the network requirements?</label>
+      </a>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Try Again </button>
+        <button class="btn btn-primary prototype-next-state"> Continue Anyway </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 6 - COUNTDOWN PAGE NON KIOSK-->
+  <div id="proto_page006" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Rise Player Starting</span>
+      </div>
+      <!-- <div class="close">
+        <button class="btn btn-close">
+          <i class="fa fa-times"></i>
+        </button>
+      </div> -->
+    </header>
+
+    <main>
+
+      <h3 class="text-center">Rise Player will start in</h3>
+      <div class="countdown-digits">10</div>
+      <h3 class="text-center">seconds.</h3>
+      <hr/>
+      <div>
+        <a href="#">Change Display ID</a>
+        <b style="margin: 0 12px;">or</b>
+        <a href="#">Change Startup Mode</a>
+      </div>
+      <br/>
+      <div class="alert alert-info">Tip! Press
+        <b> CTRL + SHIFT + Q </b> at any time to stop Rise Player once started.
+      </div>
+
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default prototype-next-state"> Cancel </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 7 - COUNTDOWN PAGE KIOSK-->
+  <div id="proto_page007" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Rise Player Starting</span>
+      </div>
+      <!-- <div class="close">
+          <button class="btn btn-close">
+            <i class="fa fa-times"></i>
+          </button>
+        </div> -->
+    </header>
+
+    <main>
+
+      <h3 class="text-center">Rise Player will start in</h3>
+      <div class="countdown-digits">10</div>
+      <h3 class="text-center">seconds.</h3>
+      <hr/>
+      <div>
+        <a href="#">Change Display ID</a>
+        <b style="margin: 0 12px;">or</b>
+        <a href="#">Change Startup Mode</a>
+      </div>
+      <br/>
+
+      <div class="alert alert-info">
+        Rise Player is only supported on managed devices. In order for Rise Player to start automatically after reboots your device
+        must be configured to run in kiosk mode. For more information visit
+        <a href="#">http://www.risevision.com/riseplayer</a>
+      </div>
+
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle prototype-next-state"></i> Help
+      </div>
+      <div class="actions">
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 8 -  DISPLAY ID ERROR -->
+  <div id="proto_page008" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Install Rise Player</span>
+      </div>
+      <!-- <div class="close">
+          <button class="btn btn-close">
+            <i class="fa fa-times"></i>
+          </button>
+        </div> -->
+    </header>
+
+    <main>
+      <div class="terms-conditions">By installing Rise Player you agree to the
+        <a href="#">Terms and Conditions</a>
+      </div>
+      <h3 class="text-center">Enter Your Display ID</h3>
+      <h4 class="text-center">( or use your
+        <a href="#">Claim ID</a> )</h4>
+      <div class="form-group">
+        <label class="secondary-label" for="id1">Display ID</label>
+        <input type="text" class="form-control id-form has-error" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false"
+          id="id1" placeholder="000000000000" />
+        <div class="text-danger half-top">This Display ID is invalid. Please try again or
+          <a href="http://www.risevision.com/riseplayer/" target="_blank">view your Displays</a>
+        </div>
+      </div>
+
+
+
+      <br/>
+      <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
+        reboots, your device must be configured to run in kiosk mode. For more information, visit
+        <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/ .</a>
+      </div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Cancel </button>
+        <button class="btn btn-primary prototype-next-state"> Continue </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
+
+  <!-- START PAGE 9 - ENTER CLAIM ID -->
+  <div id="proto_page009" class="wrapper prototype-show">
+    <header>
+      <div class="logo">
+        <img src="img/logo.svg">
+      </div>
+      <div class="header-title">
+        <span>Install Rise Player</span>
+      </div>
+      <!-- <div class="close">
+          <button class="btn btn-close">
+            <i class="fa fa-times"></i>
+          </button>
+        </div> -->
+    </header>
+
+    <main>
+      <div class="terms-conditions">By installing Rise Player you agree to the
+        <a href="#">Terms and Conditions</a>
+      </div>
+      <h3 class="text-center">Enter Your Claim ID</h3>
+      <h4 class="text-center">( or use your
+        <a href="#">Display ID</a> )</h4>
+      <div class="form-group">
+        <label class="secondary-label" for="id1">Claim ID</label>
+        <input type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false"
+          id="id1" placeholder="000000000000" />
+        <div class="text-right">
+          <a href="#" target="_blank">
+            <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
+            <label>What is a Claim ID?</label>
+          </a>
+        </div>
+        <label class="secondary-label" for="id1">Display Name</label>
+        <input type="text" class="form-control name-form" />
+      </div>
+      <br/>
+      <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
+        reboots, your device must be configured to run in kiosk mode. For more information, visit
+        <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/ .</a>
+      </div>
+    </main>
+
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Cancel </button>
+        <button class="btn btn-primary prototype-next-state"> Continue </button>
+      </div>
+    </footer>
+  </div>
+  <!-- END PAGE -->
+
 </body>
 
 </html>
+
