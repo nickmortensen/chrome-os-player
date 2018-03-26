@@ -2,6 +2,44 @@
 const sockets = new Set();
 let serverSocketId = null;
 
+function init() {
+  return stopExisting().then(() => create());
+}
+
+function stopExisting() {
+  return new Promise((resolve, reject) => {
+    chrome.sockets.tcpServer.getSockets((existingSockets) => {
+      const promises = existingSockets.filter(socket => socket.name === 'file-server').map(fileServer => {
+        return new Promise((res) => chrome.sockets.tcpServer.close(fileServer.socketId, res));
+      });
+
+      Promise.all(promises).then(resolve).catch(reject);
+    });
+  });
+}
+
+function create(address = '127.0.0.1', port = 8989) { // eslint-disable-line no-magic-numbers
+  chrome.sockets.tcpServer.create({name: 'file-server'}, (socketInfo) => {
+    serverSocketId = socketInfo.socketId;
+    chrome.sockets.tcpServer.onAccept.addListener(onAccept);
+    chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
+    chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, (result) => {
+      console.log(`socket server is listening on ${address}:${port}: ${result}`);
+    });
+  });
+}
+
+function onAccept(acceptInfo) {
+  if (acceptInfo.socketId !== serverSocketId) {
+    return;
+  }
+
+  sockets.add(acceptInfo.clientSocketId);
+
+  chrome.sockets.tcp.setPaused(acceptInfo.clientSocketId, false);
+  chrome.sockets.tcp.onReceive.addListener(onReceive);
+}
+
 function onReceive({data, socketId}) {
   if (!sockets.has(socketId)) {
     return;
@@ -98,44 +136,6 @@ function arrayBufferToString(buffer) {
 function stringToArrayBuffer(string) {
   const encoder = new TextEncoder('utf8');
   return encoder.encode(string);
-}
-
-function onAccept(acceptInfo) {
-  if (acceptInfo.socketId !== serverSocketId) {
-    return;
-  }
-
-  sockets.add(acceptInfo.clientSocketId);
-
-  chrome.sockets.tcp.setPaused(acceptInfo.clientSocketId, false);
-  chrome.sockets.tcp.onReceive.addListener(onReceive);
-}
-
-function create(address = '127.0.0.1', port = 8989) { // eslint-disable-line no-magic-numbers
-  chrome.sockets.tcpServer.create({name: 'file-server'}, (socketInfo) => {
-    serverSocketId = socketInfo.socketId;
-    chrome.sockets.tcpServer.onAccept.addListener(onAccept);
-    chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
-    chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, (result) => {
-      console.log(`socket server is listening on ${address}:${port}: ${result}`);
-    });
-  });
-}
-
-function stopExisting() {
-  return new Promise((resolve, reject) => {
-    chrome.sockets.tcpServer.getSockets((existingSockets) => {
-      const promises = existingSockets.filter(socket => socket.name === 'file-server').map(fileServer => {
-        return new Promise((res) => chrome.sockets.tcpServer.close(fileServer.socketId, res));
-      });
-
-      Promise.all(promises).then(resolve).catch(reject);
-    });
-  });
-}
-
-function init() {
-  return stopExisting().then(() => create());
 }
 
 module.exports = {
