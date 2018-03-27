@@ -73,7 +73,7 @@ describe('File Server', () => {
     });
   });
 
-  it('should receive request', () => {
+  function testRequest(requestText, responseText) {
     const serverSocketInfo = {socketId: 1, name: 'file-server'};
     chrome.sockets.tcpServer.getSockets.yields([]);
     chrome.sockets.tcpServer.create.yields(serverSocketInfo);
@@ -82,7 +82,7 @@ describe('File Server', () => {
 
     const acceptInfo = {socketId: 1, clientSocketId: 1};
 
-    const receiveInfo = {data: 'GET http://localhost:8989/filePath ', socketId: 1};
+    const receiveInfo = {data: requestText, socketId: 1};
     const keepAlive = false;
 
     return fileServer.init().then(() => {
@@ -90,8 +90,36 @@ describe('File Server', () => {
       chrome.sockets.tcp.onReceive.dispatch(receiveInfo);
 
       sinon.assert.calledWith(chrome.sockets.tcp.setKeepAlive, receiveInfo.socketId, keepAlive, 1);
-      sinon.assert.calledOnce(chrome.sockets.tcp.send);
+      sinon.assert.calledWith(chrome.sockets.tcp.send, receiveInfo.socketId, responseText);
     });
+  }
+
+  it('should accept GET request', () => {
+    const requestText =
+      `GET /file1 HTTP/1.1
+      Host: 127.0.0.1:8989
+      User-Agent: curl/7.54.0
+      Accept: */*`;
+
+    const responseText = 'HTTP/1.0 200 OK\nContent-Length: 0\nContent-Type: text/plain\n\n';
+
+    return testRequest(requestText, responseText);
+  });
+
+  it('should not accept POST', () => {
+    const requestText =
+      `POST / HTTP/1.1
+      Host: localhost:8989
+      User-Agent: curl/7.54.0
+      Accept: */*
+      Content-Length: 27
+      Content-Type: application/x-www-form-urlencoded
+
+      param1=value1&param2=value2`;
+
+    const responseText = 'HTTP/1.0 400 Bad Request\nContent-Length: 0\nContent-Type: text/plain\n\n';
+
+    return testRequest(requestText, responseText);
   });
 
 });

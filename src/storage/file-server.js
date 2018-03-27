@@ -1,3 +1,5 @@
+const util = require('./util');
+
 /* eslint-disable max-statements */
 const sockets = new Set();
 let serverSocketId = null;
@@ -24,7 +26,7 @@ function create(address = '127.0.0.1', port = 8989) { // eslint-disable-line no-
     chrome.sockets.tcpServer.onAccept.addListener(onAccept);
     chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
     chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, (result) => {
-      console.log(`socket server is listening on ${address}:${port}: ${result}`);
+      console.log(`http server is listening on ${address}:${port}: ${result}`);
     });
   });
 }
@@ -41,39 +43,24 @@ function onAccept(acceptInfo) {
 }
 
 function onReceive({data, socketId}) {
-  if (!sockets.has(socketId)) {
-    return;
-  }
+  if (!sockets.has(socketId)) {return;}
 
-  const string = arrayBufferToString(data);
+  const string = util.arrayBufferToString(data);
   console.log(`request received: ${string}`);
-  if (string.indexOf('GET ') !== 0) {
-    return destroySocketById(socketId);
-  }
 
-  const uri = parseUri(string);
-  if (!uri) {
-    return;
-  }
-
+  const uri = util.parseUri(string);
   console.log(`read file from uri ${uri}`);
   const keepAlive = string.indexOf('Connection: keep-alive') > 0;
-  writeSuccessResponse(socketId, uri, keepAlive);
-}
-
-function writeSuccessResponse(socketId, uri, keepAlive) {
-  console.log('write success response', socketId, uri, keepAlive);
-
-  const buffer = getResponseHeader(keepAlive);
+  const buffer = getResponseHeader(uri, keepAlive);
   sendResponse(socketId, buffer, keepAlive);
 }
 
-function getResponseHeader(keepAlive) {
-  const httpStatus = 'HTTP/1.0 200 OK';
+function getResponseHeader(uri, keepAlive) {
+  const httpStatus = uri ? '200 OK' : '400 Bad Request';
   const contentType = 'text/plain';
   const contentLength = 0;
   const lines = [
-    httpStatus,
+    `HTTP/1.0 ${httpStatus}`,
     `Content-Length: ${contentLength}`,
     `Content-Type: ${contentType}`
   ];
@@ -82,7 +69,7 @@ function getResponseHeader(keepAlive) {
     lines.push('Connection: keep-alive');
   }
 
-  return stringToArrayBuffer(lines.join('\n') + '\n\n'); // eslint-disable-line
+  return util.stringToArrayBuffer(lines.join('\n') + '\n\n'); // eslint-disable-line
 }
 
 function sendResponse(socketId, buffer, keepAlive) {
@@ -113,29 +100,6 @@ function destroySocketById(socketId) {
     if (chrome.runtime.lastError) {return;}
     chrome.sockets.tcp.close(socketId)
   });
-}
-
-function parseUri(data) {
-  const uriStart = 'GET '.length;
-  const uriEnd = data.indexOf(' ', uriStart);
-  if (uriEnd < 0) {return;}
-
-  const uri = data.substring(uriStart, uriEnd);
-  const query = uri.indexOf("?");
-  if (query > 0) {
-    return uri.substring(0, query);
-  }
-  return uri;
-}
-
-function arrayBufferToString(buffer) {
-  const decoder = new TextDecoder('utf8');
-  return decoder.decode(buffer);
-}
-
-function stringToArrayBuffer(string) {
-  const encoder = new TextEncoder('utf8');
-  return encoder.encode(string);
 }
 
 module.exports = {
