@@ -417,6 +417,7 @@ hr {
 }
 
 .panel p {
+  text-align: left;
   display: -webkit-box;
   overflow: hidden;
   text-overflow: ellipsis;
