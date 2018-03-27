@@ -5,6 +5,7 @@ const logger = require('./logging/logger');
 const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
 const rebootScheduler = require('./reboot-scheduler');
+const fileServer = require('./storage/file-server');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -43,6 +44,7 @@ function fetchContent() {
 function init() {
   setUpMessaging().then(storage.init);
   fetchContent();
+  fileServer.init();
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener('DOMContentLoaded', init);
