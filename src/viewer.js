@@ -22,9 +22,12 @@ function setUpMessaging() {
     viewerMessaging.handleMessage(event.data);
   });
 
-  webview.addEventListener('contentload', () => {
-    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()});
-    viewerMessaging.sendMessage({from: 'player', topic: 'hello'});
+  webview.addEventListener('loadstart', (evt) => {
+    if (!evt.isTopLevel) {return;}
+    if (!evt.url.match(/http[s]?:\/\/viewer(?:-test)?.risevision.com/)) {return;}
+    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()}, ()=>{
+      viewerMessaging.sendMessage({from: "player", topic: "latch-app-window"});
+    });
   });
 
   messaging.on('content-update', fetchContent);

@@ -26,15 +26,11 @@ function setUpMessaging() {
   }
 
   function handlePlayerMessage(message) {
-    if (message.topic === 'hello') {
-      sendMessageToApp({from: 'viewer', topic: 'hello'});
-      window.RiseVision.Viewer.Utils.reportViewerConfigToPlayer();
-    } else {
-      const handlers = eventHandlers[message.topic];
-      if (handlers && handlers.length > 0) {
-        handlers.forEach(handler => handler(message));
-      }
-    }
+    const handlers = eventHandlers[message.topic];
+
+    if (!handlers || !handlers.length) {return;}
+
+    handlers.forEach(handler => handler(message));
   }
 
   function handleLocalMessagingMessage(message) {
@@ -82,7 +78,7 @@ function generateScriptText(fn) {
   const scriptText = `(function() {
       var script = document.createElement("script");
       script.innerHTML = "(function() { (${fnText})(); })()"
-      document.body.appendChild(script);
+      document.head.appendChild(script);
       })()`;
   return scriptText;
 }

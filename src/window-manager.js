@@ -34,6 +34,9 @@ function createWebViewWindow(file, url, options = {}) {
     chrome.app.window.create(file, Object.assign(defaultOptions, options), (appWin) => {
       appWin.contentWindow.addEventListener('DOMContentLoaded', () => {
         const webview = appWin.contentWindow.document.querySelector('webview');
+        webview.addEventListener("error", (err)=>{
+          console.error(err);
+        });
         webview.src = url;
       });
       resolve(appWin);
