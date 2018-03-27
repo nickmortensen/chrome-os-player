@@ -25,6 +25,7 @@ function create(address = '127.0.0.1', port = 8989) { // eslint-disable-line no-
     serverSocketId = socketInfo.socketId;
     chrome.sockets.tcpServer.onAccept.addListener(onAccept);
     chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
+    chrome.sockets.tcp.onReceive.addListener(onReceive);
     chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, (result) => {
       console.log(`http server is listening on ${address}:${port}: ${result}`);
     });
@@ -37,9 +38,7 @@ function onAccept(acceptInfo) {
   }
 
   sockets.add(acceptInfo.clientSocketId);
-
   chrome.sockets.tcp.setPaused(acceptInfo.clientSocketId, false);
-  chrome.sockets.tcp.onReceive.addListener(onReceive);
 }
 
 function onReceive({data, socketId}) {
@@ -96,9 +95,14 @@ function sendResponse(socketId, buffer, keepAlive) {
 }
 
 function destroySocketById(socketId) {
-  chrome.sockets.tcp.disconnect(socketId, () => {
-    if (chrome.runtime.lastError) {return;}
-    chrome.sockets.tcp.close(socketId)
+  sockets.delete(socketId);
+
+  chrome.sockets.tcp.getInfo(socketId, (socketInfo) => {
+    if (socketInfo.connected) {
+      chrome.sockets.tcp.disconnect(socketId, () => chrome.sockets.tcp.close(socketId));
+    } else {
+      chrome.sockets.tcp.close(socketId);
+    }
   });
 }
 

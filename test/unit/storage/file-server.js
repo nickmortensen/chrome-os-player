@@ -69,7 +69,6 @@ describe('File Server', () => {
       chrome.sockets.tcpServer.onAccept.dispatch(acceptInfo);
 
       sinon.assert.notCalled(chrome.sockets.tcp.setPaused);
-      sinon.assert.notCalled(chrome.sockets.tcp.onReceive.addListener);
     });
   });
 
