@@ -24,10 +24,10 @@
     <h3 class="text-center">Enter Your Display ID</h3>
     <h4 class="text-center">( or use your
       <a href="#">Claim ID</a> )</h4>
+    <div id="errorMessage" style="display:none" class="alert alert-danger text-center display-id-error"></div>
     <div class="form-group">
       <label class="secondary-label" for="id1">Display ID</label>
-      <input type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false"
-        id="id1" placeholder="000000000000" />
+      <input id="displayIdInput" type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="000000000000" />
       <div class="text-right">
         <a href="#" target="_blank">
           <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
@@ -39,7 +39,7 @@
     <br/>
     <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
       reboots, your device must be configured to run in kiosk mode. For more information, visit
-      <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/ .</a>
+      <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/</a>.
     </div>
   </main>
 
@@ -49,7 +49,7 @@
     </div>
     <div class="actions">
       <button class="btn btn-default"> Cancel </button>
-      <button class="btn btn-primary prototype-next-state"> Continue </button>
+      <button id="continue" class="btn btn-primary prototype-next-state"> Continue </button>
     </div>
   </footer>
 </body>
