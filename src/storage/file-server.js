@@ -1,4 +1,5 @@
 const util = require('./util');
+const fileSystem = require('./file-system');
 
 /* eslint-disable max-statements */
 const sockets = new Set();
@@ -46,40 +47,44 @@ function onReceive({data, socketId}) {
 
   const string = util.arrayBufferToString(data);
   console.log(`request received: ${string}`);
-
-  const uri = util.parseUri(string);
-  console.log(`read file from uri ${uri}`);
   const keepAlive = string.indexOf('Connection: keep-alive') > 0;
-  const buffer = getResponseHeader(uri, keepAlive);
-  sendResponse(socketId, buffer, keepAlive);
-}
-
-function getResponseHeader(uri, keepAlive) {
-  const httpStatus = uri ? '200 OK' : '400 Bad Request';
-  const contentType = 'text/plain';
-  const contentLength = 0;
-  const lines = [
-    `HTTP/1.0 ${httpStatus}`,
-    `Content-Length: ${contentLength}`,
-    `Content-Type: ${contentType}`
-  ];
-
-  if (keepAlive) {
-    lines.push('Connection: keep-alive');
+  const uri = util.parseUri(string);
+  if (!uri) {
+    return sendResponse(socketId, '400 Bad Request', keepAlive);
   }
 
-  return util.stringToArrayBuffer(lines.join('\n') + '\n\n'); // eslint-disable-line
+  console.log(`read file from uri ${uri}`);
+  const fileName = uri.slice(uri.indexOf('/') + 1);
+  fileSystem.readFile(fileName, 'cache')
+    .then(file => sendResponse(socketId, '200 OK', keepAlive, file))
+    .catch(() => sendResponse(socketId, '404 Not Found', keepAlive));
 }
 
-function sendResponse(socketId, buffer, keepAlive) {
+function sendResponse(socketId, httpStatus, keepAlive, file) {
+  const headerBuffer = createResponseHeader(httpStatus, keepAlive, file);
+  if (!file) {
+    return sendBuffer(socketId, headerBuffer, keepAlive);
+  }
+
+  const outputBuffer = new ArrayBuffer(headerBuffer.byteLength + file.size);
+  const view = new Uint8Array(outputBuffer);
+  view.set(headerBuffer, 0);
+
+  fileSystem.readFileAsArrayBuffer(file)
+    .then((fileBuffer) => {
+      view.set(new Uint8Array(fileBuffer), headerBuffer.byteLength);
+      sendBuffer(socketId, outputBuffer, keepAlive);
+    })
+    .catch(() => sendResponse(socketId, '404 Not Found', keepAlive));
+}
+
+function sendBuffer(socketId, buffer, keepAlive) {
   // verify that socket is still connected before trying to send data
   chrome.sockets.tcp.getInfo(socketId, (socketInfo) => {
     if (!socketInfo.connected) {
-      destroySocketById(socketId);
-      return;
+      return destroySocketById(socketId);
     }
-    const delayInSeconds = 1;
-    chrome.sockets.tcp.setKeepAlive(socketId, keepAlive, delayInSeconds, () => {
+    chrome.sockets.tcp.setKeepAlive(socketId, keepAlive, () => {
       if (chrome.runtime.lastError) {
         return destroySocketById(socketId);
       }
@@ -92,6 +97,24 @@ function sendResponse(socketId, buffer, keepAlive) {
       });
     });
   });
+}
+
+function createResponseHeader(httpStatus, keepAlive, file) {
+  const contentType = file ? file.type : 'text/plain';
+  const contentLength = file ? file.size : 0;
+  const lines = [
+    `HTTP/1.0 ${httpStatus}`,
+    `Content-Length: ${contentLength}`,
+    `Content-Type: ${contentType}`
+  ];
+
+  if (keepAlive) {
+    lines.push('Connection: keep-alive');
+  }
+
+  const responseText = lines.join('\n') + '\n\n'; // eslint-disable-line
+  console.log(`sending response: ${responseText}`)
+  return util.stringToArrayBuffer(responseText);
 }
 
 function destroySocketById(socketId) {
