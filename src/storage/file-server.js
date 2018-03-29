@@ -112,7 +112,7 @@ function createResponseHeader(httpStatus, keepAlive, file) {
     lines.push('Connection: keep-alive');
   }
 
-  const responseText = lines.join('\n') + '\n\n'; // eslint-disable-line
+  const responseText = lines.join('\r\n') + '\r\n\r\n'; // eslint-disable-line
   console.log(`sending response: ${responseText}`)
   return util.stringToArrayBuffer(responseText);
 }
