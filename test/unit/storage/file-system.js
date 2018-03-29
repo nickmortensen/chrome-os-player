@@ -111,4 +111,24 @@ describe('File System', () => {
     });
   });
 
+  it('should read file', () => {
+    const mockedFile = {name: 'logo.png', size: 100};
+    const fileEntry = {file() {}};
+    sandbox.stub(fileEntry, 'file').yields(mockedFile);
+
+    const mockedDir = {getFile() {}};
+    sandbox.stub(mockedDir, 'getFile').yields(fileEntry);
+
+    const fs = {root: {getDirectory() {}}};
+    sandbox.stub(fs.root, 'getDirectory').yields(mockedDir);
+    sandbox.stub(window, 'webkitRequestFileSystem').yields(fs);
+
+    const fileName = 'logo.png'
+    const dirName = 'cache';
+
+    return fileSystem.readFile(fileName, dirName).then(file => {
+      assert.equal(file, mockedFile);
+    });
+  });
+
 });

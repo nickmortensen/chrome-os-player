@@ -36,8 +36,7 @@ function checkAvailableDiskSpace(fileSize = 0) {
  * @returns {Promise.<FileEntry>}
  */
 function writeFileToDirectory(fileName, contentStream, dirName) {
-  return requestFileSystem()
-    .then(fs => createDirectory(fs, dirName))
+  return createDirectory(dirName)
     .then(dirEntry => createFile(dirEntry, fileName))
     .then(fileEntry => writeFile(fileEntry, contentStream));
 }
@@ -48,11 +47,38 @@ function writeFileToDirectory(fileName, contentStream, dirName) {
  * @returns {Promise.<FileEntry>}
  */
 function moveFileToDirectory(fileEntry, dirName) {
-  return requestFileSystem()
-    .then(fs => createDirectory(fs, dirName))
+  return createDirectory(dirName)
     .then(dirEntry => {
-      return new Promise((resolve, reject) => fileEntry.moveTo(dirEntry, resolve, reject));
+      return new Promise((resolve, reject) => fileEntry.moveTo(dirEntry, fileEntry.name, resolve, reject));
     });
+}
+
+/**
+ * @param {string} fileName
+ * @param {string} dirName
+ * @returns {Promise.<File>}
+ */
+function readFile(fileName, dirName) {
+  return createDirectory(dirName)
+    .then(dirEntry => {
+      return new Promise((resolve, reject) => dirEntry.getFile(fileName, {}, resolve, reject));
+    })
+    .then((fileEntry) => {
+      return new Promise((resolve, reject) => fileEntry.file(resolve, reject));
+    });
+}
+
+/**
+ * @param {FileEntry} fileEntry
+ * @returns {Promise.<ArrayBuffer>}
+ */
+function readFileAsArrayBuffer(fileEntry) {
+  return new Promise((resolve, reject) => {
+    const fileReader = new FileReader();
+    fileReader.onload = (evt) => resolve(evt.target.result);
+    fileReader.onerror = reject;
+    fileReader.readAsArrayBuffer(fileEntry);
+  });
 }
 
 function requestFileSystem() {
@@ -102,5 +128,7 @@ module.exports = {
   getAvailableSpace,
   checkAvailableDiskSpace,
   writeFileToDirectory,
-  moveFileToDirectory
+  moveFileToDirectory,
+  readFile,
+  readFileAsArrayBuffer
 }
