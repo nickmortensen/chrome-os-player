@@ -35,10 +35,10 @@ function checkAvailableDiskSpace(fileSize = 0) {
  * @param {string} dirName
  * @returns {Promise.<FileEntry>}
  */
-function writeFileToDirectory(fileName, contentStream, dirName) {
+function writeFileToDirectory(fileName, contentStream, dirName, type) {
   return createDirectory(dirName)
     .then(dirEntry => createFile(dirEntry, fileName))
-    .then(fileEntry => writeFile(fileEntry, contentStream));
+    .then(fileEntry => writeFile(fileEntry, contentStream, type));
 }
 
 /**
@@ -75,10 +75,32 @@ function readFile(fileName, dirName) {
 function readFileAsArrayBuffer(fileEntry) {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
-    fileReader.onload = (evt) => resolve(evt.target.result);
+    fileReader.onloadend = (evt) => {
+      if (evt.target.readyState === FileReader.DONE) {
+        resolve(evt.target.result);
+      }
+    }
     fileReader.onerror = reject;
     fileReader.readAsArrayBuffer(fileEntry);
   });
+}
+
+/**
+ * @param {File} file
+ * @returns {Array.<Promise.<ArrayBuffer>>}
+ */
+function readChunks(file, chunkSize = 1000000) { // eslint-disable-line no-magic-numbers
+  console.log('slicing file', file);
+  const size = file.size;
+  const chunks = [];
+  for (let start = 0; start <= size; start += chunkSize) {
+    const end = Math.min(start + chunkSize, size);
+    console.log(`creating chunk from ${start} to ${end}`);
+
+    const slice = file.slice(start, end, file.type);
+    chunks.push({start, end, slice});
+  }
+  return chunks;
 }
 
 function requestFileSystem() {
@@ -99,24 +121,24 @@ function createFile(dir, name) {
   return new Promise((resolve, reject) => dir.getFile(name, {create: true}, resolve, reject));
 }
 
-function writeFile(fileEntry, contentStream) {
+function writeFile(fileEntry, contentStream, type) {
   return new Promise((resolve, reject) => {
     fileEntry.createWriter((fileWriter) => {
-      processChunkedContents(contentStream, fileWriter)
+      processChunkedContents(contentStream, fileWriter, type)
         .then(() => resolve(fileEntry))
         .catch(reject);
     });
   });
 }
 
-function processChunkedContents(contentStream, fileWriter) {
+function processChunkedContents(contentStream, fileWriter, type) {
   const fileWriteableStream = new WritableStream({
     write(chunk) {
       return new Promise((resolve, reject) => {
         fileWriter.seek(fileWriter.length);
         fileWriter.onwriteend = resolve
         fileWriter.onerror = reject
-        fileWriter.write(new Blob([chunk]));
+        fileWriter.write(new Blob([chunk], {type}));
       });
     }
   });
@@ -130,5 +152,6 @@ module.exports = {
   writeFileToDirectory,
   moveFileToDirectory,
   readFile,
-  readFileAsArrayBuffer
+  readFileAsArrayBuffer,
+  readChunks
 }

@@ -6,6 +6,7 @@ const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
+const fileDownloader = require('./storage/file-downloader');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -48,6 +49,7 @@ function init() {
   setUpMessaging().then(storage.init);
   fetchContent();
   fileServer.init();
+  fileDownloader.testDownload('https://raw.githubusercontent.com/Rise-Vision/chrome-os-player/master/README.md');
 }
 
 document.addEventListener('DOMContentLoaded', init);

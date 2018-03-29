@@ -61,6 +61,38 @@ function validateResponse(response) {
     });
 }
 
+function testDownload(url) {
+
+  return fileSystem.checkAvailableDiskSpace()
+    .then((availableSpace) => {
+      if (!availableSpace) {
+        return Promise.reject(Error('Insufficient disk space'));
+      }
+
+      return url;
+    })
+    .then((signedUrl) => {
+      if (!signedUrl) {
+        return Promise.reject(Error('No signed URL'));
+      }
+
+      return requestFile(signedUrl);
+    })
+    .then(response => validateResponse(response))
+    .then(response => {
+      const fileName = `testfile`;
+      const dirName = 'download';
+      const type = response.headers.get('content-type');
+      return fileSystem.writeFileToDirectory(fileName, response.body, dirName, type);
+    })
+    .then((fileEntry) => {
+      console.log(fileEntry);
+      return fileSystem.moveFileToDirectory(fileEntry, 'cache');
+    })
+    .then(fileEntry => console.log(fileEntry));
+}
+
 module.exports = {
-  download
+  download,
+  testDownload
 }
