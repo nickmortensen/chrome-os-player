@@ -1,47 +1,57 @@
 <!DOCTYPE html>
 <html>
-
 <head>
   <meta charset="utf-8">
-  <link href="css/reset.css" rel="stylesheet" />
-  <link href="css/player.css" rel="stylesheet" />
+  <link rel="stylesheet" href="css/reset.css" />
+  <link rel="stylesheet" href="css/font-awesome.min.css" />
+  <link rel="stylesheet" href="css/player.css" />
   <script src="player.bundle.js"></script>
   <title>Rise Vision Player</title>
 </head>
-
 <body>
-
-  <img class="logo" src="img/logo.svg">
-
-  <main>
-    <div class="display-id-group">
-      <h1>
-        <label for="displayIdInput">Enter your Display ID</label>
-      </h1>
-
-      <div id="errorMessage" class="alert alert-danger text-center display-id-error"></div>
-
-      <form id="displayId">
-        <input id="displayIdInput" type="text" class="form-control id-form" maxlength="36" autocorrect="off" autocapitalize="off" spellcheck="false" autofocus>
-      </form>
-      <div class="greenbox">
-        <h4>Where do I get my Display ID?</h4>
-        <div class="text-muted half-top"> You can find your Display ID from the Display Settings page. You can access your Displays or create a new one at
-          <a target="_blank" tabindex="2" href="https://displays.risevision.com">https://displays.risevision.com</a>.</div>
+  <div class="wrapper">
+    <header>
+      <div class="logo"> <img src="img/logo.svg"> </div>
+      <div class="header-title"><span>Install Rise Player</span></div>
+    </header>
+    <main>
+      <div class="terms-conditions">By installing Rise Player you agree to the
+        <a href="https://www.risevision.com/terms-service-privacy">Terms and Conditions</a>
       </div>
-      <button type="submit" class="btn-continue btn btn-primary" form="displayId">Continue</button>
-      <div class="terms"> By continuing you agree to the
-        <a target="_blank" href="https://www.risevision.com/terms-service-privacy">Terms &amp; Conditions</a>
+      <h3 class="text-center">Enter Your Display ID</h3>
+      <h4 class="text-center">( or use your
+        <a href="#">Claim ID</a> )</h4>
+      <div id="errorMessage" style="display:none" class="alert alert-danger text-center display-id-error"></div>
+      <div class="form-group">
+        <label class="secondary-label" for="displayIdInput">Display ID</label>
+        <form>
+          <input id="displayIdInput" autofocus type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="000000000000" />
+        </form>
+        <div class="text-right">
+          <a href="https://help.risevision.com/hc/en-us/articles/360000325886-What-is-a-Display-ID" target="_blank">
+            <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
+            <label>What is a Display ID?</label>
+          </a>
+        </div>
       </div>
-    </div>
-  </main>
+      <br/>
+      <br/>
+      <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
+        reboots, your device must be configured to run in kiosk mode. For more information, visit
+        <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/</a>.
+      </div>
+    </main>
 
-  <footer>
-    <h4>Need Help?</h4>
-    <p>Check out the Help Center at
-      <a target="_blank" href="https://help.risevision.com">https://help.risevision.com</a>
-    </p>
-  </footer>
+    <footer>
+      <div class="zendesk-web-widget">
+        <i class="fa fa-question-circle"></i> Help
+      </div>
+      <div class="actions">
+        <button class="btn btn-default"> Cancel </button>
+        <button id="continue" class="btn btn-primary prototype-next-state"> Continue </button>
+      </div>
+    </footer>
+  </div>
 </body>
 
 </html>

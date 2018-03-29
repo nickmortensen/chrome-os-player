@@ -3,6 +3,7 @@ const windowManager = require('./window-manager');
 function createViewModel(document) {
 
   const form = document.querySelector('form');
+  const cont = document.querySelector('#continue');
   const errorMessageArea = document.getElementById('errorMessage');
   const links = document.querySelectorAll('a')
 
@@ -21,10 +22,15 @@ function createViewModel(document) {
 
   return {
     bindValidateDisplayId(handler) {
+      cont.addEventListener("click", ()=>handler(displayId()));
+
       form.onsubmit = (ev) => {
         ev.preventDefault();
-        const displayId = form.querySelector('input').value;
-        handler(displayId.toUpperCase().trim());
+        handler(displayId());
+      }
+
+      function displayId() {
+        return form.querySelector('input').value.toUpperCase().trim();
       }
     },
 
