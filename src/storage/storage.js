@@ -1,6 +1,7 @@
 const messagingServiceClient = require('../messaging/messaging-service-client');
 const fileDownloader = require('./file-downloader');
 const db = require('./db');
+const gcsValidator = require('gcs-filepath-validator');
 
 function processUpdate(message) {
   const {filePath, version, token} = message;
@@ -25,8 +26,12 @@ function init() {
   messagingServiceClient.on('MSFILEUPDATE', message => handleMSFileUpdate(message));
 }
 
-function watch(message) {
-  console.log('handle watch', message);
+function watch(filePath) {
+  console.log(`received watch for ${filePath}`);
+  if (!gcsValidator.validateFilepath(filePath)) {
+    return Promise.reject(new Error('Invalid watch message'));
+  }
+
   return Promise.resolve({});
 }
 
