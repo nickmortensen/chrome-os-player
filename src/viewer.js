@@ -49,7 +49,7 @@ function init() {
   setUpMessaging().then(storage.init);
   fetchContent();
   fileServer.init();
-  fileDownloader.testDownload('https://raw.githubusercontent.com/Rise-Vision/chrome-os-player/master/README.md');
+  fileDownloader.downloadUrl('https://raw.githubusercontent.com/Rise-Vision/chrome-os-player/master/README.md', 'README.md');
 }
 
 document.addEventListener('DOMContentLoaded', init);

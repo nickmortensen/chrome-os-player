@@ -61,7 +61,7 @@ function validateResponse(response) {
     });
 }
 
-function testDownload(url) {
+function downloadUrl(url, fileName) {
 
   return fileSystem.checkAvailableDiskSpace()
     .then((availableSpace) => {
@@ -69,18 +69,10 @@ function testDownload(url) {
         return Promise.reject(Error('Insufficient disk space'));
       }
 
-      return url;
-    })
-    .then((signedUrl) => {
-      if (!signedUrl) {
-        return Promise.reject(Error('No signed URL'));
-      }
-
-      return requestFile(signedUrl);
+      return requestFile(url);
     })
     .then(response => validateResponse(response))
     .then(response => {
-      const fileName = `testfile`;
       const dirName = 'download';
       const type = response.headers.get('content-type');
       return fileSystem.writeFileToDirectory(fileName, response.body, dirName, type);
@@ -94,5 +86,5 @@ function testDownload(url) {
 
 module.exports = {
   download,
-  testDownload
+  downloadUrl
 }

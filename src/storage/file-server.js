@@ -102,7 +102,7 @@ function sendChunkBuffer(socketId, data, keepAlive, start, end, last) { // eslin
   console.log(`sendChunkBuffer ${start} ${end}`, data);
   const newline = '\r\n';
   const chunkLength = data.byteLength.toString(16).toUpperCase() + newline; // eslint-disable-line
-  const newlineLength = last ? newline.length * 2 : newline.length; // eslint-disable-line
+  const newlineLength = newline.length; // eslint-disable-line
   const buffer = new ArrayBuffer(chunkLength.length + data.byteLength + newlineLength);
   const bufferView = new Uint8Array(buffer);
   for (let i = 0; i < chunkLength.length; i++) { // eslint-disable-line
@@ -115,12 +115,12 @@ function sendChunkBuffer(socketId, data, keepAlive, start, end, last) { // eslin
   for (let i = 0; i < lineBreak.length; i++) { // eslint-disable-line
     bufferView[chunkLength.length + data.byteLength + i] = lineBreak.charCodeAt(i);
   }
-  return sendBuffer(socketId, buffer, last ? false : keepAlive, start, end);
+  return sendBuffer(socketId, buffer, keepAlive, start, end, last);
 }
 
-function sendBuffer(socketId, buffer, keepAlive, start, end) { // eslint-disable-line
+function sendBuffer(socketId, buffer, keepAlive, start, end, last) { // eslint-disable-line
   console.log(`sendBuffer ${start} ${end}`);
-  console.log(util.arrayBufferToString(buffer))
+  console.log(util.arrayBufferToString(buffer).replace(/\r\n/g, '<CR><LF>'));
 
   return new Promise((resolve) => {
     // verify that socket is still connected before trying to send data
@@ -138,6 +138,9 @@ function sendBuffer(socketId, buffer, keepAlive, start, end) { // eslint-disable
           if (!keepAlive || chrome.runtime.lastError) {
             destroySocketById(socketId);
           }
+          if (last) {
+            chrome.sockets.tcp.close(socketId);
+          }
           resolve();
         });
       });
@@ -147,12 +150,12 @@ function sendBuffer(socketId, buffer, keepAlive, start, end) { // eslint-disable
 }
 
 function createResponseHeader(httpStatus, keepAlive, file) {
-  // const contentType = file ? file.type : 'text/plain';
+  const contentType = (file && file.type) || 'text/plain'; // eslint-disable-line
   // const contentLength = file ? file.size : 0;
   const lines = [
     `HTTP/1.0 ${httpStatus}`,
     // `Content-Length: ${contentLength}`,
-    `Content-Type: text/plain`
+    `Content-Type: ${contentType}`
   ];
 
   if (keepAlive) {
