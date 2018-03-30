@@ -4,20 +4,23 @@ function createViewModel(document) {
 
   const form = document.querySelector('form');
   const cont = document.querySelector('#continue');
-  const errorMessageArea = document.getElementById('errorMessage');
-  const links = document.querySelectorAll('a')
+  const links = document.querySelectorAll('a');
 
-  links.forEach((link) => {
-    link.addEventListener('click', (ev) => {
-      ev.preventDefault();
-      const url = ev.target.href;
-      windowManager.launchWebView(url);
-    })
+  links.forEach(link => {
+    link.addEventListener('click', evt => {
+      evt.preventDefault();
+      windowManager.launchWebView(link.href);
+    });
   });
 
   function showError(message) {
-    errorMessageArea.innerHTML = `<span>${message}</span>`;
-    errorMessageArea.style.display = 'block';
+    const errorMessage = document.getElementById('errorMessage');
+    const errorSection = document.getElementById('errorSection');
+    const input = form.querySelector('input');
+
+    errorSection.hidden = false;
+    input.className = `${input.className} has-error`;
+    errorMessage.innerHTML = message;
   }
 
   return {
@@ -35,11 +38,11 @@ function createViewModel(document) {
     },
 
     showEmptyDisplayIdError() {
-      showError('Please enter a Dislay ID');
+      showError('Display ID is missing. ');
     },
 
     showInvalidDisplayIdError(displayId) {
-      showError(`The Display ID <b>${displayId}</b> is not valid or does not exist`);
+      showError(`The Display ID <b>${displayId}</b> is invalid. `);
     },
 
     launchViewer(displayId) {
