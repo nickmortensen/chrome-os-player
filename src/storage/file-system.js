@@ -1,3 +1,6 @@
+const ONE_HUNDRED_MB = 100000000;
+const FIVE_MB = 5000000;
+
 /**
  * Creates a new directory under root.
  * @param {string} name
@@ -89,7 +92,7 @@ function readFileAsArrayBuffer(fileEntry) {
  * @param {File} file
  * @returns {Array.<Promise.<ArrayBuffer>>}
  */
-function readChunks(file, chunkSize = 1000000) { // eslint-disable-line no-magic-numbers
+function readChunks(file, chunkSize = ONE_HUNDRED_MB) {
   console.log('slicing file', file);
   const size = file.size;
   const chunks = [];
@@ -106,8 +109,7 @@ function readChunks(file, chunkSize = 1000000) { // eslint-disable-line no-magic
 function requestFileSystem() {
   return new Promise((resolve, reject) => {
     // Requesting only 5MB but is not relevant because we have unlimitedStorage permission
-    const FIVE_MEGA = 5 * 1024 * 1024; // eslint-disable-line no-magic-numbers
-    window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MEGA, resolve, reject);
+    window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MB, resolve, reject);
   });
 }
 

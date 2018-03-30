@@ -6,7 +6,7 @@ const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
-const fileDownloader = require('./storage/file-downloader');
+// const fileDownloader = require('./storage/file-downloader');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -49,7 +49,9 @@ function init() {
   setUpMessaging().then(storage.init);
   fetchContent();
   fileServer.init();
-  fileDownloader.downloadUrl('https://raw.githubusercontent.com/Rise-Vision/chrome-os-player/master/README.md', 'README.md');
+  // fileDownloader.downloadUrl('https://raw.githubusercontent.com/Rise-Vision/chrome-os-player/master/README.md', 'README.md');
+  // fileDownloader.downloadUrl('https://storage.googleapis.com/rise-andre/ten_mega.png', 'ten_mega.png');
+  // fileDownloader.downloadUrl('https://storage.googleapis.com/rise-andre/one_and_a_half_gig.mp4', 'one_and_a_half_gig.mp4');
 }
 
 document.addEventListener('DOMContentLoaded', init);

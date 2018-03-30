@@ -69,36 +69,33 @@ function sendResponse(socketId, httpStatus, keepAlive, file) {
     return sendBuffer(socketId, headerBuffer, keepAlive);
   }
 
-  const sendOperations = [sendBuffer.bind(this, socketId, headerBuffer, keepAlive)];
+  const sendOperations = [sendBuffer.bind(this, socketId, headerBuffer, true)];
   const chunks = fileSystem.readChunks(file);
   chunks.forEach(({start, end, slice}) => {
     console.log(`send chunk ${start} ${end}`);
-    const operation = readAndSendChunk.bind(this, slice, socketId, keepAlive, start, end);
+    const operation = readAndSendChunk.bind(this, slice, socketId, start, end);
     sendOperations.push(operation);
   });
 
-  const lastBuffer = util.stringToArrayBuffer('');
-  sendOperations.push(sendChunkBuffer.bind(this, socketId, lastBuffer, keepAlive, -1, -1, true)); // eslint-disable-line
+  const lastChunk = util.stringToArrayBuffer('');
+  sendOperations.push(sendChunkBuffer.bind(this, socketId, lastChunk, -1, -1, true)); // eslint-disable-line
 
   console.log(sendOperations);
 
   return sendOperations.reduce((soFar, next) => {
-    console.log(soFar, next);
-    return soFar.then(() => {
-      return next.apply(); // eslint-disable-line
-    });
+    return soFar.then(() => next.apply()); // eslint-disable-line
   }, Promise.resolve());
 }
 
-function readAndSendChunk(chunk, socketId, keepAlive, start, end) { // eslint-disable-line
+function readAndSendChunk(chunk, socketId, start, end) { // eslint-disable-line
   console.log(`readAndSendChunk ${start} ${end}`);
   return fileSystem.readFileAsArrayBuffer(chunk)
       .then((fileBuffer) => {
-        return sendChunkBuffer(socketId, fileBuffer, keepAlive, start, end);
+        return sendChunkBuffer(socketId, fileBuffer, start, end);
       });
 }
 
-function sendChunkBuffer(socketId, data, keepAlive, start, end, last) { // eslint-disable-line
+function sendChunkBuffer(socketId, data, start, end, last) { // eslint-disable-line
   console.log(`sendChunkBuffer ${start} ${end}`, data);
   const newline = '\r\n';
   const chunkLength = data.byteLength.toString(16).toUpperCase() + newline; // eslint-disable-line
@@ -115,17 +112,18 @@ function sendChunkBuffer(socketId, data, keepAlive, start, end, last) { // eslin
   for (let i = 0; i < lineBreak.length; i++) { // eslint-disable-line
     bufferView[chunkLength.length + data.byteLength + i] = lineBreak.charCodeAt(i);
   }
-  return sendBuffer(socketId, buffer, keepAlive, start, end, last);
+  const keepAlive = !last;
+  return sendBuffer(socketId, buffer, keepAlive, start, end);
 }
 
-function sendBuffer(socketId, buffer, keepAlive, start, end, last) { // eslint-disable-line
+function sendBuffer(socketId, buffer, keepAlive, start, end) { // eslint-disable-line
   console.log(`sendBuffer ${start} ${end}`);
-  console.log(util.arrayBufferToString(buffer).replace(/\r\n/g, '<CR><LF>'));
+  // console.log(util.arrayBufferToString(buffer).replace(/\r\n/g, '<CR><LF>'));
 
   return new Promise((resolve) => {
     // verify that socket is still connected before trying to send data
     chrome.sockets.tcp.getInfo(socketId, (socketInfo) => {
-      if (!socketInfo.connected) {
+      if (chrome.runtime.lastError || !(socketInfo && socketInfo.connected)) {
         return resolve(destroySocketById(socketId));
       }
       chrome.sockets.tcp.setKeepAlive(socketId, keepAlive, () => {
@@ -138,9 +136,6 @@ function sendBuffer(socketId, buffer, keepAlive, start, end, last) { // eslint-d
           if (!keepAlive || chrome.runtime.lastError) {
             destroySocketById(socketId);
           }
-          if (last) {
-            chrome.sockets.tcp.close(socketId);
-          }
           resolve();
         });
       });
@@ -151,10 +146,8 @@ function sendBuffer(socketId, buffer, keepAlive, start, end, last) { // eslint-d
 
 function createResponseHeader(httpStatus, keepAlive, file) {
   const contentType = (file && file.type) || 'text/plain'; // eslint-disable-line
-  // const contentLength = file ? file.size : 0;
   const lines = [
-    `HTTP/1.0 ${httpStatus}`,
-    // `Content-Length: ${contentLength}`,
+    `HTTP/1.1 ${httpStatus}`,
     `Content-Type: ${contentType}`
   ];
 
@@ -162,8 +155,10 @@ function createResponseHeader(httpStatus, keepAlive, file) {
     lines.push('Connection: keep-alive');
   }
 
-  if (file && keepAlive) {
+  if (file) {
     lines.push('Transfer-Encoding: chunked');
+  } else {
+    lines.push('Content-Length: 0');
   }
 
   const responseText = lines.join('\r\n') + '\r\n\r\n' // eslint-disable-line
@@ -175,7 +170,7 @@ function destroySocketById(socketId) {
   sockets.delete(socketId);
 
   chrome.sockets.tcp.getInfo(socketId, (socketInfo) => {
-    if (socketInfo.connected) {
+    if (socketInfo && socketInfo.connected) {
       chrome.sockets.tcp.disconnect(socketId, () => chrome.sockets.tcp.close(socketId));
     } else {
       chrome.sockets.tcp.close(socketId);
