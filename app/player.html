@@ -19,26 +19,29 @@
         <a href="https://www.risevision.com/terms-service-privacy">Terms and Conditions</a>
       </div>
       <h3 class="text-center">Enter Your Display ID</h3>
-      <h4 class="text-center">( or use your
-        <a href="#">Claim ID</a> )</h4>
-      <div id="errorMessage" style="display:none" class="alert alert-danger text-center display-id-error"></div>
+      <h4 class="text-center">( or use your <a href="#">Claim ID</a> )</h4>
       <div class="form-group">
         <label class="secondary-label" for="displayIdInput">Display ID</label>
         <form>
           <input id="displayIdInput" autofocus type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false" placeholder="000000000000" />
         </form>
         <div class="text-right">
-          <a href="https://help.risevision.com/hc/en-us/articles/360000325886-What-is-a-Display-ID" target="_blank">
+          <a href="https://help.risevision.com/hc/en-us/articles/360000325886-What-is-a-Display-ID">
             <i class="fa fa-question-circle icon-right" aria-hidden="true"></i>
             <label>What is a Display ID?</label>
           </a>
+        </div>
+        <div id="errorSection" hidden class="text-danger half-top">
+          <span id="errorMessage"></span>
+          Please try again or
+          <a href="https://displays.risevision.com" id="viewDisplays">view your Displays</a>
         </div>
       </div>
       <br/>
       <br/>
       <div class="alert alert-info">Please note: Rise Player is only supported on managed devices. In order for Rise Player to start automatically after
         reboots, your device must be configured to run in kiosk mode. For more information, visit
-        <a href="http://www.risevision.com/riseplayer/" target="_blank">http://www.risevision.com/riseplayer/</a>.
+        <a href="https://www.risevision.com/riseplayer/">http://www.risevision.com/riseplayer/</a>.
       </div>
     </main>
 
@@ -53,5 +56,6 @@
     </footer>
   </div>
 </body>
-
 </html>
+        <input type="text" class="form-control id-form has-error" maxlength="12" autocorrect="off" autocapitalize="off" spellcheck="false"
+          id="id1" placeholder="000000000000" />
