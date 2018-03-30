@@ -38,10 +38,10 @@ function checkAvailableDiskSpace(fileSize = 0) {
  * @param {string} dirName
  * @returns {Promise.<FileEntry>}
  */
-function writeFileToDirectory(fileName, contentStream, dirName, type) {
+function writeFileToDirectory(fileName, contentStream, dirName) {
   return createDirectory(dirName)
     .then(dirEntry => createFile(dirEntry, fileName))
-    .then(fileEntry => writeFile(fileEntry, contentStream, type));
+    .then(fileEntry => writeFile(fileEntry, contentStream));
 }
 
 /**
@@ -90,18 +90,15 @@ function readFileAsArrayBuffer(fileEntry) {
 
 /**
  * @param {File} file
- * @returns {Array.<Promise.<ArrayBuffer>>}
+ * @returns {Array.<File>}
  */
-function readChunks(file, chunkSize = ONE_HUNDRED_MB) {
-  console.log('slicing file', file);
+function sliceFileInChunks(file, chunkSize = ONE_HUNDRED_MB) {
   const size = file.size;
   const chunks = [];
   for (let start = 0; start <= size; start += chunkSize) {
     const end = Math.min(start + chunkSize, size);
-    console.log(`creating chunk from ${start} to ${end}`);
-
     const slice = file.slice(start, end, file.type);
-    chunks.push({start, end, slice});
+    chunks.push(slice);
   }
   return chunks;
 }
@@ -123,24 +120,24 @@ function createFile(dir, name) {
   return new Promise((resolve, reject) => dir.getFile(name, {create: true}, resolve, reject));
 }
 
-function writeFile(fileEntry, contentStream, type) {
+function writeFile(fileEntry, contentStream) {
   return new Promise((resolve, reject) => {
     fileEntry.createWriter((fileWriter) => {
-      processChunkedContents(contentStream, fileWriter, type)
+      processChunkedContents(contentStream, fileWriter)
         .then(() => resolve(fileEntry))
         .catch(reject);
     });
   });
 }
 
-function processChunkedContents(contentStream, fileWriter, type) {
+function processChunkedContents(contentStream, fileWriter) {
   const fileWriteableStream = new WritableStream({
     write(chunk) {
       return new Promise((resolve, reject) => {
         fileWriter.seek(fileWriter.length);
         fileWriter.onwriteend = resolve
         fileWriter.onerror = reject
-        fileWriter.write(new Blob([chunk], {type}));
+        fileWriter.write(new Blob([chunk]));
       });
     }
   });
@@ -155,5 +152,5 @@ module.exports = {
   moveFileToDirectory,
   readFile,
   readFileAsArrayBuffer,
-  readChunks
+  sliceFileInChunks
 }

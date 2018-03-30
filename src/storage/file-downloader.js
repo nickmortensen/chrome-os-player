@@ -74,8 +74,7 @@ function downloadUrl(url, fileName) {
     .then(response => validateResponse(response))
     .then(response => {
       const dirName = 'download';
-      const type = response.headers.get('content-type');
-      return fileSystem.writeFileToDirectory(fileName, response.body, dirName, type);
+      return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
     })
     .then((fileEntry) => {
       console.log(fileEntry);
