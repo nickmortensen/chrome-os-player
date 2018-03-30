@@ -80,7 +80,7 @@ function sendResponse(socketId, httpStatus, keepAlive, file) {
   console.log(`sending ${chunks.length} chunks to socket ${socketId}`);
 
   return chunks.reduce((soFar, next) => {
-    return soFar.then(() => next.apply()); // eslint-disable-line
+    return soFar.then(() => next());
   }, Promise.resolve());
 }
 
