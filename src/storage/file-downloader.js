@@ -1,5 +1,6 @@
 const fileSystem = require("./file-system");
 const urlProvider = require("./url-provider");
+const util = require('../util');
 
 /**
  * Downloads a file entry and saves it to disk

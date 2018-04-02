@@ -3,6 +3,7 @@ const sinon = require('sinon');
 
 const fileSystem = require('../../../src/storage/file-system');
 const urlProvider = require('../../../src/storage/url-provider');
+const util = require('../../../src/util');
 
 const fileDownloader = require('../../../src/storage/file-downloader');
 
@@ -36,13 +37,17 @@ describe('File Downloader', () => {
     sandbox.stub(fileSystem, 'moveFileToDirectory').resolves(expectedFileEntry);
     sandbox.stub(fileSystem, 'checkAvailableDiskSpace').resolves(true);
     sandbox.stub(urlProvider, 'getUrl').resolves('http://risevision.com/test/file');
-    fetch.resolves({ok: true, status: 200, headers: {get() {}}});
+    sandbox.stub(util, 'sha1').resolves('fileName');
+
+    const response = {ok: true, status: 200, headers: {get() {}}, body: 'body'};
+    fetch.resolves(response);
 
     const entry = {filePath, version, token};
 
     return fileDownloader.download(entry)
       .then(fileEntry => {
         assert.equal(fileEntry, expectedFileEntry);
+        sinon.assert.calledWith(fileSystem.writeFileToDirectory, 'fileName', response.body, 'download');
       });
   });
 

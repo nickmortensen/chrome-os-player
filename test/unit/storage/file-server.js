@@ -1,27 +1,14 @@
 /* eslint-disable no-magic-numbers */
 const assert = require('assert');
 const sinon = require('sinon');
-const util = require('../../../src/storage/util');
+const util = require('../../../src/util');
 const fileSystem = require('../../../src/storage/file-system');
 
 const fileServer = require('../../../src/storage/file-server');
 
-class TextEncoder {encode(string) {return string;}}
-class TextDecoder {decode(buffer) {return buffer;}}
-
 const sandbox = sinon.createSandbox();
 
 describe('File Server', () => {
-
-  before(() => {
-    global.TextEncoder = TextEncoder;
-    global.TextDecoder = TextDecoder;
-  });
-
-  after(() => {
-    Reflect.deleteProperty(global, 'TextEncoder');
-    Reflect.deleteProperty(global, 'TextDecoder');
-  })
 
   afterEach(() => {
     chrome.flush();
@@ -92,6 +79,9 @@ describe('File Server', () => {
     });
 
     it('should not accept POST', () => {
+      sandbox.stub(util, 'arrayBufferToString').callsFake((buffer) => buffer);
+      sandbox.stub(util, 'stringToArrayBuffer').callsFake((string) => string);
+
       const requestText =
         `POST / HTTP/1.1
         Host: localhost:8989
@@ -118,6 +108,9 @@ describe('File Server', () => {
     });
 
     it('should return not found when it receives a GET request for absent file', () => {
+      sandbox.stub(util, 'arrayBufferToString').callsFake((buffer) => buffer);
+      sandbox.stub(util, 'stringToArrayBuffer').callsFake((string) => string);
+
       const fileEntryPromise = Promise.reject(new Error('File not found'));
       sandbox.stub(fileSystem, 'readFile').returns(fileEntryPromise);
 
@@ -149,6 +142,7 @@ describe('File Server', () => {
       sandbox.stub(fileSystem, 'readFile').returns(fileEntryPromise);
       const fileBufferPromise = Promise.resolve(new ArrayBuffer(fileEntry.size));
       sandbox.stub(fileSystem, 'readFileAsArrayBuffer').returns(fileBufferPromise);
+      sandbox.stub(util, 'arrayBufferToString').callsFake((buffer) => buffer);
       sandbox.stub(util, 'stringToArrayBuffer').returns(new ArrayBuffer(100));
 
       const requestText =

@@ -1,6 +1,8 @@
 const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
+const util = require('../../../src/util');
+
 const systemInfo = require('../../../src/logging/system-info');
 
 const sandbox = sinon.createSandbox();
@@ -16,7 +18,7 @@ describe('System Info', () => {
 
     return systemInfo.getId()
       .then((id) => {
-        assert(id === 'displayId');
+        assert.equal(id, 'displayId');
       });
   });
 
@@ -25,7 +27,7 @@ describe('System Info', () => {
 
     return systemInfo.getId()
       .then((id) => {
-        assert(id === '0.machineId');
+        assert.equal(id, '0.machineId');
       });
   });
 
@@ -34,7 +36,7 @@ describe('System Info', () => {
 
     return systemInfo.getOS()
       .then((os) => {
-        assert(os === 'OS/arch');
+        assert.equal(os, 'OS/arch');
       });
   });
 
@@ -48,7 +50,7 @@ describe('System Info', () => {
 
     return systemInfo.getIpAddress()
       .then((ip) => {
-        assert(ip === '192.168.0.12');
+        assert.equal(ip, '192.168.0.12');
       });
   });
 
@@ -61,7 +63,7 @@ describe('System Info', () => {
 
     return systemInfo.getIpAddress()
       .then((ip) => {
-        assert(ip === '');
+        assert.equal(ip, '');
       });
   });
 
@@ -70,7 +72,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerName();
 
-    assert(playerVersion === 'RisePlayer');
+    assert.equal(playerVersion, 'RisePlayer');
   });
 
   it('should return beta player name', () => {
@@ -78,7 +80,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerName();
 
-    assert(playerVersion === '(Beta) RisePlayer');
+    assert.equal(playerVersion, '(Beta) RisePlayer');
   });
 
   it('should return player version', () => {
@@ -86,7 +88,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerVersion();
 
-    assert(playerVersion === 'version');
+    assert.equal(playerVersion, 'version');
   });
 
   it('should return player beta version', () => {
@@ -94,7 +96,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerVersion();
 
-    assert(playerVersion === 'beta_version');
+    assert.equal(playerVersion, 'beta_version');
   });
 
   it('should return player beta version without prefix', () => {
@@ -102,7 +104,7 @@ describe('System Info', () => {
 
     const playerVersion = systemInfo.getPlayerVersion({includeBetaPrefix: false});
 
-    assert(playerVersion === 'version');
+    assert.equal(playerVersion, 'version');
   });
 
   it('should return Chrome version', () => {
@@ -110,7 +112,7 @@ describe('System Info', () => {
 
     const chromeVersion = systemInfo.getChromeVersion();
 
-    assert(chromeVersion === '65.0.3325.35');
+    assert.equal(chromeVersion, '65.0.3325.35');
 
     Reflect.deleteProperty(global, 'navigator');
   });
@@ -120,7 +122,7 @@ describe('System Info', () => {
 
     const chromeOSVersion = systemInfo.getChromeOSVersion();
 
-    assert(chromeOSVersion === '10323.9.0');
+    assert.equal(chromeOSVersion, '10323.9.0');
 
     Reflect.deleteProperty(global, 'navigator');
   });
@@ -130,7 +132,7 @@ describe('System Info', () => {
 
     const chromeOSVersion = systemInfo.getChromeOSVersion();
 
-    assert(chromeOSVersion === '');
+    assert.equal(chromeOSVersion, '');
 
     Reflect.deleteProperty(global, 'navigator');
   });
@@ -140,7 +142,7 @@ describe('System Info', () => {
 
     return systemInfo.getDisplayId()
       .then((id) => {
-        assert(id === 'displayId');
+        assert.equal(id, 'displayId');
       });
   });
 
@@ -149,26 +151,16 @@ describe('System Info', () => {
 
     return systemInfo.getMachineId()
       .then((id) => {
-        assert(id === 'machineId');
+        assert.equal(id, 'machineId');
       });
   });
 
   it('should generate machine id when it is not yet stored', () => {
     chrome.storage.local.get.yields({});
-    const crypto = {subtle: {digest() {}}};
-    global.crypto = crypto;
-
-    sandbox.stub(crypto.subtle, 'digest').resolves(new Uint8Array(1, 2, 3)); // eslint-disable-line no-magic-numbers
-
+    sandbox.stub(util, 'sha1').resolves('hash')
     return systemInfo.getMachineId()
       .then((id) => {
-        sinon.assert.calledOnce(crypto.subtle.digest);
-        assert(id === '00');
-        Reflect.deleteProperty(global, 'crypto');
-      })
-      .catch((err) => {
-        Reflect.deleteProperty(global, 'crypto');
-        throw err;
+        assert.equal(id, 'hash');
       });
   });
 

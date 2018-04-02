@@ -1,10 +1,7 @@
-function bufferToHex(buffer) {
-  return Array.prototype.map.call(new Uint8Array(buffer), value => value.toString(16).padStart(2, '0')).join(''); // eslint-disable-line
-}
+const util = require('../util');
 
 function generateMachineId() {
-  return crypto.subtle.digest('SHA-1', Uint8Array.of(Date.now()))
-    .then(value => bufferToHex(value));
+  return util.sha1(Date.now().toString());
 }
 
 function readLocalStorage() {

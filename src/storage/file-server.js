@@ -1,4 +1,5 @@
-const util = require('./util');
+const util = require('../util');
+const uriParser = require('./uri-parser');
 const fileSystem = require('./file-system');
 
 /* eslint-disable max-statements */
@@ -48,7 +49,7 @@ function onReceive({data, socketId}) {
   const requestText = util.arrayBufferToString(data);
   console.log(`request received:\n ${requestText}`);
   const keepAlive = requestText.indexOf('Connection: keep-alive') > 0;
-  const uri = util.parseUri(requestText);
+  const uri = uriParser.parseUri(requestText);
   if (!uri) {
     return sendResponse(socketId, '400 Bad Request', keepAlive);
   }
