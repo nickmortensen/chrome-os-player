@@ -2,6 +2,9 @@ const messagingServiceClient = require('../messaging/messaging-service-client');
 const fileDownloader = require('./file-downloader');
 const db = require('./db');
 const gcsValidator = require('gcs-filepath-validator');
+const util = require('../util');
+
+let viewerMessaging = null;
 
 function processUpdate(message) {
   const {filePath, version, token} = message;
@@ -25,8 +28,22 @@ function handleMSFileUpdate(message) {
   }
 }
 
-function init() {
-  messagingServiceClient.on('MSFILEUPDATE', message => handleMSFileUpdate(message));
+function handleWatchResult(message) {
+  const {filePath, version, token} = message;
+
+  console.log(`received version ${version} for ${filePath}`);
+
+  const status = token ? 'STALE' : 'CURRENT';
+
+  return processUpdate(message).then(() => {
+    sendFileUpdateMessageToViewer(filePath, {filePath, version, status});
+  });
+}
+
+function init(viewer) {
+  viewerMessaging = viewer;
+  messagingServiceClient.on('MSFILEUPDATE', handleMSFileUpdate);
+  messagingServiceClient.on('WATCH-RESULT', handleWatchResult)
 }
 
 function watch(message) {
@@ -43,6 +60,8 @@ function watch(message) {
     return requestMSUpdate(message, metaData);
   }
 
+  sendFileUpdateMessageToViewer(filePath, metaData);
+
   return Promise.resolve();
 }
 
@@ -54,6 +73,18 @@ function requestMSUpdate(message, metaData) {
   messagingServiceClient.send(msMessage)
 
   return Promise.resolve();
+}
+
+function sendFileUpdateMessageToViewer(filePath, metaData) {
+  getOSPath(filePath, metaData.version).then(ospath => {
+    viewerMessaging.sendMessage({topic: 'FILE-UPDATE', from: 'local-messaging', ospath, filePath, status: metaData.status, version: metaData.version});
+  });
+}
+
+function getOSPath(filePath, version) {
+  return util.sha1(`${filePath}${version}`).then((hash) => {
+    return `http://localhost:8989/${hash}`;
+  })
 }
 
 module.exports = {

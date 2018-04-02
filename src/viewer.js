@@ -45,7 +45,7 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging().then(storage.init);
+  setUpMessaging().then(() => storage.init(viewerMessaging));
   fetchContent();
   fileServer.init();
 }
