@@ -38,7 +38,7 @@ function handleLocalMessagingMessage(data) {
     const message = {from: 'local-messaging', topic: 'client-list', installedClients, clients: installedClients};
     sendMessage(message);
   } else if (data.topic === 'WATCH') {
-    storage.watch(data.filePath).then((result) => sendMessage(result));
+    storage.watch(data).then((result) => sendMessage(result));
   }
 }
 

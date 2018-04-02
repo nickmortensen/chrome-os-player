@@ -1,7 +1,12 @@
+
 const fileMetadata = {
+  entries: [],
   put(entry) {
-    console.log('to be implemented', entry);
-    return Promise.resolve();
+    this.entries.push(entry);
+  },
+
+  get(filePath) {
+    return this.entries.find((entry) => entry.filePath === filePath);
   }
 };
 

@@ -90,11 +90,21 @@ describe('Storage', () => {
 
     it('should reject invalid watch message', () => {
       const filePath = 'invalid';
-      return storage.watch(filePath)
+      return storage.watch({filePath})
         .then(assert.fail)
         .catch((error) => {
           assert.equal(error.message, 'Invalid watch message');
         });
+    });
+
+    it('should save metadata and request file update to messaging service', () => {
+      sandbox.stub(messagingServiceClient, 'send');
+
+      const filePath = 'local-storage-test/test-1x1.png';
+      return storage.watch({filePath}).then(() => {
+        const message = {filePath, version: '0'};
+        sinon.assert.calledWith(messagingServiceClient.send, message);
+      });
     });
   });
 

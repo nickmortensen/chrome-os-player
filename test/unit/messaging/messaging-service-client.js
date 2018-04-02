@@ -6,7 +6,7 @@ const Primus = require('../../../src/messaging/primus');
 const messagingServiceClient = require('../../../src/messaging/messaging-service-client');
 
 const sandbox = sinon.createSandbox();
-const connection = {open() {}, on() {}};
+const connection = {open() {}, on() {}, write() {}};
 
 describe('Messaging Service Client', () => {
 
@@ -116,5 +116,19 @@ describe('Messaging Service Client', () => {
     });
   });
 
+  it('should send messages', () => {
+    const on = sandbox.stub(connection, 'on');
+    on.withArgs('open').yields();
+
+    sandbox.stub(connection, 'write');
+
+    const message = {};
+
+    return messagingServiceClient.init().then(() => {
+      messagingServiceClient.send(message);
+
+      sinon.assert.calledWith(connection.write, message);
+    });
+  });
 
 });
