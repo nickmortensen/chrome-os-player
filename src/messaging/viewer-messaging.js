@@ -1,8 +1,5 @@
-const logger = require('./logging/logger');
-const storage = require('./storage/storage');
-
 const dataHandlerRegisteredObserver = {resolve: () => {}, messageReceived: false};
-
+const messageHandlers = {};
 let messageSender = null;
 
 function createMessageSender(webview) {
@@ -15,38 +12,50 @@ function createMessageSender(webview) {
 
 function init(webview) {
   messageSender = createMessageSender(webview);
+
+  on('data-handler-registered', () => {
+    dataHandlerRegisteredObserver.messageReceived = true;
+    dataHandlerRegisteredObserver.resolve();
+  });
+
+  on('client-list-request', () => {
+    const installedClients = ['local-storage', 'local-messaging'];
+    const message = {from: 'local-messaging', topic: 'client-list', installedClients, clients: installedClients};
+    send(message);
+  });
+
+  window.addEventListener('message', (event) => {
+    if (!event.data) {return;}
+
+    event.preventDefault();
+
+    console.log(`viewer window received message from webview: ${JSON.stringify(event.data)}`);
+    handleMessage(event.data);
+  });
 }
 
-function sendMessage(message) {
+function on(topic, handler) {
+  const key = topic.toLowerCase();
+  if (!messageHandlers[key]) {
+    messageHandlers[key] = [];
+  }
+
+  messageHandlers[key].push(handler);
+}
+
+function send(message) {
   if (messageSender) {
     messageSender.sendMessage(message);
   }
 }
 
-function handleViewerMessage(data) {
-  if (data.message === 'viewer-config') {
-    logger.logClientInfo(data);
-  } else if (data.message === 'data-handler-registered') {
-    dataHandlerRegisteredObserver.messageReceived = true;
-    dataHandlerRegisteredObserver.resolve();
-  }
-}
-
-function handleLocalMessagingMessage(data) {
-  if (data.topic === 'client-list-request') {
-    const installedClients = ['local-storage', 'local-messaging'];
-    const message = {from: 'local-messaging', topic: 'client-list', installedClients, clients: installedClients};
-    sendMessage(message);
-  } else if (data.topic === 'WATCH') {
-    storage.watch(data).then((result) => sendMessage(result));
-  }
-}
-
 function handleMessage(data) {
-  if (data.from === 'viewer') {
-    handleViewerMessage(data);
-  } else if (data.from === 'ws-client') {
-    handleLocalMessagingMessage(data);
+  const key = data.topic || data.message || data;
+  if (typeof key === 'string') {
+    const handlers = messageHandlers[key.toLowerCase()];
+    if (handlers && handlers.length > 0) {
+      handlers.forEach(handler => handler(data));
+    }
   }
 }
 
@@ -61,7 +70,7 @@ function viewerCanReceiveContent() {
 
 module.exports = {
   init,
-  sendMessage,
-  handleMessage,
+  on,
+  send,
   viewerCanReceiveContent
 }
