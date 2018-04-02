@@ -74,8 +74,12 @@ function insertMultiple(entries, dataset, table) {
     return fetch(serviceUrl, options)
       .then(res => res.json())
       .then((json)=>{
-        if (!json.insertErrors || json.insertErrors.length === 0) {return Promise.resolve();}
-        return Promise.reject(json.insertErrors);
+        if (json.insertErrors && json.insertErrors.length) {
+          return Promise.reject(json.insertErrors);
+        } else if (json.error && json.error.message) {
+          return Promise.reject(json.error.message);
+        }
+        return Promise.resolve();
       });
   });
 }
