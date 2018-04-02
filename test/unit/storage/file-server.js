@@ -68,6 +68,17 @@ describe('File Server', () => {
     });
   });
 
+  it('should return file url', () => {
+    const filePath = 'local-storage-test/1x1.png';
+    const version = 'version';
+
+    sandbox.stub(util, 'sha1').resolves('hash');
+
+    return fileServer.getFileUrl(filePath, version).then((fileUrl) => {
+      assert.equal(fileUrl, 'http://127.0.0.1:8989/hash');
+    });
+  });
+
   describe('requests', () => {
     beforeEach(() => {
       const serverSocketInfo = {socketId: 1, name: 'file-server'};

@@ -5,6 +5,12 @@ const fileSystem = require('./file-system');
 /* eslint-disable max-statements */
 const sockets = new Set();
 let serverSocketId = null;
+const address = '127.0.0.1'
+const port = 8989;
+
+function getFileUrl(filePath, version) {
+  return util.sha1(`${filePath}${version}`).then((hash) => `http://${address}:${port}/${hash}`);
+}
 
 function init() {
   return stopExisting().then(() => create());
@@ -22,7 +28,7 @@ function stopExisting() {
   });
 }
 
-function create(address = '127.0.0.1', port = 8989) { // eslint-disable-line no-magic-numbers
+function create() {
   chrome.sockets.tcpServer.create({name: 'file-server'}, (socketInfo) => {
     serverSocketId = socketInfo.socketId;
     chrome.sockets.tcpServer.onAccept.addListener(onAccept);
@@ -174,5 +180,6 @@ function destroySocketById(socketId) {
 }
 
 module.exports = {
-  init
+  init,
+  getFileUrl
 }

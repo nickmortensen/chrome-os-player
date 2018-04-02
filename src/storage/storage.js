@@ -1,28 +1,27 @@
 const messagingServiceClient = require('../messaging/messaging-service-client');
 const viewerMessaging = require('../messaging/viewer-messaging');
 const fileDownloader = require('./file-downloader');
+const fileServer = require('./file-server');
 const db = require('./db');
 const gcsValidator = require('gcs-filepath-validator');
-const util = require('../util');
 
-function processUpdate(message) {
+function processUpdate(message, status) {
   const {filePath, version, token} = message;
   console.log(`Received updated version ${version} for ${filePath}`);
-  console.log(`Token timestamp ${token.data.timestamp}`);
 
-  const entry = {filePath, version, token};
+  const entry = {filePath, version, token, status};
 
   db.watchlist.put(entry);
   db.fileMetadata.put(entry);
 
-  return fileDownloader.download(entry);
+  return fileDownloader.download({filePath, version, token});
 }
 
 function handleMSFileUpdate(message) {
-  if (!message.type) {return;}
+  if (!message.type) {return Promise.reject(new Error('Invalid file update message'));}
 
   if (message.type.toUpperCase() === 'ADD' || message.type.toUpperCase() === 'UPDATE') {
-    return processUpdate(message)
+    return processUpdate(message, 'STALE')
       .catch((err) => console.error('Handle MSFILEUPDATE Error', message.filePath, err));
   }
 }
@@ -34,8 +33,8 @@ function handleWatchResult(message) {
 
   const status = token ? 'STALE' : 'CURRENT';
 
-  return processUpdate(message).then(() => {
-    sendFileUpdateMessageToViewer(filePath, {filePath, version, status});
+  return processUpdate(message, status).then(() => {
+    return sendFileUpdateMessageToViewer(filePath, {filePath, version, status});
   });
 }
 
@@ -75,18 +74,14 @@ function requestMSUpdate(message, metaData) {
 }
 
 function sendFileUpdateMessageToViewer(filePath, metaData) {
-  getOSPath(filePath, metaData.version).then(ospath => {
-    viewerMessaging.send({topic: 'FILE-UPDATE', from: 'local-messaging', ospath, filePath, status: metaData.status, version: metaData.version});
+  return fileServer.getFileUrl(filePath, metaData.version).then(fileUrl => {
+    viewerMessaging.send({topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, filePath, status: metaData.status, version: metaData.version});
   });
-}
-
-function getOSPath(filePath, version) {
-  return util.sha1(`${filePath}${version}`).then((hash) => {
-    return `http://localhost:8989/${hash}`;
-  })
 }
 
 module.exports = {
   init,
-  watch
+  watch,
+  handleWatchResult,
+  handleMSFileUpdate
 }
