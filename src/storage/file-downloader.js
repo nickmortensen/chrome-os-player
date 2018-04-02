@@ -23,19 +23,21 @@ function download(entry) {
         return Promise.reject(Error('No signed URL'));
       }
 
-      return requestFile(signedUrl);
+      return fetch(signedUrl, {mode: 'cors', method: 'HEAD'})
+        .then(response => checkAvailableDiskSpace(response))
+        .then(() => requestFile(signedUrl));
     })
-    .then(response => validateResponse(response))
     .then(response => {
-      const fileName = `${filePath}${version}`;
-      const dirName = 'download';
-      return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
+      return util.sha1(`${filePath}${version}`).then(fileName => {
+        const dirName = 'download';
+        return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
+      });
     })
-    .then((fileEntry) => fileSystem.moveFileToDirectory(fileEntry, 'cache'));
+    .then(fileEntry => fileSystem.moveFileToDirectory(fileEntry, 'cache'));
 }
 
 function requestFile(signedUrl, retries = 2) { // eslint-disable-line no-magic-numbers
-  return fetch(signedUrl).catch(error => {
+  return fetch(signedUrl, {mode: 'cors'}).catch(error => {
     if (retries <= 0) {
       return Promise.reject(error);
     }
@@ -44,7 +46,7 @@ function requestFile(signedUrl, retries = 2) { // eslint-disable-line no-magic-n
   });
 }
 
-function validateResponse(response) {
+function checkAvailableDiskSpace(response) {
   if (!response.ok) {
     return Promise.reject(Error(`Invalid response with status code ${response.status}`));
   }
@@ -72,7 +74,7 @@ function downloadUrl(url, fileName) {
 
       return requestFile(url);
     })
-    .then(response => validateResponse(response))
+    .then(response => checkAvailableDiskSpace(response))
     .then(response => {
       const dirName = 'download';
       return fileSystem.writeFileToDirectory(fileName, response.body, dirName);

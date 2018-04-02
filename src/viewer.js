@@ -26,7 +26,7 @@ function setUpMessaging() {
     if (!evt.isTopLevel) {return;}
     if (!evt.url.match(/http[s]?:\/\/viewer(?:-test)?.risevision.com/)) {return;}
     webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()}, ()=>{
-      viewerMessaging.sendMessage({from: "player", topic: "latch-app-window"});
+      viewerMessaging.sendMessage({from: 'player', topic: 'latch-app-window'});
     });
   });
 

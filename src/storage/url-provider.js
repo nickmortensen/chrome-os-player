@@ -10,10 +10,8 @@ function getUrl(token) {
   const {data, hash} = token;
   const url = 'https://services.risevision.com/urlprovider/';
   const options = {
-    body: {
-      data,
-      hash
-    },
+    body: JSON.stringify({data, hash}),
+    headers: {'Content-Type': 'application/json'},
     method: 'POST'
   };
   return fetch(url, options)
@@ -21,7 +19,7 @@ function getUrl(token) {
       if (!response.ok) {
         return Promise.reject(Error(`Invalid response with status code ${response.status}`));
       }
-      return response.body;
+      return response.text();
     });
 }
 
