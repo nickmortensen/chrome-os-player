@@ -1,8 +1,7 @@
 const assert = require('assert');
+const util = require('../../../src/storage/uri-parser');
 
-const util = require('../../../src/storage/util');
-
-describe('Storage Util', () => {
+describe('Storage URI Parser', () => {
   it('should parse GET URI', () => {
     const requestText =
       `GET /file1 HTTP/1.1

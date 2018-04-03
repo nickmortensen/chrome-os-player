@@ -3,9 +3,11 @@ const logger = require('../logging/logger');
 
 const messageHandlers = {};
 
+let connection = null;
+
 function connect(displayId, machineId) {
   const url = `https://services.risevision.com/messaging/primus/?displayId=${displayId}&machineId=${machineId}`;
-  const connection = Primus.connect(url, {
+  connection = Primus.connect(url, {
     reconnect: {
       max: 1800000,
       min: 2000,
@@ -57,7 +59,14 @@ function on(topic, handler) {
   messageHandlers[key].push(handler);
 }
 
+function send(message) {
+  if (!connection) {return;}
+
+  connection.write(message);
+}
+
 module.exports = {
   init,
-  on
+  on,
+  send
 }
