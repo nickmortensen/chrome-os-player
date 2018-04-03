@@ -1,12 +1,19 @@
 
 const fileMetadata = {
-  entries: [],
+  entries: {},
   put(entry) {
-    this.entries.push(entry);
+    const existing = this.entries[entry.filePath] || {};
+    const newEntry = Object.assign(existing, entry);
+    this.entries[entry.filePath] = newEntry
+    return newEntry;
   },
 
   get(filePath) {
-    return this.entries.find((entry) => entry.filePath === filePath);
+    return this.entries[filePath];
+  },
+
+  getStale() {
+    return Object.values(this.entries).filter((entry) => entry.status === 'STALE');
   }
 };
 

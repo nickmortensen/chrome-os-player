@@ -1,9 +1,8 @@
-const messagingServiceClient = require('../messaging/messaging-service-client');
-const viewerMessaging = require('../messaging/viewer-messaging');
-const fileDownloader = require('./file-downloader');
-const fileServer = require('./file-server');
-const db = require('./db');
 const gcsValidator = require('gcs-filepath-validator');
+const messagingServiceClient = require('../messaging/messaging-service-client');
+const localMessaging = require('./local-messaging-helper');
+const db = require('./db');
+const downloadQueue = require('./download-queue');
 
 function processUpdate(message, status) {
   const {filePath, version, token} = message;
@@ -14,7 +13,7 @@ function processUpdate(message, status) {
   db.watchlist.put(entry);
   db.fileMetadata.put(entry);
 
-  return fileDownloader.download({filePath, version, token});
+  return Promise.resolve();
 }
 
 function handleMSFileUpdate(message) {
@@ -33,15 +32,15 @@ function handleWatchResult(message) {
 
   const status = token ? 'STALE' : 'CURRENT';
 
-  return processUpdate(message, status).then(() => {
-    return sendFileUpdateMessageToViewer(filePath, {filePath, version, status});
-  });
+  return processUpdate(message, status)
+    .then(() => localMessaging.sendFileUpdate(filePath, {filePath, version, status}));
 }
 
 function init() {
   messagingServiceClient.on('MSFILEUPDATE', handleMSFileUpdate);
   messagingServiceClient.on('WATCH-RESULT', handleWatchResult);
-  viewerMessaging.on('WATCH', watch);
+  localMessaging.on('WATCH', watch);
+  downloadQueue.checkStaleFiles();
 }
 
 function watch(message) {
@@ -58,7 +57,7 @@ function watch(message) {
     return requestMSUpdate(message, metaData);
   }
 
-  sendFileUpdateMessageToViewer(filePath, metaData);
+  localMessaging.sendFileUpdate(filePath, metaData);
 
   return Promise.resolve();
 }
@@ -71,12 +70,6 @@ function requestMSUpdate(message, metaData) {
   messagingServiceClient.send(msMessage)
 
   return Promise.resolve();
-}
-
-function sendFileUpdateMessageToViewer(filePath, metaData) {
-  return fileServer.getFileUrl(filePath, metaData.version).then(fileUrl => {
-    viewerMessaging.send({topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, filePath, status: metaData.status, version: metaData.version});
-  });
 }
 
 module.exports = {
