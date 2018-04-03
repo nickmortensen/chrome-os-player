@@ -23,9 +23,9 @@ function download(entry) {
         return Promise.reject(Error('No signed URL'));
       }
 
-      return fetch(signedUrl, {mode: 'cors', method: 'HEAD'})
+      return util.fetchWithRetry(signedUrl, {mode: 'cors', method: 'HEAD'})
         .then(response => checkAvailableDiskSpace(response))
-        .then(() => requestFile(signedUrl));
+        .then(() => util.fetchWithRetry(signedUrl, {mode: 'cors'}));
     })
     .then(response => {
       return util.sha1(`${filePath}${version}`).then(fileName => {
@@ -34,16 +34,6 @@ function download(entry) {
       });
     })
     .then(fileEntry => fileSystem.moveFileToDirectory(fileEntry, 'cache'));
-}
-
-function requestFile(signedUrl, retries = 2) { // eslint-disable-line no-magic-numbers
-  return fetch(signedUrl, {mode: 'cors'}).catch(error => {
-    if (retries <= 0) {
-      return Promise.reject(error);
-    }
-
-    return requestFile(signedUrl, retries - 1);
-  });
 }
 
 function checkAvailableDiskSpace(response) {
@@ -72,7 +62,7 @@ function downloadUrl(url, fileName) {
         return Promise.reject(Error('Insufficient disk space'));
       }
 
-      return requestFile(url);
+      return util.fetchWithRetry(url, {mode: 'cors'});
     })
     .then(response => checkAvailableDiskSpace(response))
     .then(response => {

@@ -27,11 +27,16 @@ function setUpMessaging() {
 
 function fetchContent() {
   Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
+    if (!values || values === {}) {
+      logger.error('empty content response');
+      return;
+    }
     logger.log('sending content to viewer');
     const [contentData] = values;
     viewerMessaging.send({from: 'player', topic: 'content-update', newContent: contentData});
     rebootScheduler.scheduleRebootFromViewerContents(contentData);
-  });
+  })
+  .catch((error) => logger.error('error when fetching content', error));
 }
 
 function init() {

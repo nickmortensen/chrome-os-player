@@ -5,4 +5,4 @@ function init() {
   screen.init(document, validator);
 }
 
-document.addEventListener("DOMContentLoaded", init);
+document.addEventListener('DOMContentLoaded', init);
