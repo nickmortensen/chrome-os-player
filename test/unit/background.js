@@ -65,10 +65,10 @@ describe('background script', () => {
     sinon.assert.calledOnce(chrome.runtime.requestUpdateCheck);
   });
 
-  it('should reload when update is available', () => {
+  it('should restart when update is available', () => {
     chrome.runtime.onUpdateAvailable.dispatch({});
 
-    sinon.assert.calledOnce(chrome.runtime.reload);
+    sinon.assert.calledOnce(chrome.runtime.restart);
   });
 
 });
