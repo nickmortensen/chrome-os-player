@@ -1,3 +1,6 @@
+const ONE_HUNDRED_MB = 100000000;
+const FIVE_MB = 5000000;
+
 /**
  * Creates a new directory under root.
  * @param {string} name
@@ -75,17 +78,35 @@ function readFile(fileName, dirName) {
 function readFileAsArrayBuffer(fileEntry) {
   return new Promise((resolve, reject) => {
     const fileReader = new FileReader();
-    fileReader.onload = (evt) => resolve(evt.target.result);
+    fileReader.onloadend = (evt) => {
+      if (evt.target.readyState === FileReader.DONE) {
+        resolve(evt.target.result);
+      }
+    }
     fileReader.onerror = reject;
     fileReader.readAsArrayBuffer(fileEntry);
   });
 }
 
+/**
+ * @param {File} file
+ * @returns {Array.<File>}
+ */
+function sliceFileInChunks(file, chunkSize = ONE_HUNDRED_MB) {
+  const size = file.size;
+  const chunks = [];
+  for (let start = 0; start <= size; start += chunkSize) {
+    const end = Math.min(start + chunkSize, size);
+    const slice = file.slice(start, end, file.type);
+    chunks.push(slice);
+  }
+  return chunks;
+}
+
 function requestFileSystem() {
   return new Promise((resolve, reject) => {
     // Requesting only 5MB but is not relevant because we have unlimitedStorage permission
-    const FIVE_MEGA = 5 * 1024 * 1024; // eslint-disable-line no-magic-numbers
-    window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MEGA, resolve, reject);
+    window.webkitRequestFileSystem(window.PERSISTENT, FIVE_MB, resolve, reject);
   });
 }
 
@@ -130,5 +151,6 @@ module.exports = {
   writeFileToDirectory,
   moveFileToDirectory,
   readFile,
-  readFileAsArrayBuffer
+  readFileAsArrayBuffer,
+  sliceFileInChunks
 }

@@ -61,6 +61,29 @@ function validateResponse(response) {
     });
 }
 
+function downloadUrl(url, fileName) {
+
+  return fileSystem.checkAvailableDiskSpace()
+    .then((availableSpace) => {
+      if (!availableSpace) {
+        return Promise.reject(Error('Insufficient disk space'));
+      }
+
+      return requestFile(url);
+    })
+    .then(response => validateResponse(response))
+    .then(response => {
+      const dirName = 'download';
+      return fileSystem.writeFileToDirectory(fileName, response.body, dirName);
+    })
+    .then((fileEntry) => {
+      console.log(fileEntry);
+      return fileSystem.moveFileToDirectory(fileEntry, 'cache');
+    })
+    .then(fileEntry => console.log(fileEntry));
+}
+
 module.exports = {
-  download
+  download,
+  downloadUrl
 }
