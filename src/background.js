@@ -18,7 +18,7 @@ function init(launchData) {
 
 chrome.runtime.onUpdateAvailable.addListener((details) => {
   logger.log('update is availeble', details);
-  chrome.runtime.reload();
+  chrome.runtime.restart();
 });
 
 chrome.app.runtime.onLaunched.addListener(init);
