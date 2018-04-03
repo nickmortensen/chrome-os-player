@@ -1,9 +1,10 @@
 const windowManager = require('./window-manager');
 const logger = require('./logging/logger');
-const launchEnvs = require("./launch-environment");
+const launchEnvs = require('./launch-environment');
 
 function init(launchData) {
-  logger.log(`launch from ${launchData.source}`, launchData);
+  const manifest = chrome.runtime.getManifest();
+  logger.log(`Received launch data for ${manifest.version} via ${launchData.source}`, launchData);
   launchEnvs.set(launchData);
   chrome.storage.local.get((items) => {
     if (items.displayId) {

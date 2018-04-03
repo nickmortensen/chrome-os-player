@@ -3,12 +3,18 @@ const assert = require('assert');
 const sinon = require('sinon');
 const util = require('../../../src/util');
 const fileSystem = require('../../../src/storage/file-system');
+const logger = require('../../../src/logging/logger');
 
 const fileServer = require('../../../src/storage/file-server');
 
 const sandbox = sinon.createSandbox();
 
 describe('File Server', () => {
+
+  beforeEach(() => {
+    sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'error');
+  });
 
   afterEach(() => {
     chrome.flush();

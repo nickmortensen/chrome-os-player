@@ -22,6 +22,7 @@ describe('Util', () => {
     Reflect.deleteProperty(global, 'TextEncoder');
     Reflect.deleteProperty(global, 'TextDecoder');
     Reflect.deleteProperty(global, 'fetch');
+    sandbox.restore();
   });
 
   afterEach(() => sandbox.reset());
