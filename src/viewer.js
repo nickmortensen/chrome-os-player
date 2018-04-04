@@ -40,9 +40,10 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging().then(storage.init);
-  fetchContent();
+  setUpMessaging();
+  storage.init();
   fileServer.init();
+  fetchContent();
 }
 
 document.addEventListener('DOMContentLoaded', init);
