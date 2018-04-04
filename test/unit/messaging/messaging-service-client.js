@@ -18,6 +18,7 @@ describe('Messaging Service Client', () => {
     sandbox.stub(logger, 'log');
 
     sandbox.stub(connection, 'open');
+    sandbox.stub(connection, 'on')
     sandbox.stub(Primus, 'connect').returns(connection);
 
     const displayId = 'displayId';
@@ -26,7 +27,7 @@ describe('Messaging Service Client', () => {
   });
 
   it('should connect to messaging service', () => {
-    sandbox.stub(connection, 'on').withArgs('open').yields();
+    connection.on.withArgs('open').yields();
 
     const expectedMSUrl = 'https://services.risevision.com/messaging/primus/?displayId=displayId&machineId=machineId';
     const expectedPrimusOptions = {reconnect: {max: 1800000, min: 2000, retries: Infinity}, manual: true};
@@ -37,21 +38,47 @@ describe('Messaging Service Client', () => {
     });
   });
 
-  it('should log connection opened event', () => {
-    sandbox.stub(connection, 'on').withArgs('open').yields();
-
-    const event = 'MS connection opened';
+  function shouldLogEvent(eventName, logMessage) {
+    connection.on.withArgs(eventName).yields();
 
     return messagingServiceClient.init().then(() => {
-      sinon.assert.calledWith(logger.log, event);
+      sinon.assert.calledWith(logger.log, logMessage);
     });
+  }
+
+  it('should log connection opened event', () => {
+    return shouldLogEvent('open', 'MS connection opened');
+  });
+
+  it('should log connection closed event', () => {
+    connection.on.withArgs('open').yields();
+
+    return shouldLogEvent('close', 'MS connection closed');
+  });
+
+  it('should log connection end event', () => {
+    connection.on.withArgs('open').yields();
+
+    return shouldLogEvent('end', 'MS disconnected');
+  });
+
+  it('should log reconnect event', () => {
+    connection.on.withArgs('open').yields();
+
+    return shouldLogEvent('reconnect', 'MS reconnection attempt started');
+  });
+
+  it('should log reconnected event', () => {
+    connection.on.withArgs('open').yields();
+
+    return shouldLogEvent('reconnected', 'MS successfully reconnected');
   });
 
   it('should log connection error event', () => {
     sandbox.stub(logger, 'error');
 
     const error = Error('testing');
-    sandbox.stub(connection, 'on').withArgs('error').yields(error);
+    connection.on.withArgs('error').yields(error);
 
     const event = 'MS connection error';
 
@@ -61,7 +88,7 @@ describe('Messaging Service Client', () => {
   });
 
   it('should invoke handlers when message is received', () => {
-    const on = sandbox.stub(connection, 'on');
+    const on = connection.on;
     on.withArgs('open').yields();
 
     const message = {filePath: 'path', version: 'version', type: 'ADD', topic: 'MSFILEUPDATE'};
@@ -75,11 +102,10 @@ describe('Messaging Service Client', () => {
   });
 
   it('should invoke handlers when message is received as string', () => {
-    const on = sandbox.stub(connection, 'on');
-    on.withArgs('open').yields();
+    connection.on.withArgs('open').yields();
 
     const message = 'screenshot-request';
-    on.withArgs('data').yields(message);
+    connection.on.withArgs('data').yields(message);
 
     const handler = sandbox.spy();
     messagingServiceClient.on('screenshot-request', handler);
@@ -89,11 +115,10 @@ describe('Messaging Service Client', () => {
   });
 
   it('should invoke handlers when message is received with msg string', () => {
-    const on = sandbox.stub(connection, 'on');
-    on.withArgs('open').yields();
+    connection.on.withArgs('open').yields();
 
     const message = {msg: 'content-update'};
-    on.withArgs('data').yields(message);
+    connection.on.withArgs('data').yields(message);
 
     const handler = sandbox.spy();
     messagingServiceClient.on('content-update', handler);
@@ -103,11 +128,10 @@ describe('Messaging Service Client', () => {
   });
 
   it('should not invoke handlers when message is not a string and has no topic', () => {
-    const on = sandbox.stub(connection, 'on');
-    on.withArgs('open').yields();
+    connection.on.withArgs('open').yields();
 
     const message = {};
-    on.withArgs('data').yields(message);
+    connection.on.withArgs('data').yields(message);
 
     const handler = sandbox.spy();
     messagingServiceClient.on('screenshot-request', handler);
@@ -117,8 +141,7 @@ describe('Messaging Service Client', () => {
   });
 
   it('should send messages', () => {
-    const on = sandbox.stub(connection, 'on');
-    on.withArgs('open').yields();
+    connection.on.withArgs('open').yields();
 
     sandbox.stub(connection, 'write');
 
