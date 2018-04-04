@@ -1,7 +1,7 @@
 
 const fileMetadata = {
   entries: {},
-  put(entry) {
+  put(entry = {}) {
     const existing = this.entries[entry.filePath] || {};
     const newEntry = Object.assign(existing, entry);
     this.entries[entry.filePath] = newEntry

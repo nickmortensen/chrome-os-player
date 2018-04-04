@@ -4,8 +4,6 @@ const fileDownloader = require('./file-downloader');
 const localMessaging = require('./local-messaging-helper');
 const logger = require('../logging/logger');
 
-const inProgress = new Set();
-
 function checkStaleFiles(timer = setTimeout) {
   const staleEntries = db.fileMetadata.getStale();
   if (!staleEntries.length) {
@@ -26,16 +24,9 @@ function checkStaleFiles(timer = setTimeout) {
 
 function processEntry(entry) {
   const {filePath, version} = entry;
-  if (inProgress.has(filePath)) {return Promise.resolve();}
-  inProgress.add(filePath);
   return fileDownloader.download(entry)
     .then(() => updateMetadata(version, filePath))
-    .then((metadata) => localMessaging.sendFileUpdate(filePath, metadata))
-    .then(() => inProgress.delete(filePath))
-    .catch((error) => {
-      inProgress.delete(filePath);
-      return Promise.reject(error);
-    });
+    .then((metadata) => localMessaging.sendFileUpdate(filePath, metadata));
 }
 
 function updateMetadata(downloadedVersion, filePath) {
