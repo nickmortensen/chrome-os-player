@@ -1,6 +1,7 @@
+const isEqual = require('lodash.isequal');
 const bq = require('./bq-retry');
 const systemInfo = require('./system-info');
-const isEqual = require('lodash.isequal');
+const environment = require('../launch-environment');
 
 function buildPlayerData(viewerConfig) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
@@ -30,6 +31,8 @@ function readPlayerData() {
 }
 
 function logClientInfo(viewerConfig, nowDate = new Date()) {
+  if (environment.isDevelopmentVersion()) {return Promise.resolve();}
+
   return Promise.all([buildPlayerData(viewerConfig), readPlayerData()])
     .then((values) => {
       const [newData, savedData] = values;
@@ -52,6 +55,8 @@ function logClientInfo(viewerConfig, nowDate = new Date()) {
  */
 function log(event, details, nowDate = new Date()) {
   console.log(event, details);
+
+  if (environment.isDevelopmentVersion()) {return Promise.resolve();}
 
   return Promise.all([systemInfo.getId(), systemInfo.getOS(), systemInfo.getIpAddress()])
     .then(values => {

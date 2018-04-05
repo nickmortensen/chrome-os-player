@@ -11,6 +11,8 @@ describe('Reboot Scheduler', () => {
 
   afterEach(() => sandbox.restore());
 
+  beforeEach(() => sandbox.stub(logger, 'log'));
+
   it('should not schedule reboot when content is empty', () => {
     sandbox.stub(envVars, 'isKioskSession').returns(true);
     rebootScheduler.scheduleRebootFromViewerContents();
@@ -47,7 +49,6 @@ describe('Reboot Scheduler', () => {
 
   it('should not schedule reboot and log error when restart time is not valid', () => {
     sandbox.stub(envVars, 'isKioskSession').returns(true);
-    sandbox.stub(logger, 'log');
 
     const content = {display: {restartEnabled: true, restartTime: 'tomorrow'}};
 

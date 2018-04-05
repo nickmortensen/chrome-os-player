@@ -26,6 +26,23 @@ function sha1(string) {
     .then(value => bufferToHex(value));
 }
 
+/**
+ *
+ * @param {string} url
+ * @param {object} options
+ * @param {number} [retries]
+ * @param {number} [timeout]
+ */
+function fetchWithRetry(url, options = {}, retries = 2, timeout = 1000) { // eslint-disable-line no-magic-numbers
+  return fetch(url, options).catch(error => {
+    if (retries <= 0) {
+      return Promise.reject(error);
+    }
+
+    return new Promise((resolve) => setTimeout(resolve, timeout)).then(() => fetchWithRetry(url, options, retries - 1, timeout));
+  });
+}
+
 function bufferToHex(buffer) {
   return Array.prototype.map.call(new Uint8Array(buffer), value => value.toString(16).padStart(2, '0')).join(''); // eslint-disable-line
 }
@@ -33,5 +50,6 @@ function bufferToHex(buffer) {
 module.exports = {
   arrayBufferToString,
   stringToArrayBuffer,
-  sha1
+  sha1,
+  fetchWithRetry
 }

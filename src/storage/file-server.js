@@ -1,6 +1,7 @@
 const util = require('../util');
 const uriParser = require('./uri-parser');
 const fileSystem = require('./file-system');
+const logger = require('../logging/logger');
 
 /* eslint-disable max-statements */
 const sockets = new Set();
@@ -35,7 +36,7 @@ function create() {
     chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
     chrome.sockets.tcp.onReceive.addListener(onReceive);
     chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, (result) => {
-      console.log(`http server is listening on ${address}:${port}: ${result}`);
+      logger.log(`http server is listening on ${address}:${port}: ${result}`);
     });
   });
 }
@@ -64,7 +65,7 @@ function onReceive({data, socketId}) {
   fileSystem.readFile(fileName, 'cache')
     .then(file => sendResponse(socketId, '200 OK', keepAlive, file))
     .catch((error) => {
-      console.log(`responding with 404 due to error when handling file ${fileName}`, error);
+      logger.error(`responding with 404 due to error when handling file ${fileName}`, error);
       sendResponse(socketId, '404 Not Found', keepAlive);
     });
 }

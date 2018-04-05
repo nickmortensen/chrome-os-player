@@ -2,6 +2,8 @@ const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const bq = require('../../../src/logging/bq-retry');
 const systemInfo = require('../../../src/logging/system-info');
+const environment = require('../../../src/launch-environment');
+
 const logger = require('../../../src/logging/logger');
 
 const sandbox = sinon.createSandbox();
@@ -12,6 +14,8 @@ describe('Logger', () => {
 
   beforeEach(() => {
     sandbox.stub(bq, 'insert').resolves();
+
+    sandbox.stub(environment, 'isDevelopmentVersion').returns(false);
 
     sandbox.stub(systemInfo, 'getId').returns('displayId');
     sandbox.stub(systemInfo, 'getMachineId').returns('machineId');
@@ -44,6 +48,15 @@ describe('Logger', () => {
     return logger.log(eventName, {details: 'some detail'}, nowDate)
       .then(() => {
         sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
+      });
+  });
+
+  it('should not log to big query when on development environment', () => {
+    environment.isDevelopmentVersion.returns(true);
+
+    return logger.log('test')
+      .then(() => {
+        sinon.assert.notCalled(bq.insert);
       });
   });
 
@@ -93,6 +106,17 @@ describe('Logger', () => {
       .then(() => {
         sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expectedPlayerData}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});
+      });
+  });
+
+  it('should not log client info to big query when on development environment', () => {
+    environment.isDevelopmentVersion.returns(true);
+
+    const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
+
+    return logger.logClientInfo(viewerConfig)
+      .then(() => {
+        sinon.assert.notCalled(bq.insert);
       });
   });
 

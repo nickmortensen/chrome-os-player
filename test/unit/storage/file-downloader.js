@@ -99,7 +99,7 @@ describe('File Downloader', () => {
     sandbox.stub(fileSystem, 'writeFileToDirectory').resolves({});
     sandbox.stub(fileSystem, 'checkAvailableDiskSpace').resolves(true);
     sandbox.stub(urlProvider, 'getUrl').resolves('http://risevision.com/test/file');
-    fetch.rejects(Error('Testing'));
+    sandbox.stub(util, 'fetchWithRetry').rejects(Error('Testing'));
 
     const entry = {filePath, version, token};
 

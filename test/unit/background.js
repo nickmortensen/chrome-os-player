@@ -9,7 +9,8 @@ describe('background script', () => {
 
   beforeEach(() => {
     sandbox.stub(logger, 'log');
-    sandbox.stub(launchEnvs, "set");
+    sandbox.stub(launchEnvs, 'set');
+    chrome.runtime.getManifest.returns({version: '0.0.0.0'});
     require('../../src/background'); // eslint-disable-line global-require
   });
 

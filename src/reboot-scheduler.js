@@ -24,7 +24,7 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   const rebootDate = parseRebootDate(content.display.restartTime);
   const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
 
-  console.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
+  logger.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
   chrome.runtime.restartAfterDelay(seconds);
 }
 

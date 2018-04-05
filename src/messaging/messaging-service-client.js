@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const Primus = require('./primus');
 const logger = require('../logging/logger');
 
@@ -17,11 +18,13 @@ function connect(displayId, machineId) {
   });
 
   connection.on('open', () => logger.log('MS connection opened'));
-  connection.on('close', () => console.log('MS connection closed'));
-  connection.on('end', () => console.log('MS disconnected'));
+  connection.on('close', () => logger.log('MS connection closed'));
+  connection.on('end', () => logger.log('MS disconnected'));
   connection.on('error', (error) => logger.error('MS connection error', error));
+  connection.on('reconnect', () => logger.log('MS reconnection attempt started'));
+  connection.on('reconnected', () => logger.log('MS successfully reconnected'));
   connection.on('data', (data) => {
-    console.log(`MS received data: ${JSON.stringify(data)}`);
+    logger.log('MS received data', data);
 
     const key = data.topic || data.msg || data;
     if (typeof key === 'string') {
