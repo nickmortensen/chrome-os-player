@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 const Primus = require('./primus');
 const logger = require('../logging/logger');
+const systemInfo = require('../logging/system-info');
 
 const messageHandlers = {};
 
@@ -44,12 +45,13 @@ function connect(displayId, machineId) {
 }
 
 function readDisplayAndMachineIds() {
-  return new Promise((resolve) => chrome.storage.local.get(resolve));
+  return Promise.all([systemInfo.getDisplayId(), systemInfo.getMachineId()])
 }
 
 function init() {
-  return readDisplayAndMachineIds().then((items) => {
-    return connect(items.displayId, items.machineId);
+  return readDisplayAndMachineIds().then((values) => {
+    const [displayId, machineId] = values;
+    return connect(displayId, machineId);
   });
 }
 
