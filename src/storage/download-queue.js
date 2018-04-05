@@ -1,7 +1,7 @@
 const db = require('./db');
 const queueCheckInterval = 5000;
 const fileDownloader = require('./file-downloader');
-const localMessaging = require('./local-messaging-helper');
+const localMessaging = require('./messaging/local-messaging-helper');
 const logger = require('../logging/logger');
 
 function checkStaleFiles(timer = setTimeout) {
@@ -26,7 +26,7 @@ function processEntry(entry) {
   const {filePath, version} = entry;
   return fileDownloader.download(entry)
     .then(() => updateMetadata(version, filePath))
-    .then((metadata) => localMessaging.sendFileUpdate(filePath, metadata));
+    .then((metadata) => localMessaging.sendFileUpdate(metadata));
 }
 
 function updateMetadata(downloadedVersion, filePath) {
