@@ -14,7 +14,7 @@
     <h4 class="text-center">( or use your
       <a id="displayIdLink" href="">Display ID</a> )</h4>
     <div class="form-group">
-      <form>
+      <form id="claimIdForm">
         <label class="secondary-label" for="claimIdInput">Claim ID</label>
         <input id="claimIdInput" autofocus type="text" class="form-control id-form" maxlength="12" autocorrect="off" autocapitalize="off"
           spellcheck="false" placeholder="000000000000" />
@@ -26,7 +26,6 @@
         </div>
         <label class="secondary-label" for="claimNameInput">Display Name</label>
         <input id="claimNameInput" type="text" class="form-control name-form" />
-        <input type="submit" hidden />
       </form>
       <div id="errorSection" hidden class="text-danger half-top">
         <span id="errorMessage"></span>
@@ -47,7 +46,7 @@
     </div>
     <div class="actions">
       <button class="btn btn-default"> Cancel </button>
-      <button id="continue" class="btn btn-primary prototype-next-state"> Continue </button>
+      <button id="continue" class="btn btn-primary prototype-next-state" form="claimIdForm"> Continue </button>
     </div>
   </footer>
 </div>
