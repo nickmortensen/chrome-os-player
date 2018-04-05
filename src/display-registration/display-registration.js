@@ -1,4 +1,4 @@
-const windowManager = require('./window-manager');
+const windowManager = require('../window-manager');
 
 function createViewModel(document) {
 

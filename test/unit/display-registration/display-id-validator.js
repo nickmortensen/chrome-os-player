@@ -1,6 +1,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
-const validator = require('../../src/display-id-validator');
+const validator = require('../../../src/display-registration/display-id-validator');
 const fetch = sinon.stub();
 
 describe('Display ID Validator', () => {

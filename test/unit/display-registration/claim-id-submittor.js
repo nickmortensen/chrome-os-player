@@ -1,6 +1,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
-const submittor = require('../../src/claim-id-submittor');
+const submittor = require('../../../src/display-registration/claim-id-submittor');
 const fetch = sinon.stub();
 
 describe('Claim ID Submittor', () => {
