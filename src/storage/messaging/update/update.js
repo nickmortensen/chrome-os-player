@@ -15,9 +15,7 @@ module.exports = {
     return module.exports.updateWatchlistAndMetadata({
       filePath, version, token, status: "STALE"
     })
-    .then(()=>{
-      localMessaging.sendFileUpdate({filePath, status: "STALE", version});
-    })
+    .then(()=> localMessaging.sendFileUpdate({filePath, status: "STALE", version}))
     .then(() => db.watchlist.setLastChanged(message.watchlistLastChanged));
   },
   process(message) {

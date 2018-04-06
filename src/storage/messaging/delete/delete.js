@@ -14,11 +14,9 @@ module.exports = {
     return db.fileMetadata.delete(filePath)
       .then(() => db.watchlist.delete(filePath))
       .then(() => db.watchlist.setLastChanged(watchlistLastChanged))
-      .then(()=>{
-        localMessaging.sendFileUpdate({
-          filePath,
-          status: "DELETED"
-        });
-      });
+      .then(() => localMessaging.sendFileUpdate({
+        filePath,
+        status: "DELETED"
+      }));
   }
 };

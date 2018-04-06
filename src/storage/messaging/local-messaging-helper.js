@@ -6,7 +6,7 @@ function sendFileUpdate(metaData) {
   return fileServer.getFileUrl(filePath, version).then(fileUrl => {
     const message = {topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, filePath, status: metaData.status, version};
     console.log(`sending FILE-UPDATE to viewer ${JSON.stringify(message)}`, metaData);
-    viewerMessaging.send(message);
+    return viewerMessaging.send(message);
   });
 }
 

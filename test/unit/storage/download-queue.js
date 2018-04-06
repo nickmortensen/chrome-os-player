@@ -16,7 +16,7 @@ describe('Download Queue', ()=>{
   beforeEach(() => {
     sandbox.stub(db.fileMetadata, 'getStale');
     sandbox.stub(fileDownloader, 'download').resolves();
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
   });
 
   afterEach(() => sandbox.restore());

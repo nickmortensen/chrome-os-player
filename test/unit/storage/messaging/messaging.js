@@ -68,7 +68,7 @@ describe('Storage Messaging', () => {
   });
 
   it('should delete entry from metadata and watchlist db collections and send file update on MSFILEUPDATE delete message', () => {
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     const message = {filePath, version, token, type: 'DELETE', topic: 'MSFILEUPDATE'};
 
@@ -98,7 +98,7 @@ describe('Storage Messaging', () => {
 
   it('should save metadata and request file update to messaging service on new watch message', () => {
     sandbox.stub(messagingServiceClient, 'send');
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     const expectedMessage = {filePath, version: '0'};
 
@@ -110,7 +110,7 @@ describe('Storage Messaging', () => {
 
   it('should send file update message to viewer on watch message for existing file', () => {
     sandbox.stub(messagingServiceClient, 'send');
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     const metadata = {filePath, version, status: 'STALE'};
     sandbox.stub(db.fileMetadata, 'get').returns(metadata)
@@ -132,7 +132,7 @@ describe('Storage Messaging', () => {
   it('should send file update message to viewer on WATCH-RESULT message', () => {
     const message = {msg: 'ok', topic: 'watch-result', filePath, version, token, watchlistLastChanged: '1522699819330'};
 
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     return messaging.handleWatchResult(message).then(() => {
       sinon.assert.calledWith(db.watchlist.put, {filePath, version, token, status: 'STALE'});

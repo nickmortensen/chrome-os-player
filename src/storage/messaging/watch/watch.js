@@ -13,9 +13,7 @@ function handleFileWatchResult(message) {
   const status = token ? 'STALE' : 'CURRENT';
 
   return update.updateWatchlistAndMetadata({filePath, version, status, token})
-  .then(()=>{
-    localMessaging.sendFileUpdate({filePath, status, version});
-  });
+  .then(() => localMessaging.sendFileUpdate({filePath, status, version}));
 }
 
 function handleFolderWatchResult(message) {
@@ -39,16 +37,13 @@ module.exports = {
       return module.exports.requestMSUpdate(message, metaData);
     }
 
-    localMessaging.sendFileUpdate(metaData);
-
-    return Promise.resolve();
+    return localMessaging.sendFileUpdate(metaData);
   },
   msResult(message) {
     const {filePath, error, folderData, watchlistLastChanged} = message;
 
     if (error) {
-      localMessaging.sendFileUpdate({filePath, status: "NOEXIST"});
-      return Promise.resolve();
+      return localMessaging.sendFileUpdate({filePath, status: "NOEXIST"});
     }
 
     const action = folderData ? handleFolderWatchResult : handleFileWatchResult;
