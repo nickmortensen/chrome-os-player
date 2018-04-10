@@ -1,10 +1,9 @@
-const windowManager = require('./window-manager');
+const windowManager = require('../window-manager');
 
 function createViewModel(document) {
 
   const form = document.querySelector('form');
-  const cont = document.querySelector('#continue');
-  const links = document.querySelectorAll('a');
+  const links = document.querySelectorAll('a.webview');
 
   links.forEach(link => {
     link.addEventListener('click', evt => {
@@ -24,21 +23,31 @@ function createViewModel(document) {
   }
 
   return {
-    bindValidateDisplayId(handler) {
-      cont.addEventListener("click", ()=>handler(displayId()));
-
+    bindRegistrationControllerFunction(fn) {
       form.onsubmit = (ev) => {
         ev.preventDefault();
-        handler(displayId());
+        fn(...getInputs());
       }
 
-      function displayId() {
-        return form.querySelector('input').value.toUpperCase().trim();
+      function getInputs() {
+        return Array.from(form.querySelectorAll('input')).map(elm=>elm.value);
       }
     },
 
     showEmptyDisplayIdError() {
       showError('Display ID is missing. ');
+    },
+
+    showEmptyClaimIdError() {
+      showError('Claim ID is missing. ');
+    },
+
+    showMissingDisplayNameError() {
+      showError('Display name is missing. ');
+    },
+
+    showInvalidClaimIdError(id) {
+      showError(`The Claim ID <b>${id}</b> is invalid. `);
     },
 
     showInvalidDisplayIdError(displayId) {
@@ -51,7 +60,7 @@ function createViewModel(document) {
   }
 }
 
-function createController(viewModel, validator) {
+function createController(viewModel, registrationService) {
   const controller = {
     validateDisplayId(displayId) {
       if (!displayId) {
@@ -59,21 +68,41 @@ function createController(viewModel, validator) {
         return Promise.reject(Error('empty display id'));
       }
 
-      return validator.validateDisplayId(displayId)
+      return registrationService(displayId)
         .then(() => chrome.storage.local.set({displayId}))
         .then(() => viewModel.launchViewer(displayId))
         .catch(() => viewModel.showInvalidDisplayIdError(displayId));
+    },
+    submitClaimId(id, name) {
+      if (!id) {
+        viewModel.showEmptyClaimIdError();
+        return;
+      }
+
+      if (!name) {
+        viewModel.showMissingDisplayNameError();
+        return;
+      }
+
+      return registrationService(id, name)
+      .then(displayId=>{
+        chrome.storage.local.set({displayId});
+        viewModel.launchViewer(displayId);
+      })
+      .catch(() => viewModel.showInvalidClaimIdError(id));
     }
   };
-
-  viewModel.bindValidateDisplayId(controller.validateDisplayId.bind(controller));
 
   return controller;
 }
 
-function init(document, validator) {
+function init(document, registrationService) {
   const viewModel = createViewModel(document);
-  return createController(viewModel, validator);
+
+  return [
+    viewModel,
+    createController(viewModel, registrationService)
+  ];
 }
 
 module.exports = {

@@ -1,12 +1,11 @@
 /* eslint-disable no-magic-numbers */
-
-function launchPlayer() {
+function startRegistration() {
   const options = {
-    id: 'player',
+    id: 'registration',
     outerBounds: getDefaultScreenBounds()
   };
 
-  chrome.app.window.create('player.html', options, (playerWindow) => {
+  chrome.app.window.create('registration.html', options, (playerWindow) => {
     playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
   });
 }
@@ -59,7 +58,7 @@ function getDefaultScreenBounds() {
 }
 
 module.exports = {
-  launchPlayer,
+  startRegistration,
   launchViewer,
   launchWebView,
   closeAll

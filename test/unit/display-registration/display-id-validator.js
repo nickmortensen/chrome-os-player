@@ -1,6 +1,6 @@
 const assert = require('assert');
 const sinon = require('sinon');
-const validator = require('../../src/display-id-validator');
+const validator = require('../../../src/display-registration/display-id-validator');
 const fetch = sinon.stub();
 
 describe('Display ID Validator', () => {
@@ -22,7 +22,7 @@ describe('Display ID Validator', () => {
       }
     });
 
-    return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
+    return validator('--XXX--AKQ2K8D9D9VE')
       .then((resp)=>{
         assert.equal(resp.item.companyId, 'A');
       });
@@ -31,7 +31,7 @@ describe('Display ID Validator', () => {
   it('rejects when validation fetch fails', () => {
     fetch.rejects(Error());
 
-    return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
+    return validator('--XXX--AKQ2K8D9D9VE')
       .then(() => assert.fail('catch should have been called'))
       .catch((err) => {
         assert.ok(err);
@@ -50,7 +50,7 @@ describe('Display ID Validator', () => {
       }
     });
 
-    return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
+    return validator('--XXX--AKQ2K8D9D9VE')
     .then(() => assert.fail('catch should have been called'))
     .catch((err) => {
         assert.equal(err.message, 'test failure');
@@ -66,7 +66,7 @@ describe('Display ID Validator', () => {
       }
     });
 
-    return validator.validateDisplayId('--XXX--AKQ2K8D9D9VE')
+    return validator('--XXX--AKQ2K8D9D9VE')
       .then(() => assert.fail('catch should have been called'))
       .catch((err) => {
         assert.equal(err.message, 'Display has been deleted');
