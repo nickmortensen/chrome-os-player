@@ -111,4 +111,24 @@ describe('Download Queue', ()=>{
       });
   });
 
+  it('sends file error message', ()=>{
+    const existingMetadata = {version: '1.0.0'};
+    sandbox.stub(db.fileMetadata, 'get').returns(existingMetadata);
+    const error = new Error('Insuficient disk space');
+    fileDownloader.download.rejects(error);
+    sandbox.stub(logger, 'error').resolves();
+    sandbox.stub(localMessaging, 'sendFileError').resolves();
+
+    db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);
+    db.fileMetadata.getStale.onSecondCall().returns([]);
+
+    const executeImmediatly = () => {};
+    return queue.checkStaleFiles(executeImmediatly)
+      .then(() => {
+        sinon.assert.notCalled(localMessaging.sendFileUpdate);
+        sinon.assert.calledWith(localMessaging.sendFileError, {filePath: 'my-file-0', version: '1.0.0', msg: error.message, details: error.stack});
+      });
+  });
+
+
 });

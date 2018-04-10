@@ -12,8 +12,8 @@ function checkStaleFiles(timer = setTimeout) {
   const entry = staleEntries[0];
   return processEntry(entry)
     .then(() => checkStaleFiles(timer))
-    .catch((err)=>{
-      logger.error(`error downloading entry filePath: ${entry.filePath} version: ${entry.version}`, err);
+    .catch((err) => {
+      handleError(err, entry);
       return intervalCheck();
     });
 
@@ -34,6 +34,14 @@ function updateMetadata(downloadedVersion, filePath) {
   const currentVersion = metadata && metadata.version;
   const newStatus = currentVersion === downloadedVersion ? 'CURRENT' : 'STALE';
   return db.fileMetadata.put({filePath, status: newStatus});
+}
+
+function handleError(err, entry) {
+  const {filePath, version} = entry;
+  const defaultMessage = `error downloading entry filePath: ${filePath} version: ${version}`;
+  const msg = err ? err.message : defaultMessage;
+  localMessaging.sendFileError({filePath, version, msg, details: err ? err.stack : {}});
+  logger.error(defaultMessage, err);
 }
 
 module.exports = {
