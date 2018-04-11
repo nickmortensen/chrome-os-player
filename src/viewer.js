@@ -6,6 +6,8 @@ const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
+const util = require('./util');
+const pixelmatch = require('pixelmatch');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -45,5 +47,22 @@ function init() {
   fileServer.init();
   fetchContent();
 }
+
+function testWhiteScreen() {
+  const webview = document.querySelector('webview');
+  webview.captureVisibleRegion({format: 'png'}, (dataUrl) => {
+    util.dataUrlToImageData(dataUrl).then((image) => {
+      const white = new Uint8Array(image.data.length)
+      for (let i = 0; i < image.byteLength; i++) { // eslint-disable-line
+        white[i] = 255;
+      }
+
+      const diff = pixelmatch(image.data, white, null, image.width, image.height);
+      console.log('diff', diff);
+    });
+  });
+}
+
+window.testWhiteScreen = testWhiteScreen;
 
 document.addEventListener('DOMContentLoaded', init);
