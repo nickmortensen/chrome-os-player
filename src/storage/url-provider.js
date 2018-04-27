@@ -20,6 +20,10 @@ function getUrl(token) {
         return Promise.reject(Error(`Invalid response with status code ${response.status}`));
       }
       return response.text();
+    })
+    .then(signedUrl => {
+      const separator = signedUrl.includes('?') ? '&' : '?';
+      return `${signedUrl}${separator}displayId=${data.displayId}`;
     });
 }
 

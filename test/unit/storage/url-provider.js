@@ -38,11 +38,11 @@ describe('URL Provider', () => {
   it('should throw error when token data invalid', () => testInvalidToken({hash: "abc123", data: {}}));
 
   it('should return successful signed URL', () => {
-    fetch.resolves({ok: true, status: 200, text() {return 'test-signed-url';}});
+    fetch.resolves({ok: true, status: 200, text() {return Promise.resolve('test-signed-url?signature=qwerty');}});
 
     return urlProvider.getUrl(testToken)
       .then(url => {
-        assert.equal(url, 'test-signed-url');
+        assert.equal(url, 'test-signed-url?signature=qwerty&displayId=test-display-id');
       });
   });
 
