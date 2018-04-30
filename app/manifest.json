@@ -53,5 +53,9 @@
       ]
     },
     "offline_enabled": true,
-    "kiosk_enabled": true
+    "kiosk_enabled": true,
+    "kiosk": {
+      "always_update": true,
+      "required_platform_version": "10032.86.0"
+    }
   }
