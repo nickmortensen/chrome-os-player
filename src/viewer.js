@@ -40,8 +40,7 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging();
-  storage.init();
+  setUpMessaging().then(storage.init);
   fileServer.init();
   fetchContent();
 }

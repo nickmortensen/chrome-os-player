@@ -3,7 +3,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 
 const fileDownloader = require('../../../src/storage/file-downloader');
-const localMessaging = require('../../../src/storage/local-messaging-helper');
+const localMessaging = require('../../../src/storage/messaging/local-messaging-helper');
 const db = require('../../../src/storage/db');
 const logger = require('../../../src/logging/logger');
 
@@ -16,7 +16,7 @@ describe('Download Queue', ()=>{
   beforeEach(() => {
     sandbox.stub(db.fileMetadata, 'getStale');
     sandbox.stub(fileDownloader, 'download').resolves();
-    sandbox.stub(localMessaging, 'sendFileUpdate');
+    sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
   });
 
   afterEach(() => sandbox.restore());
@@ -90,7 +90,7 @@ describe('Download Queue', ()=>{
     return queue.checkStaleFiles(executeImmediatly)
       .then(() => {
         sinon.assert.calledOnce(localMessaging.sendFileUpdate);
-        const metadata = localMessaging.sendFileUpdate.lastCall.args[1];
+        const metadata = localMessaging.sendFileUpdate.lastCall.args[0];
         assert.equal(metadata.status, 'STALE');
       });
   });
@@ -106,7 +106,7 @@ describe('Download Queue', ()=>{
     return queue.checkStaleFiles(executeImmediatly)
       .then(() => {
         sinon.assert.calledOnce(localMessaging.sendFileUpdate);
-        const metadata = localMessaging.sendFileUpdate.lastCall.args[1];
+        const metadata = localMessaging.sendFileUpdate.lastCall.args[0];
         assert.equal(metadata.status, 'CURRENT');
       });
   });
