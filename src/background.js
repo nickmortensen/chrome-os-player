@@ -21,7 +21,7 @@ function init(launchData) {
 chrome.power.requestKeepAwake('display');
 
 chrome.runtime.onUpdateAvailable.addListener((details) => {
-  logger.log('update is availeble', details);
+  logger.log('update is available', details);
   chrome.runtime.restart();
 });
 
