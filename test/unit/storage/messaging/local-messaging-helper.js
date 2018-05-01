@@ -22,6 +22,19 @@ describe('Local Messaging Helper', () => {
         const expectedMessage = {topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, filePath, status: metadata.status, version: metadata.version};
         sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
       });
+  });
+
+  it('should send file error message', () => {
+    sandbox.stub(viewerMessaging, 'send');
+
+    const filePath = 'local-storage-test/test-1x1.png';
+    const message = {filePath, version: '1516908679637510', msg: 'Insuficient disk space', details: {}};
+
+    return localMessaging.sendFileError(message)
+      .then(() => {
+        const expectedMessage = Object.assign({topic: 'FILE-ERROR', from: 'local-messaging'}, message);
+        sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
+      });
 
   });
 });

@@ -10,11 +10,18 @@ function sendFileUpdate(metaData) {
   });
 }
 
+function sendFileError(data) {
+  const message = Object.assign({topic: 'FILE-ERROR', from: 'local-messaging'}, data);
+  console.log(`sending FILE-ERROR to viewer ${JSON.stringify(message)}`, data);
+  return Promise.resolve(viewerMessaging.send(message));
+}
+
 function on(event, handler) {
   return viewerMessaging.on(event, handler);
 }
 
 module.exports = {
   on,
-  sendFileUpdate
+  sendFileUpdate,
+  sendFileError
 }
