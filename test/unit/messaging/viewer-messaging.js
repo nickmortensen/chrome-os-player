@@ -44,7 +44,7 @@ describe('Viewer Messaging', () => {
     const data = {from: 'ws-client', topic: 'client-list-request'};
     onMessageEvent({data, preventDefault() {}});
 
-    const expectedClientListResponse = {from: 'local-messaging', topic: 'client-list', installedClients: ['local-storage', 'local-messaging'], clients: ['local-storage', 'local-messaging']};
+    const expectedClientListResponse = {from: 'local-messaging', topic: 'client-list', installedClients: ['local-storage', 'local-messaging', 'licensing'], clients: ['local-storage', 'local-messaging', 'licensing']};
 
     sinon.assert.calledWith(webview.contentWindow.postMessage, expectedClientListResponse, webview.src);
   });
