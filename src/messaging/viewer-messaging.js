@@ -19,7 +19,7 @@ function init(webview) {
   });
 
   on('client-list-request', () => {
-    const installedClients = ['local-storage', 'local-messaging'];
+    const installedClients = ['local-storage', 'local-messaging', 'licensing'];
     const message = {from: 'local-messaging', topic: 'client-list', installedClients, clients: installedClients};
     send(message);
   });

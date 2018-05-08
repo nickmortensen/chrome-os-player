@@ -19,7 +19,7 @@ describe('Local Messaging Helper', () => {
 
     return localMessaging.sendFileUpdate(metadata)
       .then(() => {
-        const expectedMessage = {topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, filePath, status: metadata.status, version: metadata.version};
+        const expectedMessage = {topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, osurl: fileUrl, filePath, status: metadata.status, version: metadata.version};
         sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
       });
   });
