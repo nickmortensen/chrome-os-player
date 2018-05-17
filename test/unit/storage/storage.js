@@ -4,6 +4,7 @@ const downloadQueue = require('../../../src/storage/download-queue');
 const watchlist = require('../../../src/storage/messaging/watch/watchlist');
 const messaging = require('../../../src/storage/messaging/messaging');
 const db = require('../../../src/storage/db');
+const fileSystem = require('../../../src/storage/file-system');
 
 const storage = require('../../../src/storage/storage');
 
@@ -18,6 +19,7 @@ describe('Storage', () => {
     sandbox.stub(downloadQueue, 'checkStaleFiles');
     sandbox.stub(watchlist, 'requestWatchlistCompare');
     sandbox.stub(db, 'start');
+    sandbox.stub(fileSystem, 'clearLeastRecentlyUsedFiles').resolves();
   });
 
   it('should initialize storage messaging', () => {
@@ -42,6 +44,12 @@ describe('Storage', () => {
     storage.init();
 
     sinon.assert.calledOnce(db.start);
+  });
+
+  it('should clear cache', () => {
+    storage.init();
+
+    sinon.assert.calledOnce(fileSystem.clearLeastRecentlyUsedFiles);
   });
 
 });
