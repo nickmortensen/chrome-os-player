@@ -131,4 +131,92 @@ describe('File System', () => {
     });
   });
 
+  it("should not clear cache if available space has not reached the threshold", () => {
+    const grantedBytes = 50 * 1024 * 1024;
+    const usedBytes = 5 * 1024 * 1024;
+
+    sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota').yields(usedBytes, grantedBytes);
+
+    const mockedFile = mockFile('logo.png', new Date());
+
+    const entries = [mockedFile];
+    mockDir(entries);
+
+    const dirName = 'cache';
+    return fileSystem.clearLeastRecentlyUsedFiles(dirName).then(() => {
+      sinon.assert.notCalled(mockedFile.remove);
+    });
+  });
+
+  it("should not delete anything from cache if there is no file to be deleted", () => {
+    const grantedBytes = 50 * 1024 * 1024;
+    const usedBytes = grantedBytes * 0.91;
+
+    sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota').yields(usedBytes, grantedBytes);
+
+    const mockedFile = mockFile('logo.png', new Date());
+
+    const entries = [];
+    mockDir(entries);
+
+    const dirName = 'cache';
+    return fileSystem.clearLeastRecentlyUsedFiles(dirName).then(() => {
+      sinon.assert.notCalled(mockedFile.remove);
+    });
+  });
+
+  it("should delete least recently used file from cache until available space is smaller than threshold", () => {
+    const grantedBytes = 50 * 1024 * 1024;
+
+    sandbox.stub(navigator.webkitPersistentStorage, 'queryUsageAndQuota')
+      .onFirstCall().yields(grantedBytes * 0.91, grantedBytes)
+      .onSecondCall().yields(grantedBytes * 0.8, grantedBytes);
+
+    const now = new Date();
+
+    const oneYearAgo = new Date();
+    oneYearAgo.setFullYear(now.getFullYear() - 1);
+
+    const oneMonthAgo = new Date();
+    oneMonthAgo.setMonth(now.getMonth() - 1);
+
+    const oneHourAgo = new Date();
+    oneHourAgo.setHours(now.getHours() - 1);
+
+    const mostRecent = mockFile('most-recent', now);
+    const oldest = mockFile('oldest', oneYearAgo);
+    const lastMonth = mockFile('last-month', oneMonthAgo);
+    const lastHour = mockFile('last-hour', oneHourAgo);
+
+    const entries = [mostRecent, oldest, lastMonth, lastHour];
+    mockDir(entries);
+
+    const dirName = 'cache';
+    return fileSystem.clearLeastRecentlyUsedFiles(dirName).then(() => {
+      sinon.assert.called(oldest.remove);
+      sinon.assert.notCalled(mostRecent.remove);
+      sinon.assert.notCalled(lastMonth.remove);
+      sinon.assert.notCalled(lastHour.remove);
+    });
+  });
+
+  function mockFile(name, modificationTime) {
+    const mockedFile = {name, isFile: true, getMetadata() {}, remove() {}};
+    sandbox.stub(mockedFile, 'getMetadata').yields({modificationTime});
+    sandbox.stub(mockedFile, 'remove').yields();
+    return mockedFile;
+  }
+
+  function mockDir(entries) {
+    const mockedDirReader = {readEntries() {}};
+    sandbox.stub(mockedDirReader, "readEntries")
+      .onFirstCall().yields(entries)
+      .onSecondCall().yields([]);
+    const mockedDir = {createReader() {}};
+    sandbox.stub(mockedDir, 'createReader').returns(mockedDirReader);
+
+    const fs = {root: {getDirectory() {}}};
+    sandbox.stub(fs.root, 'getDirectory').yields(mockedDir);
+    sandbox.stub(window, 'webkitRequestFileSystem').yields(fs);
+  }
 });

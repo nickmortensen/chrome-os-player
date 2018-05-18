@@ -1,5 +1,6 @@
 const ONE_HUNDRED_MB = 100000000;
 const FIVE_MB = 5000000;
+const CACHE_CLEANUP_PERCENT_THRESHOLD = 0.9;
 
 /**
  * Creates a new directory under root.
@@ -16,9 +17,7 @@ function createDirectory(name) {
  * @returns {Promise.<number>}
  */
 function getAvailableSpace() {
-  return new Promise((resolve, reject) => {
-    navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => resolve(grantedBytes - usedBytes), reject);
-  });
+  return queryUsageAndQuota().then(({usedBytes, grantedBytes}) => grantedBytes - usedBytes);
 }
 
 /**
@@ -103,6 +102,81 @@ function sliceFileInChunks(file, chunkSize = ONE_HUNDRED_MB) {
   return chunks;
 }
 
+function clearLeastRecentlyUsedFiles(dirName) {
+  return queryUsageAndQuota().then(({usedBytes, grantedBytes}) => {
+    if (usedBytes <= CACHE_CLEANUP_PERCENT_THRESHOLD * grantedBytes) {
+      console.log(`not cleaning cache files, bytes used smaller than threshold: ${usedBytes}, threshold: ${CACHE_CLEANUP_PERCENT_THRESHOLD * grantedBytes}`);
+      return Promise.resolve();
+    }
+    return readFilesSortedByModificationTime(dirName).then(entries => {
+      if (entries.length === 0) {
+        console.log(`not cleaning cache files, no entries to remove`);
+        return Promise.resolve();
+      }
+      const leastRecentlyUsed = entries[0];
+      console.log(`removing least recently used file: ${leastRecentlyUsed.file.name} ${leastRecentlyUsed.metadata.modificationTime}`);
+      return removeFile(leastRecentlyUsed.file).then(() => {
+        return clearLeastRecentlyUsedFiles(dirName);
+      });
+    });
+  });
+}
+
+function removeFile(file) {
+  return new Promise((resolve, reject) => file.remove(resolve, reject))
+}
+
+function queryUsageAndQuota() {
+  return new Promise((resolve, reject) => {
+    navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => resolve({usedBytes, grantedBytes}), reject);
+  });
+}
+
+function readFilesSortedByModificationTime(dirName) {
+  return readDirEntries(dirName)
+      .then(entries => entries.filter(entry => entry.isFile))
+      .then(files => {
+        const promises = files.map(file => getMetadata(file).then(metadata => ({file, metadata})));
+        return Promise.all(promises)
+          .then(allMetadata => {
+              return allMetadata.sort((one, other) => one.metadata.modificationTime - other.metadata.modificationTime);
+          });
+      });
+}
+
+/**
+ *
+ * @param {Entry} file
+ * @returns {Promise.<Metadata>}
+ */
+function getMetadata(file) {
+  return new Promise((resolve, reject) => file.getMetadata(resolve, reject));
+}
+
+/**
+ *
+ * @param {String} dirName
+ * @returns {Promise.<Entry[]>}
+ */
+function readDirEntries(dirName) {
+  return createDirectory(dirName)
+    .then(dirEntry => {
+      return new Promise((resolve, reject) => {
+        const dirReader = dirEntry.createReader();
+        function readEntriesRecursively(entries = []) {
+           dirReader.readEntries((results) => {
+            if (results.length > 0) {
+                readEntriesRecursively([...entries, ...results]);
+            } else {
+                resolve(entries);
+            }
+          }, reject);
+        }
+        readEntriesRecursively();
+      });
+    });
+}
+
 function requestFileSystem() {
   return new Promise((resolve, reject) => {
     // Requesting only 5MB but is not relevant because we have unlimitedStorage permission
@@ -152,5 +226,6 @@ module.exports = {
   moveFileToDirectory,
   readFile,
   readFileAsArrayBuffer,
-  sliceFileInChunks
+  sliceFileInChunks,
+  clearLeastRecentlyUsedFiles
 }
