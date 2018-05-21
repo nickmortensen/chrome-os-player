@@ -29,17 +29,6 @@ describe('background script', () => {
     sinon.assert.calledOnce(windowManager.startRegistration);
   });
 
-  it('should launch viewer when app is launched and there is a saved display id', () => {
-    sandbox.stub(windowManager, 'launchViewer');
-
-    const displayId = 'displayId';
-    chrome.storage.local.get.yields({displayId});
-
-    chrome.app.runtime.onLaunched.dispatch({});
-
-    sinon.assert.calledWith(windowManager.launchViewer, displayId);
-  });
-
   it('should close all windows when restart is required', () => {
     sandbox.stub(windowManager, 'closeAll');
 

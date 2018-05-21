@@ -11,10 +11,12 @@ function startRegistration() {
 }
 
 function launchViewer(displayId) {
+  const previousWindow = chrome.app.window.current();
   const url = `http://viewer-test.risevision.com/Viewer.html?player=true&type=display&id=${displayId}`;
   return createWebViewWindow('viewer.html', url, {id: 'viewer', state: 'fullscreen'})
     .then((viewerWindow) => {
       viewerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
+      previousWindow.close();
     });
 }
 
