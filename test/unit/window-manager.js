@@ -101,4 +101,13 @@ describe('Window Manager', () => {
     sinon.assert.callCount(stub.close, windows.length);
   });
 
+  it('should close current window', () => {
+    const stub = {close: sandbox.spy()};
+    chrome.app.window.current.returns(stub);
+
+    windowManager.closeCurrentWindow();
+
+    sinon.assert.called(stub.close);
+  });
+
 });

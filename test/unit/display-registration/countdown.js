@@ -65,4 +65,16 @@ describe('Countdown Screen', () => {
     sinon.assert.called(windowManager.launchViewer);
   });
 
+  it('closes current window on cancel', () => {
+    sandbox.stub(windowManager, 'closeCurrentWindow');
+    sandbox.useFakeTimers();
+
+    const displayId = 'displayId';
+    const controller = screen.createController(viewModel, displayId);
+
+    controller.cancel();
+
+    sinon.assert.called(windowManager.closeCurrentWindow);
+  });
+
 });

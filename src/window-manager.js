@@ -29,6 +29,11 @@ function closeAll() {
   windows.forEach(win => win.close());
 }
 
+function closeCurrentWindow() {
+  const current = chrome.app.window.current();
+  current.close();
+}
+
 function createWebViewWindow(file, url, options = {}) {
   const defaultOptions = {outerBounds: getDefaultScreenBounds()};
   return new Promise((resolve) => {
@@ -63,5 +68,6 @@ module.exports = {
   startRegistration,
   launchViewer,
   launchWebView,
-  closeAll
+  closeAll,
+  closeCurrentWindow
 }

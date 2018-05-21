@@ -6,6 +6,7 @@ function createViewModel(document) {
   const secondsText = document.getElementById('secondsText');
   const actions = document.querySelectorAll('a, button');
   const continueButton = document.getElementById('continue');
+  const cancelButton = document.getElementById('cancel');
 
   return {
     bindController(controller) {
@@ -19,6 +20,11 @@ function createViewModel(document) {
       continueButton.addEventListener('click', evt => {
         evt.preventDefault();
         controller.continue();
+      });
+
+      cancelButton.addEventListener('click', evt => {
+        evt.preventDefault();
+        controller.cancel();
       });
     },
 
@@ -40,6 +46,10 @@ function createController(viewModel, displayId) {
 
     continue() {
       windowManager.launchViewer(displayId);
+    },
+
+    cancel() {
+      windowManager.closeCurrentWindow();
     }
   };
 
