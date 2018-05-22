@@ -5,6 +5,7 @@ function startRegistration() {
     outerBounds: getDefaultScreenBounds()
   };
 
+  chrome.power.requestKeepAwake('display');
   chrome.app.window.create('registration.html', options, (playerWindow) => {
     playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
   });
@@ -13,6 +14,8 @@ function startRegistration() {
 function launchViewer(displayId) {
   const previousWindow = chrome.app.window.current();
   const url = `http://viewer-test.risevision.com/Viewer.html?player=true&type=display&id=${displayId}`;
+
+  chrome.power.requestKeepAwake('display');
   return createWebViewWindow('viewer.html', url, {id: 'viewer', state: 'fullscreen'})
     .then((viewerWindow) => {
       viewerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());

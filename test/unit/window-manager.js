@@ -36,6 +36,12 @@ describe('Window Manager', () => {
     sinon.assert.calledWith(chrome.app.window.create, 'registration.html', expectedWindowOptions);
   });
 
+  it('should request keep awake when registration window is launched', () => {
+    windowManager.startRegistration();
+
+    sinon.assert.calledWith(chrome.power.requestKeepAwake, 'display');
+  });
+
   it('should release keep awake when registration window is closed', () => {
     const playerWindow = {onClosed: {addListener() {}}};
     sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
@@ -67,6 +73,13 @@ describe('Window Manager', () => {
     return windowManager.launchViewer(displayId).then(() => {
       sinon.assert.calledOnce(previousWindow.close);
     });
+  });
+
+  it('should request keep awake when viewer is launched', () => {
+    const displayId = 'displayId';
+    windowManager.launchViewer(displayId);
+
+    sinon.assert.calledWith(chrome.power.requestKeepAwake, 'display');
   });
 
   it('should release keep awake when viewer is closed', () => {
