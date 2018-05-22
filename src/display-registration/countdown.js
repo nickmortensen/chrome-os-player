@@ -1,4 +1,5 @@
 const windowManager = require('../window-manager');
+const launchEnv = require('../launch-environment');
 
 function createViewModel(document) {
 
@@ -7,9 +8,26 @@ function createViewModel(document) {
   const actions = document.querySelectorAll('a, button');
   const continueButton = document.getElementById('continue');
   const cancelButton = document.getElementById('cancel');
+  const links = document.querySelectorAll('a.webview');
+
+  function setupInfoMessage() {
+    const nonKioskDisclaimer = document.getElementById('nonKioskDisclaimer');
+    if (launchEnv.isKioskSession()) {
+      nonKioskDisclaimer.remove();
+    }
+  }
+
+  setupInfoMessage();
 
   return {
     bindController(controller) {
+      links.forEach(link => {
+        link.addEventListener('click', evt => {
+          evt.preventDefault();
+          controller.launchWebView(link.href);
+        });
+      });
+
       actions.forEach(action => {
         action.addEventListener('click', evt => {
           evt.preventDefault();
@@ -42,6 +60,10 @@ function createController(viewModel, displayId) {
   const controller = {
     stopCountdown() {
       clearInterval(runningTimer);
+    },
+
+    launchWebView(url) {
+      windowManager.launchWebView(url);
     },
 
     continue() {
