@@ -39,10 +39,6 @@ describe('background script', () => {
     sinon.assert.calledOnce(windowManager.closeAll);
   });
 
-  it('should request keep awake', () => {
-    sinon.assert.calledWith(chrome.power.requestKeepAwake, 'display');
-  });
-
   it('should check for updates when app is launched', () => {
     chrome.runtime.requestUpdateCheck.flush();
     sandbox.stub(windowManager, 'startRegistration');
