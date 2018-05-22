@@ -1,4 +1,3 @@
-const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const windowManager = require('../../src/window-manager');
@@ -23,7 +22,7 @@ describe('Window Manager', () => {
 
   afterEach(() => {
     sandbox.restore();
-    chrome.app.window.create.flush();
+    chrome.flush();
   });
 
   it('should launch player', () => {
@@ -34,17 +33,17 @@ describe('Window Manager', () => {
 
     windowManager.startRegistration();
 
-    assert(chrome.app.window.create.calledWith('registration.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+    sinon.assert.calledWith(chrome.app.window.create, 'registration.html', expectedWindowOptions);
   });
 
-  it('should release keep awake when player is closed', () => {
+  it('should release keep awake when registration window is closed', () => {
     const playerWindow = {onClosed: {addListener() {}}};
     sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
     chrome.app.window.create.yields(playerWindow);
 
     windowManager.startRegistration();
 
-    assert(chrome.power.releaseKeepAwake.calledOnce, 'chrome.power.releaseKeepAwake should have been called');
+    sinon.assert.calledOnce(chrome.power.releaseKeepAwake);
   });
 
   it('should launch viewer', () => {
@@ -53,18 +52,35 @@ describe('Window Manager', () => {
     const displayId = 'displayId';
     windowManager.launchViewer(displayId);
 
-    assert(chrome.app.window.create.calledWith('viewer.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+    sinon.assert.calledWith(chrome.app.window.create, 'viewer.html', expectedWindowOptions);
+  });
+
+  it('should close previous window when viewer is launched', () => {
+    const viewerWindow = {onClosed: {addListener() {}}, contentWindow: {addEventListener() {}}};
+    sandbox.stub(viewerWindow.onClosed, 'addListener').yields([]);
+    chrome.app.window.create.yields(viewerWindow);
+
+    const previousWindow = {close: sinon.spy()};
+    chrome.app.window.current.returns(previousWindow);
+
+    const displayId = 'displayId';
+    return windowManager.launchViewer(displayId).then(() => {
+      sinon.assert.calledOnce(previousWindow.close);
+    });
   });
 
   it('should release keep awake when viewer is closed', () => {
+    const previousWindow = {close: sinon.spy()};
+    chrome.app.window.current.returns(previousWindow);
+
     const viewerWindow = {onClosed: {addListener() {}}, contentWindow: {addEventListener() {}}};
     sandbox.stub(viewerWindow.onClosed, 'addListener').yields([]);
     chrome.app.window.create.yields(viewerWindow);
 
     const displayId = 'displayId';
-    windowManager.launchViewer(displayId);
-
-    assert(chrome.power.releaseKeepAwake.calledOnce, 'chrome.power.releaseKeepAwake should have been called');
+    return windowManager.launchViewer(displayId).then(() => {
+      sinon.assert.calledOnce(chrome.power.releaseKeepAwake);
+    });
   });
 
   it('should launch web view', () => {
@@ -72,7 +88,7 @@ describe('Window Manager', () => {
     windowManager.launchWebView(url);
 
     const expectedWindowOptions = {outerBounds: expectedDefaultOuterBounds};
-    assert(chrome.app.window.create.calledWith('webview.html', expectedWindowOptions), 'chrome.app.window.create should have been called');
+    sinon.assert.calledWith(chrome.app.window.create, 'webview.html', expectedWindowOptions);
   });
 
   it('should close all windows', () => {
@@ -83,6 +99,15 @@ describe('Window Manager', () => {
     windowManager.closeAll();
 
     sinon.assert.callCount(stub.close, windows.length);
+  });
+
+  it('should close current window', () => {
+    const stub = {close: sandbox.spy()};
+    chrome.app.window.current.returns(stub);
+
+    windowManager.closeCurrentWindow();
+
+    sinon.assert.called(stub.close);
   });
 
 });

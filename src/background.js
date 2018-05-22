@@ -7,13 +7,7 @@ function init(launchData) {
   logger.log(`Received launch data for ${manifest.version} via ${launchData.source}`, launchData);
   launchEnvs.set(launchData);
 
-  chrome.storage.local.get((items) => {
-    if (items.displayId) {
-      windowManager.launchViewer(items.displayId);
-    } else {
-      windowManager.startRegistration();
-    }
-  });
+  windowManager.startRegistration();
 
   chrome.runtime.requestUpdateCheck((status, details) => logger.log(`update check result: ${status}`, details));
 }

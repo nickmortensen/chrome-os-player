@@ -8,6 +8,7 @@
     "sourceType": "module"
   },
   "rules": {
-    "max-statements": "off"
+    "max-statements": "off",
+    "no-magic-numbers": "off"
   }
 }
