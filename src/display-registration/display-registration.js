@@ -1,4 +1,5 @@
 const windowManager = require('../window-manager');
+const launchEnv = require('../launch-environment');
 
 function createViewModel(document) {
 
@@ -11,6 +12,24 @@ function createViewModel(document) {
       windowManager.launchWebView(link.href);
     });
   });
+
+  function setupInfoMessage() {
+    const nonKioskDisclaimer = document.getElementById('nonKioskDisclaimer');
+    if (launchEnv.isKioskSession()) {
+      nonKioskDisclaimer.remove();
+    }
+  }
+
+  function loadSavedDisplayId() {
+    chrome.storage.local.get(items => {
+      if (items.displayId) {
+        document.getElementById('displayIdInput').value = items.displayId;
+      }
+    });
+  }
+
+  setupInfoMessage();
+  loadSavedDisplayId();
 
   function showError(message) {
     const errorMessage = document.getElementById('errorMessage');
