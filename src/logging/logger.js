@@ -2,6 +2,7 @@ const isEqual = require('lodash.isequal');
 const bq = require('./bq-retry');
 const systemInfo = require('./system-info');
 const environment = require('../launch-environment');
+const moment = require('moment-timezone');
 
 function buildPlayerData(viewerConfig) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
@@ -19,7 +20,9 @@ function buildPlayerData(viewerConfig) {
         local_ip: ip,
         viewer_version: viewerConfig.viewerVersion,
         width: viewerConfig.width,
-        height: viewerConfig.height
+        height: viewerConfig.height,
+        time_zone: moment.tz.guess(),
+        utc_offset: moment().format("Z")
       };
     });
 }
