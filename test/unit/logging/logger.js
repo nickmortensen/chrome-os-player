@@ -3,6 +3,7 @@ const chrome = require('sinon-chrome/apps');
 const bq = require('../../../src/logging/bq-retry');
 const systemInfo = require('../../../src/logging/system-info');
 const environment = require('../../../src/launch-environment');
+const moment = require('moment-timezone');
 
 const logger = require('../../../src/logging/logger');
 
@@ -99,7 +100,9 @@ describe('Logger', () => {
       local_ip: '192.168.0.1',
       viewer_version: viewerConfig.viewerVersion,
       width: viewerConfig.width,
-      height: viewerConfig.height
+      height: viewerConfig.height,
+      time_zone: moment.tz.guess(),
+      utc_offset: moment().format('Z')
     };
 
     return logger.logClientInfo(viewerConfig, nowDate)
@@ -135,7 +138,9 @@ describe('Logger', () => {
       local_ip: '192.168.0.1',
       viewer_version: viewerConfig.viewerVersion,
       width: viewerConfig.width,
-      height: viewerConfig.height
+      height: viewerConfig.height,
+      time_zone: moment.tz.guess(),
+      utc_offset: moment().format('Z')
     };
 
     chrome.storage.local.get.yields({playerData: expectedPlayerData});
@@ -161,7 +166,9 @@ describe('Logger', () => {
       local_ip: '192.168.0.1',
       viewer_version: viewerConfig.viewerVersion,
       width: viewerConfig.width,
-      height: viewerConfig.height
+      height: viewerConfig.height,
+      time_zone: moment.tz.guess(),
+      utc_offset: moment().format('Z')
     };
 
     const staleData = {...expectedPlayerData, height: 900};
