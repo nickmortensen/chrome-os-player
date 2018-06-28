@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('./database/api');
 const queueCheckInterval = 5000;
 const fileDownloader = require('./file-downloader');
 const localMessaging = require('./messaging/local-messaging-helper');

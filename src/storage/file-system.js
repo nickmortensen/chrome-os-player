@@ -126,6 +126,16 @@ function removeFile(file) {
   return new Promise((resolve, reject) => file.remove(resolve, reject))
 }
 
+/**
+ * @param {String} filePath
+ * @param {String} version
+ * @returns {Promise}
+ */
+function removeCacheFile(fileName) {
+  const dirName = 'cache';
+  return readFile(fileName, dirName).then(file => removeFile(file));
+}
+
 function queryUsageAndQuota() {
   return new Promise((resolve, reject) => {
     navigator.webkitPersistentStorage.queryUsageAndQuota((usedBytes, grantedBytes) => resolve({usedBytes, grantedBytes}), reject);
@@ -227,5 +237,7 @@ module.exports = {
   readFile,
   readFileAsArrayBuffer,
   sliceFileInChunks,
-  clearLeastRecentlyUsedFiles
+  clearLeastRecentlyUsedFiles,
+  removeCacheFile,
+  readDirEntries
 }

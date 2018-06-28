@@ -1,13 +1,15 @@
-const db = require("../../db");
+const db = require("../../database/api");
 const entry = require("./entry");
 const localMessaging = require('../local-messaging-helper');
 
 module.exports = {
   updateWatchlistAndMetadata(dbEntry) {
-    db.fileMetadata.put(dbEntry)
-    db.watchlist.put(dbEntry);
+    const promises = [
+      db.fileMetadata.put(dbEntry),
+      db.watchlist.put(dbEntry)
+    ];
 
-    return Promise.resolve();
+    return Promise.all(promises);
   },
   update(message) {
     const {filePath, version, token} = message;

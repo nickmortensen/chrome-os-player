@@ -1,5 +1,5 @@
 const localMessaging = require('../local-messaging-helper');
-const db = require("../../db");
+const db = require("../../database/api");
 const gcsValidator = require("gcs-filepath-validator");
 
 module.exports = {

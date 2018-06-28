@@ -4,7 +4,7 @@ const sinon = require('sinon');
 
 const fileDownloader = require('../../../src/storage/file-downloader');
 const localMessaging = require('../../../src/storage/messaging/local-messaging-helper');
-const db = require('../../../src/storage/db');
+const db = require('../../../src/storage/database/api');
 const logger = require('../../../src/logging/logger');
 
 const queue = require('../../../src/storage/download-queue');
@@ -17,6 +17,8 @@ describe('Download Queue', ()=>{
     sandbox.stub(db.fileMetadata, 'getStale');
     sandbox.stub(fileDownloader, 'download').resolves();
     sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
+    sandbox.stub(db.fileMetadata, 'get');
+    sandbox.stub(db.fileMetadata, 'put').callsFake(entry => Promise.resolve(entry));
   });
 
   afterEach(() => sandbox.restore());
@@ -81,7 +83,7 @@ describe('Download Queue', ()=>{
 
   it('sends file update message with stale status after downloading if version has changed', () => {
     const existingMetadata = {version: '1.0.1'};
-    sandbox.stub(db.fileMetadata, 'get').returns(existingMetadata);
+    db.fileMetadata.get.returns(existingMetadata);
 
     db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);
     db.fileMetadata.getStale.onSecondCall().returns([]);
@@ -97,7 +99,7 @@ describe('Download Queue', ()=>{
 
   it('sends file update message with current status after downloading if version has not changed', ()=>{
     const existingMetadata = {version: '1.0.0'};
-    sandbox.stub(db.fileMetadata, 'get').returns(existingMetadata);
+    db.fileMetadata.get.returns(existingMetadata);
 
     db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);
     db.fileMetadata.getStale.onSecondCall().returns([]);
@@ -113,7 +115,7 @@ describe('Download Queue', ()=>{
 
   it('sends file error message', ()=>{
     const existingMetadata = {version: '1.0.0'};
-    sandbox.stub(db.fileMetadata, 'get').returns(existingMetadata);
+    db.fileMetadata.get.returns(existingMetadata);
     const error = new Error('Insuficient disk space');
     fileDownloader.download.rejects(error);
     sandbox.stub(logger, 'error').resolves();
