@@ -36,22 +36,6 @@ describe('Window Manager', () => {
     sinon.assert.calledWith(chrome.app.window.create, 'registration.html', expectedWindowOptions);
   });
 
-  it('should request keep awake when registration window is launched', () => {
-    windowManager.startRegistration();
-
-    sinon.assert.calledWith(chrome.power.requestKeepAwake, 'display');
-  });
-
-  it('should release keep awake when registration window is closed', () => {
-    const playerWindow = {onClosed: {addListener() {}}};
-    sandbox.stub(playerWindow.onClosed, 'addListener').yields([]);
-    chrome.app.window.create.yields(playerWindow);
-
-    windowManager.startRegistration();
-
-    sinon.assert.calledOnce(chrome.power.releaseKeepAwake);
-  });
-
   it('should launch viewer', () => {
     const expectedWindowOptions = {id: 'viewer', state: 'fullscreen', outerBounds: expectedDefaultOuterBounds};
 

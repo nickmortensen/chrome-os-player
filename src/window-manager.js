@@ -5,10 +5,7 @@ function startRegistration() {
     outerBounds: getDefaultScreenBounds()
   };
 
-  chrome.power.requestKeepAwake('display');
-  chrome.app.window.create('registration.html', options, (playerWindow) => {
-    playerWindow.onClosed.addListener(() => chrome.power.releaseKeepAwake());
-  });
+  chrome.app.window.create('registration.html', options);
 }
 
 function launchViewer(displayId) {
