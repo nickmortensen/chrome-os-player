@@ -33,7 +33,7 @@ function updateMetadata(downloadedVersion, filePath) {
   const metadata = db.fileMetadata.get(filePath);
   const currentVersion = metadata && metadata.version;
   const newStatus = currentVersion === downloadedVersion ? 'CURRENT' : 'STALE';
-  return db.fileMetadata.put({filePath, status: newStatus});
+  return db.fileMetadata.put({filePath, status: newStatus, version: downloadedVersion || currentVersion});
 }
 
 function handleError(err, entry) {
