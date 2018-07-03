@@ -64,6 +64,8 @@ function setUpMessaging() {
 
   window.useWindowMessagingForLocalMessaging = true;
   window.disableViewerContentFetch = true;
+  window.useRLSSingleFile = true;
+  window.useRLSFolder = true;
   window.postToPlayer = sendMessageToApp;
   window.receiveFromPlayer = registerMessageHandler;
 }
