@@ -71,4 +71,21 @@ describe('Reboot Scheduler', () => {
 
     sinon.assert.calledWith(chrome.runtime.restartAfterDelay, 3600);
   });
+
+  it('should not reboot now when not in kiosk mode', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(false);
+
+    rebootScheduler.rebootNow();
+
+    sinon.assert.notCalled(chrome.runtime.restart);
+  });
+
+  it('should reboot now successfully', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
+
+    rebootScheduler.rebootNow();
+
+    sinon.assert.called(chrome.runtime.restart);
+  });
+
 });
