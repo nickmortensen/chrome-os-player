@@ -4,6 +4,7 @@ const sinon = require('sinon');
 const messagingServiceClient = require('../../../../src/messaging/messaging-service-client');
 const localMessaging = require('../../../../src/storage/messaging/local-messaging-helper');
 const db = require('../../../../src/storage/database/api');
+const logger = require('../../../../src/logging/logger');
 
 const messaging = require('../../../../src/storage/messaging/messaging');
 
@@ -19,6 +20,7 @@ describe('Storage Messaging', () => {
     sandbox.stub(db.fileMetadata, 'delete').resolves();
     sandbox.stub(db.watchlist, 'delete');
     sandbox.stub(db.watchlist, 'setLastChanged');
+    sandbox.stub(logger, 'error');
   });
 
   const filePath = 'local-storage-test/test-1x1.png';

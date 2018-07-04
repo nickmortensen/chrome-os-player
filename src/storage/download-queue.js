@@ -41,7 +41,7 @@ function handleError(err, entry) {
   const defaultMessage = `error downloading entry filePath: ${filePath} version: ${version}`;
   const msg = err ? err.message : defaultMessage;
   localMessaging.sendFileError({filePath, version, msg, details: err ? err.stack : {}});
-  logger.error(defaultMessage, err);
+  logger.error(defaultMessage, err, {filePath});
 }
 
 module.exports = {

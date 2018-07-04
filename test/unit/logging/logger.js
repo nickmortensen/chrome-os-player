@@ -77,7 +77,8 @@ describe('Logger', () => {
       event_details: JSON.stringify(eventDetails),
       chrome_version: '64.0.3282.186'
     };
-    return logger.error(eventName, error, nowDate)
+    const details = {};
+    return logger.error(eventName, error, details, nowDate)
       .then(() => {
         sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expetedData}, 'ChromeOS_Player_Events', 'events');
       });

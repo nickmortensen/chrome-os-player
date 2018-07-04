@@ -4,6 +4,7 @@ const loki = require("lokijs");
 const LokiIndexedAdapter = require("lokijs/src/loki-indexed-adapter");
 const fileSystem = require("../../file-system");
 const util = require("../../../util");
+const logger = require("../../../logging/logger");
 
 const DB_FILENAME = 'local-storage.db';
 const defaultSaveInterval = 4000;
@@ -59,11 +60,11 @@ function syncCacheMetadataWithFileSystem() {
         return fileNames.indexOf(fileName) < 0;
       })
       .forEach(({entry}) => {
-        console.log("File not found in cache dir. Marking it as unknown in the database", JSON.stringify(entry));
+        logger.log("File not found in cache dir. Marking it as unknown in the database", JSON.stringify(entry));
         metadata.update(Object.assign({}, entry, {status: "UNKNOWN", version: "0"}));
       });
     })
-    .catch(() => console.warning("Error when reading cache dir to sync metadata database"));
+    .catch(() => logger.log("Error when reading cache dir to sync metadata database"));
 }
 
 module.exports = {

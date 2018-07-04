@@ -85,10 +85,9 @@ function log(event, details, nowDate = new Date()) {
  * @param {Date} [nowDate]
  * @returns {Promise}
  */
-function error(event, err, nowDate = new Date()) {
+function error(event, err, details = {}, nowDate = new Date()) {
   console.error(event, err);
 
-  const details = {};
   if (err) {
     details.message = err.message;
     details.stack = err.stack;
