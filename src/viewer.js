@@ -21,6 +21,7 @@ function setUpMessaging() {
   });
 
   messaging.on('content-update', fetchContent);
+  messaging.on('reboot-request', () => rebootScheduler.rebootNow());
   viewerMessaging.on('viewer-config', logger.logClientInfo);
 
   return messaging.init();
