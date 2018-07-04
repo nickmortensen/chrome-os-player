@@ -5,11 +5,12 @@ const deleteFile = require("./delete/delete");
 const update = require("./update/update");
 const watch = require("./watch/watch");
 const watchlist = require("./watch/watchlist");
+const logger = require("../../logging/logger");
 
 const actions = {ADD: add, UPDATE: update, DELETE: deleteFile};
 
 function logError(err, userFriendlyMessage = "", filePath) {
-  console.log(err, userFriendlyMessage, filePath);
+  logger.error(userFriendlyMessage, err, {filePath});
 }
 
 function init() {
