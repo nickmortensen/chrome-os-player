@@ -36,14 +36,22 @@ function parseRebootDate(restartHHMM) {
   return rebootDate;
 }
 
-function rebootNow() {
-  if (launchEnvs.isKioskSession()) {
+function rebootNow(forceReboot = true) {
+  if (forceReboot && launchEnvs.isKioskSession()) {
     logger.log('rebooting');
     chrome.runtime.restart();
+  } else {
+    logger.log('restarting');
+    chrome.runtime.reload();
   }
+}
+
+function restart() {
+  rebootNow(false);
 }
 
 module.exports = {
   scheduleRebootFromViewerContents,
-  rebootNow
+  rebootNow,
+  restart
 }
