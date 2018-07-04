@@ -3,7 +3,7 @@ const sinon = require('sinon');
 
 const messagingServiceClient = require('../../../../src/messaging/messaging-service-client');
 const localMessaging = require('../../../../src/storage/messaging/local-messaging-helper');
-const db = require('../../../../src/storage/db');
+const db = require('../../../../src/storage/database/api');
 
 const messaging = require('../../../../src/storage/messaging/messaging');
 
@@ -14,10 +14,11 @@ describe('Storage Messaging', () => {
   afterEach(() => sandbox.restore());
 
   beforeEach(() => {
-    sandbox.stub(db.fileMetadata, 'put');
+    sandbox.stub(db.fileMetadata, 'put').resolves();
     sandbox.stub(db.watchlist, 'put');
     sandbox.stub(db.fileMetadata, 'delete').resolves();
     sandbox.stub(db.watchlist, 'delete');
+    sandbox.stub(db.watchlist, 'setLastChanged');
   });
 
   const filePath = 'local-storage-test/test-1x1.png';
@@ -70,7 +71,7 @@ describe('Storage Messaging', () => {
   it('should delete entry from metadata and watchlist db collections and send file update on MSFILEUPDATE delete message', () => {
     sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
-    const message = {filePath, version, token, type: 'DELETE', topic: 'MSFILEUPDATE'};
+    const message = {filePath, version, token, type: 'DELETE', topic: 'MSFILEUPDATE', watchlistLastChanged: '2522697262234'};
 
     return messaging.handleMSFileUpdate(message).then(() => {
       sinon.assert.calledWith(db.watchlist.delete, filePath);
@@ -98,6 +99,7 @@ describe('Storage Messaging', () => {
 
   it('should save metadata and request file update to messaging service on new watch message', () => {
     sandbox.stub(messagingServiceClient, 'send');
+    sandbox.stub(db.fileMetadata, 'get').returns();
     sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     const expectedMessage = {filePath, version: '0'};

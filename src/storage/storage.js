@@ -1,15 +1,20 @@
 const messaging = require('./messaging/messaging');
 const downloadQueue = require('./download-queue');
 const watchlist = require('./messaging/watch/watchlist');
-const db = require('./db');
+const db = require('./database/lokijs/database');
 const fileSystem = require('./file-system');
+const expiration = require('./expiration');
 
 function init() {
-  messaging.init();
-  downloadQueue.checkStaleFiles();
-  watchlist.requestWatchlistCompare();
-  db.start();
-  fileSystem.clearLeastRecentlyUsedFiles('cache');
+  return fileSystem.clearLeastRecentlyUsedFiles('cache')
+    .then(() => db.start())
+    .then(() => expiration.cleanExpired())
+    .then(() => {
+      messaging.init();
+      watchlist.requestWatchlistCompare();
+      downloadQueue.checkStaleFiles();
+      expiration.scheduleIncreaseSequence();
+    });
 }
 
 module.exports = {

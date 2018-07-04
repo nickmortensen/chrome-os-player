@@ -1,4 +1,4 @@
-const db = require('./db');
+const db = require('./database/api');
 const queueCheckInterval = 5000;
 const fileDownloader = require('./file-downloader');
 const localMessaging = require('./messaging/local-messaging-helper');
@@ -33,7 +33,7 @@ function updateMetadata(downloadedVersion, filePath) {
   const metadata = db.fileMetadata.get(filePath);
   const currentVersion = metadata && metadata.version;
   const newStatus = currentVersion === downloadedVersion ? 'CURRENT' : 'STALE';
-  return db.fileMetadata.put({filePath, status: newStatus});
+  return db.fileMetadata.put({filePath, status: newStatus, version: downloadedVersion || currentVersion});
 }
 
 function handleError(err, entry) {

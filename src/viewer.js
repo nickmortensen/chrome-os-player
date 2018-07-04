@@ -32,8 +32,8 @@ function fetchContent() {
       logger.error('empty content response');
       return;
     }
-    logger.log('sending content to viewer');
     const [contentData] = values;
+    logger.log('sending content to viewer', contentData);
     viewerMessaging.send({from: 'player', topic: 'content-update', newContent: contentData});
     rebootScheduler.scheduleRebootFromViewerContents(contentData);
   })

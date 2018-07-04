@@ -3,7 +3,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const messagingServiceClient = require('../../../../../src/messaging/messaging-service-client');
 
-const db = require('../../../../../src/storage/db');
+const db = require('../../../../../src/storage/database/api');
 const watch = require('../../../../../src/storage/messaging/watch/watch');
 const watchlist = require('../../../../../src/storage/messaging/watch/watchlist');
 

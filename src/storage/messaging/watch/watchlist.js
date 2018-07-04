@@ -1,5 +1,5 @@
 const messagingServiceClient = require('../../../messaging/messaging-service-client');
-const db = require("../../db");
+const db = require("../../database/api");
 const update = require("../update/update");
 const watch = require("./watch");
 

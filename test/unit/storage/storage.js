@@ -3,8 +3,9 @@ const sinon = require('sinon');
 const downloadQueue = require('../../../src/storage/download-queue');
 const watchlist = require('../../../src/storage/messaging/watch/watchlist');
 const messaging = require('../../../src/storage/messaging/messaging');
-const db = require('../../../src/storage/db');
+const db = require('../../../src/storage/database/lokijs/database');
 const fileSystem = require('../../../src/storage/file-system');
+const expiration = require('../../../src/storage/expiration');
 
 const storage = require('../../../src/storage/storage');
 
@@ -20,36 +21,50 @@ describe('Storage', () => {
     sandbox.stub(watchlist, 'requestWatchlistCompare');
     sandbox.stub(db, 'start');
     sandbox.stub(fileSystem, 'clearLeastRecentlyUsedFiles').resolves();
+    sandbox.stub(expiration, 'cleanExpired').resolves();
+    sandbox.stub(expiration, 'scheduleIncreaseSequence').resolves();
   });
 
   it('should initialize storage messaging', () => {
-    storage.init();
-
-    sinon.assert.calledOnce(messaging.init);
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(messaging.init);
+    });
   });
 
   it('should initialize download queue', () => {
-    storage.init();
-
-    sinon.assert.calledOnce(downloadQueue.checkStaleFiles);
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(downloadQueue.checkStaleFiles);
+    });
   });
 
   it('should request watchlist compare', () => {
-    storage.init();
-
-    sinon.assert.calledOnce(watchlist.requestWatchlistCompare);
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(watchlist.requestWatchlistCompare);
+    });
   });
 
   it('should start database', () => {
-    storage.init();
-
-    sinon.assert.calledOnce(db.start);
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(db.start);
+    });
   });
 
   it('should clear cache', () => {
-    storage.init();
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(fileSystem.clearLeastRecentlyUsedFiles);
+    });
+  });
 
-    sinon.assert.calledOnce(fileSystem.clearLeastRecentlyUsedFiles);
+  it('should clean expired files', () => {
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(expiration.cleanExpired);
+    });
+  });
+
+  it('should schedule sequence increase', () => {
+    return storage.init().then(() => {
+      sinon.assert.calledOnce(expiration.scheduleIncreaseSequence);
+    });
   });
 
 });
