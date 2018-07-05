@@ -4,7 +4,7 @@ const contentLoader = require('./content-loader');
 const logger = require('./logging/logger');
 const messaging = require('./messaging/messaging-service-client');
 const storage = require('./storage/storage');
-const licensing = require('./licensing/licensing');
+const licensing = require('./licensing');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
 
@@ -43,10 +43,7 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging().then(() => {
-    storage.init();
-    licensing.init();
-  });
+  setUpMessaging().then(storage.init).then(licensing.init)
   fileServer.init();
   fetchContent();
 }

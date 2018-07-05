@@ -7,6 +7,7 @@ function init(launchData) {
   logger.log(`Received launch data for ${manifest.version} via ${launchData.source}`, launchData);
   launchEnvs.set(launchData);
 
+  console.log("STARTING REGISTRATION");
   windowManager.startRegistration();
 
   chrome.runtime.requestUpdateCheck((status, details) => logger.log(`update check result: ${status}`, details));

@@ -88,6 +88,25 @@ function readFileAsArrayBuffer(fileEntry) {
 }
 
 /**
+ * @param {fileHash} string
+ * @returns {Promise.<Object>}
+ */
+function readCachedFileAsObject(fileHash) {
+  return readFile(fileHash, 'cache')
+  .then(readFileAsArrayBuffer)
+  .then(buf=>{
+    return Reflect.apply(String.fromCharCode, null, new Uint8Array(buf));
+  })
+  .then(str=>{
+    try {
+      return JSON.parse(str);
+    } catch (err) {
+      return Promise.reject(err);
+    }
+  });
+}
+
+/**
  * @param {File} file
  * @returns {Array.<File>}
  */
@@ -229,6 +248,7 @@ function processChunkedContents(contentStream, fileWriter) {
 }
 
 module.exports = {
+  readCachedFileAsObject,
   createDirectory,
   getAvailableSpace,
   checkAvailableDiskSpace,
