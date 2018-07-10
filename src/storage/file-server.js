@@ -126,7 +126,8 @@ function sendBuffer({socketId, buffer, keepAlive}) {
       if (chrome.runtime.lastError || !(socketInfo && socketInfo.connected)) {
         return resolve(destroySocketById(socketId));
       }
-      chrome.sockets.tcp.setKeepAlive(socketId, keepAlive, () => {
+      const delayInSeconds = 1;
+      chrome.sockets.tcp.setKeepAlive(socketId, keepAlive, delayInSeconds, () => {
         if (chrome.runtime.lastError) {
           return resolve(destroySocketById(socketId));
         }
