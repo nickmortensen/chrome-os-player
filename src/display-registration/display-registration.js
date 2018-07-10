@@ -79,18 +79,26 @@ function createViewModel(document) {
   }
 }
 
+
+function normalizeDisplayId(id) {
+  const LEGACY_ID_REGEX = /^[a-fA-F0-9]{8}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{4}-[a-fA-F0-9]{12}$/;
+  return id.match(LEGACY_ID_REGEX) ? id.toLowerCase() : id.toUpperCase().trim();
+}
+
 function createController(viewModel, registrationService) {
   const controller = {
-    validateDisplayId(displayId) {
-      if (!displayId) {
+    validateDisplayId(typedDisplayId) {
+      if (!typedDisplayId) {
         viewModel.showEmptyDisplayIdError();
         return Promise.reject(Error('empty display id'));
       }
 
+      const displayId = normalizeDisplayId(typedDisplayId);
+
       return registrationService(displayId)
         .then(() => chrome.storage.local.set({displayId}))
         .then(() => viewModel.launchViewer(displayId))
-        .catch(() => viewModel.showInvalidDisplayIdError(displayId));
+        .catch(() => viewModel.showInvalidDisplayIdError(typedDisplayId));
     },
     submitClaimId(id, name) {
       if (!id) {
