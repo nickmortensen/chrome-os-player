@@ -43,7 +43,7 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging().then(storage.init).then(licensing.init)
+  setUpMessaging().then(storage.init).then(licensing.init).catch(console.error);
   fileServer.init();
   fetchContent();
 }
