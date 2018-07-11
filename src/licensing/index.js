@@ -42,9 +42,14 @@ function updateLicensingWithNewGCSData({topic, status, filePath, ospath} = {}) {
   })
 }
 
-function licensingRequestResponse(prod) {
+function licensingRequestResponse(product) {
   return ()=>{
-    const message = {from: 'local-messaging', topic: `${prod}-licensing-update`, isAuthorized: prod === "rpp" ? licenseData.authorized : true};
+    const message = {
+      from: 'local-messaging',
+      topic: `${product}-licensing-update`,
+      isAuthorized: product === "rpp" ? licenseData.authorized : true
+    };
+
     viewerMessaging.send(message);
   }
 }
