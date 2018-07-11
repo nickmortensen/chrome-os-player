@@ -58,13 +58,24 @@ describe('Display ID Screen', () => {
       });
   });
 
-  it('stores display ID locally when it is valid', () => {
+  it('stores uppercase display ID locally when it is valid', () => {
     const validator = ()=>Promise.resolve();
     const controller = screen.createController(viewModel, validator);
 
     return controller.validateDisplayId('valid')
       .then(() => {
-        assert.ok(chrome.storage.local.set.calledWith({displayId: 'valid'}));
+        assert.ok(chrome.storage.local.set.calledWith({displayId: 'VALID'}));
+      });
+  });
+
+  it('stores lowercase legacy display ID locally when it is valid', () => {
+    const validator = ()=>Promise.resolve();
+    const controller = screen.createController(viewModel, validator);
+
+    const displayId = '0584CCCD-2AB1-42F1-A2EE-0FD22AB5098D';
+    return controller.validateDisplayId(displayId)
+      .then(() => {
+        assert.ok(chrome.storage.local.set.calledWith({displayId: '0584cccd-2ab1-42f1-a2ee-0fd22ab5098d'}));
       });
   });
 

@@ -4,7 +4,7 @@ const validationParams = "?fields=size";
 const validationUrl = `${validationHost}${validationPath}${validationParams}`;
 
 module.exports = (id) => {
-  return fetch(validationUrl.replace('DISPLAYID', id.toUpperCase().trim()))
+  return fetch(validationUrl.replace('DISPLAYID', id))
   .then(response => response.json())
   .then((json)=>{
     if (json.error) {return Promise.reject(Error(json.error.message));}
