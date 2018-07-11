@@ -1,6 +1,7 @@
 const ONE_HUNDRED_MB = 100000000;
 const FIVE_MB = 5000000;
 const CACHE_CLEANUP_PERCENT_THRESHOLD = 0.9;
+const util = require('../util');
 
 /**
  * Creates a new directory under root.
@@ -84,6 +85,23 @@ function readFileAsArrayBuffer(fileEntry) {
     }
     fileReader.onerror = reject;
     fileReader.readAsArrayBuffer(fileEntry);
+  });
+}
+
+/**
+ * @param {fileHash} string
+ * @returns {Promise.<Object>}
+ */
+function readCachedFileAsObject(fileHash) {
+  return readFile(fileHash, 'cache')
+  .then(readFileAsArrayBuffer)
+  .then(util.arrayBufferToString)
+  .then(str=>{
+    try {
+      return JSON.parse(str);
+    } catch (err) {
+      return Promise.reject(err);
+    }
   });
 }
 
@@ -229,6 +247,7 @@ function processChunkedContents(contentStream, fileWriter) {
 }
 
 module.exports = {
+  readCachedFileAsObject,
   createDirectory,
   getAvailableSpace,
   checkAvailableDiskSpace,

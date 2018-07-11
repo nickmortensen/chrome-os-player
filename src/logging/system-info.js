@@ -5,7 +5,15 @@ function generateMachineId() {
 }
 
 function readLocalStorage() {
-  return new Promise((resolve) => chrome.storage.local.get(items => resolve(items)));
+  return new Promise((res, rej)=>{
+    chrome.storage.local.get(items=>{
+      if (chrome.runtime.lastError) {
+        return rej(Error(chrome.runtime.lastError.message));
+      }
+
+      return res(items);
+    })
+  });
 }
 
 function getMachineId() {
