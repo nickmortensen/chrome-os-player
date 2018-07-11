@@ -1,6 +1,7 @@
 const ONE_HUNDRED_MB = 100000000;
 const FIVE_MB = 5000000;
 const CACHE_CLEANUP_PERCENT_THRESHOLD = 0.9;
+const util = require('../util');
 
 /**
  * Creates a new directory under root.
@@ -94,9 +95,7 @@ function readFileAsArrayBuffer(fileEntry) {
 function readCachedFileAsObject(fileHash) {
   return readFile(fileHash, 'cache')
   .then(readFileAsArrayBuffer)
-  .then(buf=>{
-    return Reflect.apply(String.fromCharCode, null, new Uint8Array(buf));
-  })
+  .then(util.arrayBufferToString)
   .then(str=>{
     try {
       return JSON.parse(str);
