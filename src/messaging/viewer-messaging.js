@@ -1,4 +1,15 @@
-const dataHandlerRegisteredObserver = {resolve: () => {}, messageReceived: false};
+const dataHandlerRegisteredObserver = {
+  init() {
+    this.messageReceived = false;
+    this.resolvers = [];
+  },
+  resolve() {
+    while (this.resolvers.length > 0) {
+      const fn = this.resolvers.pop();
+      fn();
+    }
+  }
+};
 const messageHandlers = {};
 let messageSender = null;
 
@@ -12,6 +23,8 @@ function createMessageSender(webview) {
 
 function init(webview) {
   messageSender = createMessageSender(webview);
+
+  dataHandlerRegisteredObserver.init();
 
   on('data-handler-registered', () => {
     dataHandlerRegisteredObserver.messageReceived = true;
@@ -61,9 +74,9 @@ function handleMessage(data) {
 
 function viewerCanReceiveContent() {
   return new Promise(resolve => {
-    dataHandlerRegisteredObserver.resolve = resolve;
+    dataHandlerRegisteredObserver.resolvers.push(resolve);
     if (dataHandlerRegisteredObserver.messageReceived) {
-      resolve();
+      dataHandlerRegisteredObserver.resolve();
     }
   });
 }

@@ -38,6 +38,15 @@ describe('Viewer Messaging', () => {
     return viewerMessaging.viewerCanReceiveContent();
   });
 
+  it('should indicate viewer can receive content for multiple callers', () => {
+    const data = {from: 'viewer', message: 'data-handler-registered'};
+    const promises = [viewerMessaging.viewerCanReceiveContent(), viewerMessaging.viewerCanReceiveContent()];
+
+    onMessageEvent({data, preventDefault() {}});
+
+    return Promise.all(promises);
+  });
+
   it('should respond to client list request message', () => {
     sandbox.stub(webview.contentWindow, 'postMessage');
 
