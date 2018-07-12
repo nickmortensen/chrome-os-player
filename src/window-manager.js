@@ -10,7 +10,7 @@ function startRegistration() {
 
 function launchViewer(displayId) {
   const previousWindow = chrome.app.window.current();
-  const url = `http://viewer-test.risevision.com/Viewer.html?player=true&type=display&id=${displayId}`;
+  const url = `http://viewer.risevision.com/Viewer.html?player=true&type=display&id=${displayId}`;
 
   chrome.power.requestKeepAwake('display');
   return createWebViewWindow('viewer.html', url, {id: 'viewer', state: 'fullscreen'})
