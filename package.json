@@ -10,7 +10,7 @@
     "prebuild": "npm run lint",
     "build": "webpack",
     "pretest": "npm run lint",
-    "test": "nyc mocha -r test/mocha-env.js -t 20000 --recursive --exit test/unit/**",
+    "test": "mocha -r test/mocha-env.js -t 2000 --recursive --exit test/unit/**",
     "predist": "npm run build && rimraf dist && mkdir dist && cp -r app/* dist",
     "dist": "node deploy.js -i && zip dist/app.zip -r dist",
     "predeploy": "npm run dist",
