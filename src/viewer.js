@@ -29,11 +29,7 @@ function setUpMessaging() {
 }
 
 function fetchContent() {
-  Promise.all([contentLoader.fetchContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
-    if (!values || values === {}) {
-      logger.error('empty content response');
-      return;
-    }
+  Promise.all([contentLoader.loadContent(), viewerMessaging.viewerCanReceiveContent()]).then((values) => {
     const [contentData] = values;
     logger.log('sending content to viewer', contentData);
     viewerMessaging.send({from: 'player', topic: 'content-update', newContent: contentData});
