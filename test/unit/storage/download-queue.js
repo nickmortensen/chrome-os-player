@@ -132,5 +132,23 @@ describe('Download Queue', ()=>{
       });
   });
 
+  it('marks file medatada as UNKNOWN on file error', ()=>{
+    const existingMetadata = {version: '1.0.0'};
+    db.fileMetadata.get.returns(existingMetadata);
+    const error = new Error('Insuficient disk space');
+    fileDownloader.download.rejects(error);
+    sandbox.stub(logger, 'error').resolves();
+    sandbox.stub(localMessaging, 'sendFileError').resolves();
+
+    db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);
+    db.fileMetadata.getStale.onSecondCall().returns([]);
+
+    const executeImmediatly = () => {};
+    return queue.checkStaleFiles(executeImmediatly)
+      .then(() => {
+        sinon.assert.calledWith(db.fileMetadata.put, {filePath: 'my-file-0', status: "UNKNOWN", version: "0"});
+      });
+  });
+
 
 });
