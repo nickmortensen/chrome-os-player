@@ -80,4 +80,37 @@ describe('Content Loader', () => {
     });
   });
 
+  it('should remove content from local storage after it gets loaded', () => {
+    const storedData = {
+      displayId: 'displayId',
+      content: {
+        content: {
+          presentations: [
+            {
+              layout: `
+              <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN">
+              <html>
+              <script language="javascript">
+              var presentationData = {
+                  "widget1": "http://s3.amazonaws.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
+                  "widget2": "https://widgets.risevision.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
+                  "widget3": "http://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html",
+                  "widget4": "http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html"
+              }
+              </script>
+              </html>
+            `
+            }
+          ]
+        }
+      }
+    };
+
+    chrome.storage.local.get.yields(storedData);
+
+    return contentLoader.loadContent().then(() => {
+      sinon.assert.calledWith(chrome.storage.local.remove, 'content');
+    });
+  });
+
 });
