@@ -83,7 +83,7 @@ function querySubscriptionAPI(cid) {
 function sendLicensingUpdate() {
   console.log("Sending storage licensing update");
   const message = {
-    from: 'licensing',
+    from: 'local-messaging',
     topic: 'storage-licensing-update',
     isAuthorized: storageIsAuthorized
   };

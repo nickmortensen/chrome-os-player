@@ -81,7 +81,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
 
 function sendLicensingUpdate() {
   const message = {
-    from: 'licensing',
+    from: 'local-messaging',
     topic: 'licensing-update',
     subscriptions
   };
