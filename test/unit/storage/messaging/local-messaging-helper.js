@@ -19,7 +19,7 @@ describe('Local Messaging Helper', () => {
 
     return localMessaging.sendFileUpdate(metadata)
       .then(() => {
-        const expectedMessage = {topic: 'FILE-UPDATE', from: 'local-messaging', ospath: fileUrl, osurl: fileUrl, filePath, status: metadata.status, version: metadata.version};
+        const expectedMessage = {topic: 'FILE-UPDATE', from: 'local-storage', ospath: fileUrl, osurl: fileUrl, filePath, status: metadata.status, version: metadata.version};
         sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
       });
   });
@@ -32,7 +32,7 @@ describe('Local Messaging Helper', () => {
 
     return localMessaging.sendFileError(message)
       .then(() => {
-        const expectedMessage = Object.assign({topic: 'FILE-ERROR', from: 'local-messaging'}, message);
+        const expectedMessage = Object.assign({topic: 'FILE-ERROR', from: 'local-storage'}, message);
         sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
       });
 
