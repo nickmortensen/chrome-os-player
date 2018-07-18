@@ -6,11 +6,13 @@ const displayRegistrationScreen = require('./display-registration');
 const countdownHtml = require('./countdown.html');
 const countdownScreen = require('./countdown');
 const contentLoader = require('../content-loader');
+const logger = require('../logging/logger');
 
 window.addEventListener('DOMContentLoaded', () => {
   const body = document.querySelector('body');
 
   function goToDisplayId(invalidDisplayId) {
+    logger.log('showing display id screen', invalidDisplayId);
     body.innerHTML = displayIdHtml;
     const [viewModel, controller] = displayRegistrationScreen.init(document, displayIdValidator);
     viewModel.bindRegistrationControllerFunction(controller.validateDisplayId.bind(controller));
@@ -26,6 +28,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function goToClaimId() {
+    logger.log('showing claim id screen');
     body.innerHTML = claimIdHtml;
     const [viewModel, controller] = displayRegistrationScreen.init(document, claimIdSubmittor);
     viewModel.bindRegistrationControllerFunction(controller.submitClaimId.bind(controller));
@@ -37,6 +40,7 @@ window.addEventListener('DOMContentLoaded', () => {
   }
 
   function showCountdown(displayId) {
+    logger.log('showing countdown screen');
     body.innerHTML = countdownHtml;
     const [_, controller] = countdownScreen.init(document, displayId); // eslint-disable-line no-unused-vars
     const displayIdLink = document.getElementById('displayIdLink');

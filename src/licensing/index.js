@@ -4,6 +4,7 @@ const storageLocalMessaging = require('../storage/messaging/local-messaging-help
 const storageMessaging = require('../storage/messaging/messaging');
 const fileSystem = require('../storage/file-system')
 const systemInfo = require('../logging/system-info');
+const logger = require('../logging/logger');
 
 const displayConfigBucket = 'risevision-display-notifications';
 const productCodes = {
@@ -44,7 +45,7 @@ function submitWatchForProductAuthChanges() {
   });
 
   filePaths.forEach(filePath=>{
-    console.log(`Submitting watch for ${filePath}`)
+    logger.log(`licensing - submitting watch for ${filePath}`);
     storageMessaging.handleWatch({
       from: 'licensing',
       topic: 'WATCH',
@@ -65,10 +66,11 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
   return fileSystem.readCachedFileAsObject(ospath.split("/").pop())
   .then(obj=>{
     subscriptions[productCode] = obj.authorized;
-    console.log(`Licensing authorization set to ${JSON.stringify(subscriptions)}`);
+    logger.log(`licensing - authorization set to ${JSON.stringify(subscriptions)}`);
   })
   .then(sendLicensingUpdate)
   .catch(err=>{
+    logger.error('licensing - error on updating product authorization', err);
     console.error(Error(err.message))
   });
 
@@ -80,6 +82,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
 }
 
 function sendLicensingUpdate() {
+  logger.log('licensing - sending licensing update', subscriptions);
   const message = {
     from: 'licensing',
     topic: 'licensing-update',

@@ -4,10 +4,9 @@ const launchEnvs = require('./launch-environment');
 
 function init(launchData) {
   const manifest = chrome.runtime.getManifest();
-  logger.log(`Received launch data for ${manifest.version} via ${launchData.source}`, launchData);
+  logger.log(`received launch data for ${manifest.version} via ${launchData.source}`, launchData);
   launchEnvs.set(launchData);
 
-  console.log("STARTING REGISTRATION");
   windowManager.startRegistration();
 
   chrome.runtime.requestUpdateCheck((status, details) => logger.log(`update check result: ${status}`, details));

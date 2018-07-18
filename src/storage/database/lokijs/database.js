@@ -60,11 +60,11 @@ function syncCacheMetadataWithFileSystem() {
         return fileNames.indexOf(fileName) < 0;
       })
       .forEach(({entry}) => {
-        logger.log("File not found in cache dir. Marking it as unknown in the database", JSON.stringify(entry));
+        logger.log("storage - File not found in cache dir. Marking it as unknown in the database", entry);
         metadata.update(Object.assign({}, entry, {status: "UNKNOWN", version: "0"}));
       });
     })
-    .catch(() => logger.log("Error when reading cache dir to sync metadata database"));
+    .catch(err => logger.error("storage - Error when reading cache dir to sync metadata database", err));
 }
 
 module.exports = {

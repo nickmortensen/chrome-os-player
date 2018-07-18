@@ -23,21 +23,21 @@ function init() {
 function handleWatch(message) {
   return watch.process(message)
     .catch((err) => {
-      logError(err, "Handle WATCH Error", message.filePath);
+      logError(err, "storage - handle WATCH Error", message.filePath);
     });
 }
 
 function handleWatchResult(message) {
   return watch.msResult(message)
   .catch((err) => {
-    logError(err, "Handle WATCH-RESULT Error", message.filePath);
+    logError(err, "storage - handle WATCH-RESULT Error", message.filePath);
   });
 }
 
 function handleWatchlistResult(message) {
   return watchlist.refresh(message.watchlist, message.lastChanged)
   .catch((err) => {
-    logError(err, "Handle WATCHLIST-RESULT Error", "");
+    logError(err, "storage - handle WATCHLIST-RESULT Error", "");
   });
 }
 
@@ -51,7 +51,7 @@ function handleMSFileUpdate(message) {
 
   return action.process(message)
   .catch(err => {
-    logError(err, `Handle MSFILEUPDATE ${type} Error`, message.filePath);
+    logError(err, `storage - handle MSFILEUPDATE ${type} Error`, message.filePath);
   });
 }
 

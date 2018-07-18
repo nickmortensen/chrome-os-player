@@ -20,12 +20,20 @@ function setUpMessaging() {
     });
   });
 
+  setupLogEvents(webview);
+
   messaging.on('content-update', fetchContent);
   messaging.on('reboot-request', () => rebootScheduler.rebootNow());
   messaging.on('restart-request', () => rebootScheduler.restart());
   viewerMessaging.on('viewer-config', logger.logClientInfo);
 
   return messaging.init();
+}
+
+function setupLogEvents(webview) {
+  webview.addEventListener('loadabort', evt => logger.error('viewer webview load aborted', null, {code: evt.code, reason: evt.reason}));
+  webview.addEventListener('unresponsive', () => logger.error('viewer webview unresponsive'));
+  webview.addEventListener('permissionrequest', evt => logger.log('viewer webview premission requested', evt.permission));
 }
 
 function fetchContent() {
@@ -39,7 +47,10 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging().then(storage.init).then(licensing.init).catch(console.error);
+  setUpMessaging()
+    .then(storage.init)
+    .then(licensing.init)
+    .catch(error => logger.error('error when initilizing modules', error));
   fileServer.init();
   fetchContent();
 }

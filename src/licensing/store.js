@@ -1,5 +1,6 @@
 const util = require('../util');
 const systemInfo = require('../logging/system-info');
+const logger = require('../logging/logger');
 const viewerMessaging = require('../messaging/viewer-messaging');
 const storageLocalMessaging = require('../storage/messaging/local-messaging-helper');
 const storageMessaging = require('../storage/messaging/messaging');
@@ -35,7 +36,7 @@ function updateStorageAuth() {
     setTimeout(()=>module.exports.updateStorageAuth(), ONE_DAY_MS);
   })
   .catch(err=>{
-    console.error(err);
+    logger.error('licensing - error on updating storage authorization', err);
     setTimeout(()=>module.exports.updateStorageAuth(), ONE_HOUR_MS);
   })
 }
@@ -66,9 +67,10 @@ function resolveCompanyId(resolver, {topic, status, filePath, ospath} = {}) {
   return fileSystem.readCachedFileAsObject(ospath.split("/").pop())
   .then(obj=>{
     resolver(obj.companyId);
-    console.log(`Company id set to ${obj.companyId}`);
+    logger.log(`licensing - company id set to ${obj.companyId}`);
   })
   .catch(err=>{
+    logger.error('licensing - error when setting company id', err);
     console.error(Error(err.message))
   });
 }
@@ -81,7 +83,7 @@ function querySubscriptionAPI(cid) {
 }
 
 function sendLicensingUpdate() {
-  console.log("Sending storage licensing update");
+  logger.log('licensing - sending storage licensing update', storageIsAuthorized);
   const message = {
     from: 'licensing',
     topic: 'storage-licensing-update',

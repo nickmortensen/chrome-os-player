@@ -20,7 +20,7 @@ function clean(filePath) {
 
     return (isFolder ? cleanFolderContents(filePath) : Promise.resolve())
     .then(() => {
-      logger.log('expiration', `removing metadata and contents for ${filePath} | ${version}`);
+      logger.log('storage - expiration', `removing metadata and contents for ${filePath} | ${version}`);
 
       return db.deleteAllDataFor(filePath);
     })
@@ -34,28 +34,28 @@ function clean(filePath) {
       .catch(error => logger.log("warning", error.stack));
     });
   })
-  .catch(error => logger.error(error, `Error while removing expired file metadata: ${filePath}`));
+  .catch(error => logger.error(`storage - error while removing expired file metadata: ${filePath}`, error));
 }
 
 function cleanExpired() {
   return Promise.resolve()
   .then(() => {
-    logger.log('expiration', 'checking expired metadata and files');
+    logger.log('storage - expiration', 'checking expired metadata and files');
 
     const expired = db.fileMetadata.find({watchSequence: {"$gt": 0}})
     .filter(db.watchlist.shouldBeExpired);
 
     return Promise.all(expired.map(entry => clean(entry.filePath)));
   })
-  .then(() => logger.log('expiration', 'ending check'))
-  .catch(error => logger.error(error, 'Error while cleaning expired entries and files'));
+  .then(() => logger.log('storage - expiration', 'ending check'))
+  .catch(error => logger.error('storage - error while cleaning expired entries and files', error));
 }
 
 function scheduleIncreaseSequence(schedule = setTimeout) {
   schedule(() => {
     const updatedSequence = db.watchlist.increaseRuntimeSequence();
 
-    logger.log('increasing runtime sequence', updatedSequence.toString());
+    logger.log('storage - increasing runtime sequence', updatedSequence.toString());
   }, SEQUENCE_TIMEOUT);
 }
 

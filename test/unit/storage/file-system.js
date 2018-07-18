@@ -1,6 +1,7 @@
 /* eslint-disable no-magic-numbers */
 const assert = require('assert');
 const sinon = require('sinon');
+const logger = require('../../../src/logging/logger');
 
 const fileSystem = require('../../../src/storage/file-system');
 
@@ -22,6 +23,8 @@ describe('File System', () => {
     Reflect.deleteProperty(global, 'navigator');
     Reflect.deleteProperty(global, 'WritableStream');
   });
+
+  beforeEach(() => sandbox.stub(logger, 'log'));
 
   afterEach(() => sandbox.restore());
 
