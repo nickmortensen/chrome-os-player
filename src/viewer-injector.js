@@ -20,7 +20,7 @@ function setUpMessaging() {
 
     if (message.from === 'player') {
       handlePlayerMessage(message);
-    } else if (message.from === 'local-messaging') {
+    } else {
       handleLocalMessagingMessage(message);
     }
   }

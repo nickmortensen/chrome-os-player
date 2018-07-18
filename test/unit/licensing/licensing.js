@@ -35,7 +35,7 @@ describe('Licensing', () => {
     return licensing.init()
     .then(()=>new Promise(res=>setTimeout(res, 0)))
     .then(()=>{
-      const expectedMessage = {from: 'local-messaging', topic: 'storage-licensing-update', isAuthorized: true};
+      const expectedMessage = {from: 'licensing', topic: 'storage-licensing-update', isAuthorized: true};
       sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
     })
   });
@@ -67,7 +67,7 @@ describe('Licensing', () => {
       const subscriptions = {
         "c4b368be86245bf9501baaa6e0b00df9719869fd": true
       };
-      const expectedMessage = {from: 'local-messaging', topic: 'licensing-update', subscriptions};
+      const expectedMessage = {from: 'licensing', topic: 'licensing-update', subscriptions};
       sinon.assert.calledWith(viewerMessaging.send, expectedMessage);
     });
   });
