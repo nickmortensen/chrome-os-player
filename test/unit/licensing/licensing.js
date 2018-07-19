@@ -5,6 +5,7 @@ const viewerMessaging = require('../../../src/messaging/viewer-messaging');
 const storageMessaging = require('../../../src/storage/messaging/messaging');
 const storageLocalMessaging = require('../../../src/storage/messaging/local-messaging-helper');
 const systemInfo = require('../../../src/logging/system-info');
+const logger = require('../../../src/logging/logger');
 const util = require('../../../src/util');
 
 const licensing = require('../../../src/licensing');
@@ -12,6 +13,12 @@ const licensing = require('../../../src/licensing');
 const sandbox = sinon.createSandbox();
 
 describe('Licensing', () => {
+
+  beforeEach(() => {
+    sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'error');
+  });
+
   afterEach(() => sandbox.restore());
 
   it('should respond to storage-licensing-request', () => {

@@ -1,6 +1,7 @@
 const db = require("../../database/api");
 const entry = require("./entry");
 const localMessaging = require('../local-messaging-helper');
+const logger = require('../../../logging/logger');
 
 module.exports = {
   updateWatchlistAndMetadata(dbEntry) {
@@ -27,8 +28,7 @@ module.exports = {
   validate(message, type) {
     const {filePath, version, token} = message;
 
-    console.log(`received ${type} version ${version} for ${filePath}`);
-    console.log(`token timestamp ${token.data.timestamp}`);
+    logger.log(`storage - received ${type} version ${version} for ${filePath}`, `token timestamp ${token.data.timestamp}`);
 
     if (!entry.validate(message)) {
       return Promise.reject(new Error(`Invalid ${type} message`));

@@ -3,12 +3,12 @@ const localMessaging = require('../local-messaging-helper');
 const messagingServiceClient = require('../../../messaging/messaging-service-client');
 const db = require("../../database/api");
 const update = require("../update/update");
-
+const logger = require('../../../logging/logger');
 
 function handleFileWatchResult(message) {
   const {filePath, version, token} = message;
 
-  console.log(`received version ${version} for ${filePath}`);
+  logger.log(`storage - received version ${version} for ${filePath}`);
 
   const status = token ? 'STALE' : 'CURRENT';
 
@@ -17,7 +17,7 @@ function handleFileWatchResult(message) {
 }
 
 function handleFolderWatchResult(message) {
-  console.log(`Handling folder watch result ${JSON.stringify(message)}`);
+  logger.log(`storage - handling folder watch result ${JSON.stringify(message)}`);
 
   const {folderData} = message;
 
@@ -27,6 +27,8 @@ function handleFolderWatchResult(message) {
 function processFileWatch(message, existingMetadata) {
   const metadata = existingMetadata || {filePath: message.filePath};
   metadata.status = metadata.status || "UNKNOWN";
+
+  logger.log(`storage - processing watch for file ${JSON.stringify(metadata)}`);
 
   if (metadata.status === "UNKNOWN") {
     return requestMSUpdate(message, metadata);
@@ -43,16 +45,17 @@ function processFolderWatch(message, existingMetadata) {
   const folderPath = message.filePath;
   if (existingMetadata) {
     const folderFiles = db.fileMetadata.getFolderFiles(folderPath);
-    console.log(`Processing watch for existing folder ${folderPath}, ${JSON.stringify(folderFiles)}`);
+    logger.log(`storage - processing watch for existing folder ${folderPath}, ${JSON.stringify(folderFiles)}`);
     const promises = folderFiles.map(fileMetadata => processFileWatch({filePath: fileMetadata.filePath}, fileMetadata));
     return Promise.all(promises);
   }
 
-  console.log(`Requesting MS update for folder ${folderPath}`);
   return requestMSUpdate(message, {filePath: folderPath});
 }
 
 function requestMSUpdate(message, metaData) {
+  logger.log('storage - requesting MS update', metaData);
+
   const msMessage = Object.assign({}, message, {version: metaData.version || "0"});
 
   return db.fileMetadata.put(metaData)
@@ -74,7 +77,7 @@ function processFileOrFolderWatch(message) {
 module.exports = {
   process(message) {
     const filePath = message.filePath;
-    console.log(`received watch for ${filePath}`);
+    logger.log(`storage - received watch for ${filePath}`);
 
     if (!gcsValidator.validateFilepath(filePath)) {
       return Promise.reject(new Error('Invalid watch message'));

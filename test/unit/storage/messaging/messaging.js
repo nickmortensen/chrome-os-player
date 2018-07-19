@@ -20,6 +20,7 @@ describe('Storage Messaging', () => {
     sandbox.stub(db.fileMetadata, 'delete').resolves();
     sandbox.stub(db.watchlist, 'delete');
     sandbox.stub(db.watchlist, 'setLastChanged');
+    sandbox.stub(logger, 'log');
     sandbox.stub(logger, 'error');
   });
 

@@ -2,6 +2,7 @@ const ONE_HUNDRED_MB = 100000000;
 const FIVE_MB = 5000000;
 const CACHE_CLEANUP_PERCENT_THRESHOLD = 0.9;
 const util = require('../util');
+const logger = require('../logging/logger');
 
 /**
  * Creates a new directory under root.
@@ -126,13 +127,14 @@ function clearLeastRecentlyUsedFiles(dirName) {
       console.log(`not cleaning cache files, bytes used smaller than threshold: ${usedBytes}, threshold: ${CACHE_CLEANUP_PERCENT_THRESHOLD * grantedBytes}`);
       return Promise.resolve();
     }
+    logger.log('storage - removing least recently used files', {usedBytes, threshold: CACHE_CLEANUP_PERCENT_THRESHOLD * grantedBytes});
     return readFilesSortedByModificationTime(dirName).then(entries => {
       if (entries.length === 0) {
         console.log(`not cleaning cache files, no entries to remove`);
         return Promise.resolve();
       }
       const leastRecentlyUsed = entries[0];
-      console.log(`removing least recently used file: ${leastRecentlyUsed.file.name} ${leastRecentlyUsed.metadata.modificationTime}`);
+      logger.log(`storage - removing least recently used file: ${leastRecentlyUsed.file.name} ${leastRecentlyUsed.metadata.modificationTime}`);
       return removeFile(leastRecentlyUsed.file).then(() => {
         return clearLeastRecentlyUsedFiles(dirName);
       });

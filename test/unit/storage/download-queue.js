@@ -19,6 +19,8 @@ describe('Download Queue', ()=>{
     sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
     sandbox.stub(db.fileMetadata, 'get');
     sandbox.stub(db.fileMetadata, 'put').callsFake(entry => Promise.resolve(entry));
+    sandbox.stub(logger, 'log');
+    sandbox.stub(logger, 'error');
   });
 
   afterEach(() => sandbox.restore());
@@ -68,7 +70,6 @@ describe('Download Queue', ()=>{
   it('retries on interval after a download failure', ()=>{
     db.fileMetadata.getStale.returns([{filePath: 'my-file-0'}])
     fileDownloader.download.rejects();
-    sandbox.stub(logger, 'error').resolves();
 
     let callCount = 0;
     return queue.checkStaleFiles((cb) => {
@@ -118,7 +119,6 @@ describe('Download Queue', ()=>{
     db.fileMetadata.get.returns(existingMetadata);
     const error = new Error('Insuficient disk space');
     fileDownloader.download.rejects(error);
-    sandbox.stub(logger, 'error').resolves();
     sandbox.stub(localMessaging, 'sendFileError').resolves();
 
     db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);
@@ -137,7 +137,6 @@ describe('Download Queue', ()=>{
     db.fileMetadata.get.returns(existingMetadata);
     const error = new Error('Insuficient disk space');
     fileDownloader.download.rejects(error);
-    sandbox.stub(logger, 'error').resolves();
     sandbox.stub(localMessaging, 'sendFileError').resolves();
 
     db.fileMetadata.getStale.onFirstCall().returns([{filePath: 'my-file-0', version: '1.0.0'}]);

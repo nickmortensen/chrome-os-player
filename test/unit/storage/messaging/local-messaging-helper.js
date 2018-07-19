@@ -1,12 +1,16 @@
 const sinon = require('sinon');
 const viewerMessaging = require('../../../../src/messaging/viewer-messaging');
 const fileServer = require('../../../../src/storage/file-server');
+const logger = require('../../../../src/logging/logger');
 
 const localMessaging = require('../../../../src/storage/messaging/local-messaging-helper');
 
 const sandbox = sinon.createSandbox();
 
 describe('Local Messaging Helper', () => {
+
+  beforeEach(() => sandbox.stub(logger, 'log'));
+
   afterEach(() => sandbox.restore());
 
   it('should send file update message', () => {

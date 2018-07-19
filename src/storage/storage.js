@@ -4,6 +4,7 @@ const watchlist = require('./messaging/watch/watchlist');
 const db = require('./database/lokijs/database');
 const fileSystem = require('./file-system');
 const expiration = require('./expiration');
+const logger = require('../logging/logger');
 
 function init() {
   return fileSystem.clearLeastRecentlyUsedFiles('cache')
@@ -14,7 +15,8 @@ function init() {
       watchlist.requestWatchlistCompare();
       downloadQueue.checkStaleFiles();
       expiration.scheduleIncreaseSequence();
-    });
+    })
+    .catch(error => logger.error('storage - error when starting', error));
 }
 
 module.exports = {

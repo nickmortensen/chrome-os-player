@@ -38,7 +38,7 @@ function updateMetadata(downloadedVersion, filePath) {
 
 function handleError(err, entry) {
   const {filePath, version} = entry;
-  const defaultMessage = `error downloading entry filePath: ${filePath} version: ${version}`;
+  const defaultMessage = `storage - error downloading entry filePath: ${filePath} version: ${version}`;
   const msg = err ? err.message : defaultMessage;
   localMessaging.sendFileError({filePath, version, msg, details: err ? err.stack : {}});
   logger.error(defaultMessage, err, {filePath});
