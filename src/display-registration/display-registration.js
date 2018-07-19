@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const windowManager = require('../window-manager');
 const launchEnv = require('../launch-environment');
 
@@ -5,12 +6,18 @@ function createViewModel(document) {
 
   const form = document.querySelector('form');
   const links = document.querySelectorAll('a.webview');
+  const cancelButton = document.getElementById('cancel');
 
   links.forEach(link => {
     link.addEventListener('click', evt => {
       evt.preventDefault();
       windowManager.launchWebView(link.href);
     });
+  });
+
+  cancelButton.addEventListener('click', evt => {
+    evt.preventDefault();
+    windowManager.closeCurrentWindow();
   });
 
   function setupInfoMessage() {
