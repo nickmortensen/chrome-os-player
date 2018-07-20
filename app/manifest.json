@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "name": "Rise Vision Player Beta",
+    "name": "Rise Player Beta",
     "version": "0.0.0.0",
     "permissions": [
       "<all_urls>",
