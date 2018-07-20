@@ -104,6 +104,7 @@ function createController(viewModel, registrationService) {
 
       return registrationService(displayId)
         .then(() => chrome.storage.local.set({displayId}))
+        .then(() => chrome.storage.local.remove('content'))
         .then(() => viewModel.launchViewer(displayId))
         .catch(() => viewModel.showInvalidDisplayIdError(typedDisplayId));
     },
