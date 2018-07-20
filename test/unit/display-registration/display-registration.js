@@ -79,4 +79,15 @@ describe('Display ID Screen', () => {
       });
   });
 
+  it('removes cached content when display is valid', () => {
+    const validator = ()=>Promise.resolve();
+    const controller = screen.createController(viewModel, validator);
+
+    const displayId = 'valid';
+    return controller.validateDisplayId(displayId)
+      .then(() => {
+        assert.ok(chrome.storage.local.remove.calledWith('content'));
+      });
+  });
+
 });
