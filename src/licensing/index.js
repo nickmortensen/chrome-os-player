@@ -55,8 +55,11 @@ function submitWatchForProductAuthChanges() {
 }
 
 function updateProductAuth({topic, status, filePath, ospath} = {}) {
-  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
+  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {
+    logger.error('licensing - RPP authorization file not found');
+    return;
+  }
   if (!aProductAuthFileWasChanged()) {return}
 
   const productCode = Object.values(productCodes).find(prodCode=>{

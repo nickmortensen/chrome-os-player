@@ -60,9 +60,12 @@ function getCompanyId() {
 }
 
 function resolveCompanyId(resolver, {topic, status, filePath, ospath} = {}) {
-  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
-  if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
   if (!filePath.endsWith('display.json')) {return}
+  if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
+  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {
+    logger.error('licensing - display file not found');
+    return;
+  }
 
   return fileSystem.readCachedFileAsObject(ospath.split("/").pop())
   .then(obj=>{
