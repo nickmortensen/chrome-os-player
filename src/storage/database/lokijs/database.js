@@ -44,16 +44,16 @@ function initLokijs(saveInterval) {
   });
 }
 
-function readCurrentFilesMetadata() {
+function readMetadata() {
   const metadata = db.getCollection("metadata");
-  const promises = metadata.find({status: "CURRENT"}).map(entry => {
+  const promises = metadata.find({status: {"$in": ["CURRENT", "UNKNOWN"]}}).map(entry => {
     return util.sha1(`${entry.filePath}${entry.version}`).then(fileName => {return {entry, fileName}});
   })
   return Promise.all(promises);
 }
 
 function syncCacheMetadataWithFileSystem() {
-  return Promise.all([readCurrentFilesMetadata(), fileSystem.readDirEntries('cache')])
+  return Promise.all([readMetadata(), fileSystem.readDirEntries('cache')])
     .then(([metadata, files]) => {
       const fileNames = files.map(file => file.name);
       metadata.filter(({fileName}) => {
