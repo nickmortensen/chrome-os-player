@@ -46,7 +46,7 @@ function processFolderWatch(message, existingMetadata) {
   if (existingMetadata) {
     const folderFiles = db.fileMetadata.getFolderFiles(folderPath);
     logger.log(`storage - processing watch for existing folder ${folderPath}, ${JSON.stringify(folderFiles)}`);
-    const promises = folderFiles.map(fileMetadata => processFileWatch({filePath: fileMetadata.filePath}, fileMetadata));
+    const promises = folderFiles.map(fileMetadata => processFileWatch({filePath: fileMetadata.filePath, topic: 'watch'}, fileMetadata));
     return Promise.all(promises);
   }
 
