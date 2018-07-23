@@ -37,7 +37,7 @@ describe('Window Manager', () => {
   });
 
   it('should launch viewer', () => {
-    const expectedWindowOptions = {id: 'viewer', state: 'fullscreen', outerBounds: expectedDefaultOuterBounds};
+    const expectedWindowOptions = {state: 'fullscreen', outerBounds: expectedDefaultOuterBounds};
 
     const displayId = 'displayId';
     windowManager.launchViewer(displayId);
