@@ -54,9 +54,9 @@ function processFolderWatch(message, existingMetadata) {
 }
 
 function requestMSUpdate(message, metaData) {
-  logger.log('storage - requesting MS update', metaData);
-
   const msMessage = Object.assign({}, message, {version: metaData.version || "0"});
+
+  logger.log('storage - requesting MS update', msMessage);
 
   return db.fileMetadata.put(metaData)
   .then(()=>{
