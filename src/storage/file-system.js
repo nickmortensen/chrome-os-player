@@ -90,7 +90,7 @@ function readFileAsArrayBuffer(fileEntry) {
 }
 
 /**
- * @param {fileHash} string
+ * @param {string} filePath
  * @returns {Promise.<Object>}
  */
 function readCachedFileAsObject(fileHash) {

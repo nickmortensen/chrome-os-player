@@ -65,7 +65,10 @@ function on(topic, handler) {
 }
 
 function send(message) {
-  if (!connection) {return;}
+  if (!connection) {
+    logger.error('messaging - cannot send message to MS, no connection');
+    return;
+  }
 
   connection.write(message);
 }
