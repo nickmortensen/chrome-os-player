@@ -163,7 +163,7 @@ function removeFile(file) {
  * @param {String} version
  * @returns {Promise}
  */
-function removeCacheFile(fileName) {
+function removeCachedFile(fileName) {
   const dirName = 'cache';
 
   return createDirectory(dirName)
@@ -277,6 +277,6 @@ module.exports = {
   readFileAsArrayBuffer,
   sliceFileInChunks,
   clearLeastRecentlyUsedFiles,
-  removeCacheFile,
+  removeCachedFile,
   readDirEntries
 }

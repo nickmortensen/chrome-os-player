@@ -214,7 +214,7 @@ describe('File System', () => {
     sandbox.stub(fs.root, 'getDirectory').yields(mockedDir);
     sandbox.stub(window, 'webkitRequestFileSystem').yields(fs);
 
-    return fileSystem.removeCacheFile(fileName).then(() => {
+    return fileSystem.removeCachedFile(fileName).then(() => {
       sinon.assert.called(mockedFile.remove);
     });
   });
