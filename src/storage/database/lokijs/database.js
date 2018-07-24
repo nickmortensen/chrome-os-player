@@ -47,13 +47,16 @@ function initLokijs(saveInterval) {
 function readMetadata() {
   const metadata = db.getCollection("metadata");
   const validPersistedFileStates = ["CURRENT", "UNKNOWN"];
-  const promises = metadata.find({status: {"$in": validPersistedFileStates}}).map(entry => {
-    return util.sha1(`${entry.filePath}${entry.version}`).then(fileName => {return {entry, fileName}});
-  })
+  const promises = metadata.find({status: {"$in": validPersistedFileStates}})
+    .filter(entry => entry.filePath.endsWith("/"))
+    .map(entry => {
+      return util.sha1(`${entry.filePath}${entry.version}`).then(fileName => {return {entry, fileName}});
+    });
   return Promise.all(promises);
 }
 
 function syncCacheMetadataWithFileSystem() {
+  const metadataCollection = db.getCollection("metadata");
   return Promise.all([readMetadata(), fileSystem.readDirEntries('cache')])
     .then(([metadata, files]) => {
       const fileNames = files.map(file => file.name);
@@ -62,7 +65,7 @@ function syncCacheMetadataWithFileSystem() {
       })
       .forEach(({entry}) => {
         logger.log("storage - File not found in cache dir. Marking it as unknown in the database", entry);
-        metadata.update(Object.assign({}, entry, {status: "UNKNOWN", version: "0"}));
+        metadataCollection.update(Object.assign({}, entry, {status: "UNKNOWN", version: "0"}));
       });
     })
     .catch(err => logger.error("storage - Error when reading cache dir to sync metadata database", err));
