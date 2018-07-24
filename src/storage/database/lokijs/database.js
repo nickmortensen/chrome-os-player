@@ -46,7 +46,8 @@ function initLokijs(saveInterval) {
 
 function readMetadata() {
   const metadata = db.getCollection("metadata");
-  const promises = metadata.find({status: {"$in": ["CURRENT", "UNKNOWN"]}}).map(entry => {
+  const validPersistedFileStates = ["CURRENT", "UNKNOWN"];
+  const promises = metadata.find({status: {"$in": validPersistedFileStates}}).map(entry => {
     return util.sha1(`${entry.filePath}${entry.version}`).then(fileName => {return {entry, fileName}});
   })
   return Promise.all(promises);
