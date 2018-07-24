@@ -142,6 +142,9 @@ function clearLeastRecentlyUsedFiles(dirName) {
   });
 }
 
+/**
+ * @param {FileEntry} file
+ */
 function removeFile(file) {
   return new Promise((resolve, reject) => file.remove(resolve, reject))
 }
@@ -153,7 +156,12 @@ function removeFile(file) {
  */
 function removeCacheFile(fileName) {
   const dirName = 'cache';
-  return readFile(fileName, dirName).then(file => removeFile(file));
+
+  return createDirectory(dirName)
+    .then(dirEntry => {
+      return new Promise((resolve, reject) => dirEntry.getFile(fileName, {}, resolve, reject));
+    })
+    .then(fileEntry => removeFile(fileEntry));
 }
 
 function queryUsageAndQuota() {

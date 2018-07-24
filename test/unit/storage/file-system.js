@@ -207,11 +207,8 @@ describe('File System', () => {
     const fileName = 'f4fc70185c74a262524c67f43e92a9bd681a72ac';
     const mockedFile = mockFile(fileName, new Date());
 
-    const fileEntry = {file() {}};
-    sandbox.stub(fileEntry, 'file').yields(mockedFile);
-
     const mockedDir = {getFile() {}};
-    sandbox.stub(mockedDir, 'getFile').yields(fileEntry);
+    sandbox.stub(mockedDir, 'getFile').yields(mockedFile);
 
     const fs = {root: {getDirectory() {}}};
     sandbox.stub(fs.root, 'getDirectory').yields(mockedDir);
