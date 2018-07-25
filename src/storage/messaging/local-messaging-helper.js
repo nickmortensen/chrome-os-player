@@ -8,7 +8,7 @@ function sendFileUpdate(metaData) {
   const {filePath, version} = metaData;
   return fileServer.getFileUrl(filePath, version).then(fileUrl => {
     const message = {topic: 'FILE-UPDATE', from: 'local-storage', ospath: fileUrl, osurl: fileUrl, filePath, status: metaData.status, version};
-    logger.log('storage - sending FILE-UPDATE to viewer', message);
+    logger.log(`storage - sending FILE-UPDATE/${message.status} to viewer`, message);
     localListeners.forEach(listener=>listener(message));
     return viewerMessaging.send(message);
   });

@@ -17,7 +17,7 @@ const ONE_DAY_MS = 24 * 60 * 60 * 1000; // eslint-disable-line no-magic-numbers
 const ONE_HOUR_MS = ONE_DAY_MS / 24; // eslint-disable-line no-magic-numbers
 
 let companyIdPromise = null;
-let storageIsAuthorized = false;
+let storageIsAuthorized = null;
 
 module.exports = {
   init() {
@@ -63,7 +63,7 @@ function resolveCompanyId(resolver, {topic, status, filePath, ospath} = {}) {
   if (!filePath.endsWith('display.json')) {return}
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
   if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {
-    logger.error('licensing - display file not found');
+    if (["DELETED", "NOEXIST"].includes(status)) {logger.error('licensing - display file not found');}
     return;
   }
 
@@ -87,6 +87,10 @@ function querySubscriptionAPI(cid) {
 
 function sendLicensingUpdate() {
   logger.log('licensing - sending storage licensing update', storageIsAuthorized);
+  if (storageIsAuthorized === null) {
+    return;
+  }
+
   const message = {
     from: 'licensing',
     topic: 'storage-licensing-update',
