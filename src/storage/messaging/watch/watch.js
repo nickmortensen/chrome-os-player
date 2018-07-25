@@ -32,7 +32,8 @@ function handleFileWatchResult(message) {
   const status = token ? 'STALE' : 'CURRENT';
 
   return update.updateWatchlistAndMetadata({filePath, version, status, token})
-  .then(() => sendFileUpdate({filePath, status, version}));
+  .then(() => sendFileUpdate({filePath, status, version}))
+  .catch(error => logger.error(`error on handling file watch result for ${filePath}`, error));
 }
 
 function handleFolderWatchResult(message) {
