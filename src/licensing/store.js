@@ -63,7 +63,7 @@ function resolveCompanyId(resolver, {topic, status, filePath, ospath} = {}) {
   if (!filePath.endsWith('display.json')) {return}
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
   if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {
-    logger.error('licensing - display file not found');
+    if (["DELETED", "NOEXIST"].includes(status)) {logger.error('licensing - display file not found');}
     return;
   }
 
