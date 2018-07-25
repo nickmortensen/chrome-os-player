@@ -48,7 +48,7 @@ function readMetadata() {
   const metadata = db.getCollection("metadata");
   const validPersistedFileStates = ["CURRENT", "UNKNOWN"];
   const promises = metadata.find({status: {"$in": validPersistedFileStates}})
-    .filter(entry => entry.filePath.endsWith("/"))
+    .filter(entry => !entry.filePath.endsWith("/"))
     .map(entry => {
       return util.sha1(`${entry.filePath}${entry.version}`).then(fileName => {return {entry, fileName}});
     });

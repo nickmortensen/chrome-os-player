@@ -30,7 +30,7 @@ function clean(filePath) {
       }
 
       return util.sha1(`${filePath}${version}`)
-      .then(fileName => fileSystem.removeCacheFile(fileName))
+      .then(fileName => fileSystem.removeCachedFile(fileName))
       .catch(error => logger.log("warning", error.stack));
     });
   })

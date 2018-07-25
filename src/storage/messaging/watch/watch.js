@@ -4,6 +4,25 @@ const messagingServiceClient = require('../../../messaging/messaging-service-cli
 const db = require("../../database/api");
 const update = require("../update/update");
 const logger = require('../../../logging/logger');
+const fileSystem = require('../../file-system');
+
+function sendFileUpdate(entry) {
+  const {filePath, status, version} = entry;
+  if (entry.status === 'CURRENT') {
+    return fileSystem.readCachedFile(filePath, version)
+      .then(() => localMessaging.sendFileUpdate({filePath, status, version}))
+      .catch(error => {
+        const msg = `cannot read file ${filePath} before sending file update message`;
+        logger.error(`storage - ${msg}`, error);
+        const metadata = {filePath, version: '0', status: 'UNKNOWN'};
+        return update.updateWatchlistAndMetadata(metadata)
+          .then(() => localMessaging.sendFileError({filePath, version, msg, details: error ? error.stack : {}}))
+          .then(() => requestMSUpdate({filePath, topic: 'watch'}, metadata));
+      });
+  }
+
+  return localMessaging.sendFileUpdate({filePath, status, version});
+}
 
 function handleFileWatchResult(message) {
   const {filePath, version, token} = message;
@@ -13,7 +32,8 @@ function handleFileWatchResult(message) {
   const status = token ? 'STALE' : 'CURRENT';
 
   return update.updateWatchlistAndMetadata({filePath, version, status, token})
-  .then(() => localMessaging.sendFileUpdate({filePath, status, version}));
+  .then(() => sendFileUpdate({filePath, status, version}))
+  .catch(error => logger.error(`error on handling file watch result for ${filePath}`, error));
 }
 
 function handleFolderWatchResult(message) {
@@ -34,7 +54,7 @@ function processFileWatch(message, existingMetadata) {
     return requestMSUpdate(message, metadata);
   }
 
-  return Promise.resolve(localMessaging.sendFileUpdate({
+  return Promise.resolve(sendFileUpdate({
     filePath: message.filePath,
     status: metadata.status,
     version: metadata.version

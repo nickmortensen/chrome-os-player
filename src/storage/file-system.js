@@ -107,6 +107,15 @@ function readCachedFileAsObject(fileHash) {
 }
 
 /**
+ * @param {string} filePath
+ * @param {string} version
+ * @returns {Promise.<File>}
+ */
+function readCachedFile(filePath, version) {
+  return util.sha1(`${filePath}${version}`).then(fileName => readFile(fileName, 'cache'));
+}
+
+/**
  * @param {File} file
  * @returns {Array.<File>}
  */
@@ -154,7 +163,7 @@ function removeFile(file) {
  * @param {String} version
  * @returns {Promise}
  */
-function removeCacheFile(fileName) {
+function removeCachedFile(fileName) {
   const dirName = 'cache';
 
   return createDirectory(dirName)
@@ -258,6 +267,7 @@ function processChunkedContents(contentStream, fileWriter) {
 
 module.exports = {
   readCachedFileAsObject,
+  readCachedFile,
   createDirectory,
   getAvailableSpace,
   checkAvailableDiskSpace,
@@ -267,6 +277,6 @@ module.exports = {
   readFileAsArrayBuffer,
   sliceFileInChunks,
   clearLeastRecentlyUsedFiles,
-  removeCacheFile,
+  removeCachedFile,
   readDirEntries
 }
