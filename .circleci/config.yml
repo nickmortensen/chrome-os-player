@@ -29,6 +29,18 @@ jobs:
       - run:
           name: Deploy
           command: npm run deploy
+      - run:
+          name: Update version on GCS
+          command: |
+            echo "Updating to version $(cat latest-chrome-player-version)"
+            mkdir -p ~/.ssh
+            echo $GIT_FINGERPRINT >> ~/.ssh/known_hosts
+            git clone git@github.com:Rise-Vision/private-keys.git
+            gcloud auth activate-service-account 452091732215@developer.gserviceaccount.com --key-file private-keys/storage-server/rva-media-library-ce0d2bd78b54.json
+            gsutil cp latest-chrome-player-version gs://install-versions.risevision.com
+            gsutil setmeta -h "Cache-Control:private, max-age=0" gs://install-versions.risevision.com/latest-chrome-player-version
+            gsutil setmeta -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-chrome-player-version
+            gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-chrome-player-version
 
 workflows:
   version: 2

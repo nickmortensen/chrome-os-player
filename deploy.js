@@ -78,6 +78,7 @@ function publish() {
 
   console.log(chromeWebStorePublishRequest.stdout.toString());
 
+  fs.writeFileSync("./latest-chrome-player-version", manifest.version)
+
   process.exit(chromeWebStorePublishRequest.status);
 }
-
