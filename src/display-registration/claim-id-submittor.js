@@ -5,7 +5,7 @@ module.exports = (id, name) => {
   if (!id) {return Promise.reject(Error("Missing id"));}
   if (!name) {return Promise.reject(Error("Missing display name"));}
 
-  return fetch(`${claimUrl}/${id}/register?name=${name}`)
+  return fetch(`${claimUrl}/${id.toUpperCase()}/register?name=${name}`)
   .then(response => response.json())
   .then((json)=>{
     if (!json || !json.status) {return Promise.reject(Error("Unexpected error"));}
