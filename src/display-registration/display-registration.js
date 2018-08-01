@@ -11,7 +11,7 @@ function createViewModel(document) {
   links.forEach(link => {
     link.addEventListener('click', evt => {
       evt.preventDefault();
-      windowManager.launchWebView(link.href);
+      windowManager.launchWebView(link.href, true);
     });
   });
 

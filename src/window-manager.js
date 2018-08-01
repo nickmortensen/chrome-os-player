@@ -20,8 +20,13 @@ function launchViewer(displayId) {
     });
 }
 
-function launchWebView(url) {
-  createWebViewWindow('webview.html', url);
+function launchWebView(url, showFrame = false) {
+  const options = showFrame ? {
+    state: showFrame ? "normal" : "fullscreen",
+    frame: "chrome"
+  } : {}
+
+  createWebViewWindow('webview.html', url, options);
 }
 
 function closeAll() {
