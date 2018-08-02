@@ -2,3 +2,35 @@ webview {
   width: 100%;
   height: 100%;
 }
+
+.btn {
+  font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+  display: inline-block;
+  margin-bottom: 0;
+  text-align: center;
+  vertical-align: middle;
+  cursor: pointer;
+  border: 1px solid transparent;
+  white-space: nowrap;
+  padding: 10px 16px;
+  font-size: 16px;
+  line-height: 1.33;
+  border-radius: 6px;
+  font-weight: 400;
+  outline: 0;
+  -webkit-transition: all .2s;
+  transition: all .2s;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
+.btn.btn-primary {
+  color: #fff;
+  background-color: #4ab767;
+  border-color: #4ab767;
+}
+
+#close-webview {
+  position: absolute;
+  right: 0;
+  margin: 1em;
+}
