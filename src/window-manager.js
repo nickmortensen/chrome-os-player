@@ -20,13 +20,15 @@ function launchViewer(displayId) {
     });
 }
 
-function launchWebView(url, showFrame = false) {
-  const options = showFrame ? {
-    state: showFrame ? "normal" : "fullscreen",
-    frame: "chrome"
-  } : {}
-
-  createWebViewWindow('webview.html', url, options);
+function launchWebView(url) {
+  createWebViewWindow('webview.html', url).then((webViewWindow) => {
+    webViewWindow.contentWindow.addEventListener('DOMContentLoaded', () => {
+      const closeButton = webViewWindow.contentWindow.document.getElementById('close-webview');
+      closeButton.addEventListener('click', () => {
+        webViewWindow.close();
+      });
+    });
+  });
 }
 
 function closeAll() {

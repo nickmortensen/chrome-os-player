@@ -63,7 +63,7 @@ function createController(viewModel, displayId) {
     },
 
     launchWebView(url) {
-      windowManager.launchWebView(url, true);
+      windowManager.launchWebView(url);
     },
 
     continue() {
