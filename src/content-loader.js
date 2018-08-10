@@ -37,7 +37,8 @@ function loadData() {
 
 function loadContent() {
   return loadData().then((contentData) => {
-    const regex = new RegExp('http(?:s?)://s3.amazonaws.com/widget-(image|video)', 'g');
+    const supportedWidgets = ['image', 'video', 'google-calendar', 'google-spreadsheet', 'html', 'rss', 'text', 'time-date', 'web-page'];
+    const regex = new RegExp(`http(?:s?)://s3.amazonaws.com/widget-(${supportedWidgets.join('|')})`, 'g');
     const rewriteUrl = (match, widgetName) => `http://widgets.risevision.com/widget-${widgetName}`; // eslint-disable-line func-style
     const hasPresentations = contentData && contentData.content && contentData.content.presentations;
 
