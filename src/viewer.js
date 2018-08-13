@@ -8,6 +8,7 @@ const licensing = require('./licensing');
 const debugDataRequest = require('./messaging/debug-data-request');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
+const launchEnv = require('./launch-environment');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -48,13 +49,15 @@ function fetchContent() {
 }
 
 function init() {
-  setUpMessaging()
-    .then(storage.init)
-    .then(licensing.init)
-    .then(debugDataRequest.init)
-    .catch(error => logger.error('error when initilizing modules', error));
-  fileServer.init();
-  fetchContent();
+  launchEnv.init().then(() => {
+    setUpMessaging()
+      .then(storage.init)
+      .then(licensing.init)
+      .then(debugDataRequest.init)
+      .catch(error => logger.error('error when initilizing modules', error));
+    fileServer.init();
+    fetchContent();
+  });
 }
 
 document.addEventListener('DOMContentLoaded', init);
