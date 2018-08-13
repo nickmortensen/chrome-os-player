@@ -26,16 +26,19 @@ function incrementVersion() {
 
   const publishVersion = manifest.version;
 
-  console.log(`Writing version ${publishVersion} to manifest.json`);
+  if (process.env.NODE_ENV !== 'production') {
+    manifest.name = `${manifest.name} Beta`;
+  }
+
+  console.log(`Writing app name "${manifest.name}" and version ${publishVersion} to manifest.json`);
 
   fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, null, 2), {encoding: "utf8"});
 }
 
-
 function publish() {
   const credentialsPath = "private-keys/chrome-os-player/credentials.json";
   const credentials = JSON.parse(fs.readFileSync(credentialsPath, utf8()));
-  const appId = credentials.beta_app_id;
+  const appId = (process.env.NODE_ENV === 'production') ? credentials.production_app_id : credentials.beta_app_id;
 
   const accessTokenRequest = spawnSync("curl", ["--data",
   "client_id=" + credentials.client_id +
