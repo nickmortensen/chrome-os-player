@@ -37,7 +37,8 @@ describe('Content Loader', () => {
     });
   });
 
-  it('should rewrite image and video widget URLs', () => {
+  it('should rewrite supported widget URLs', () => {
+
     chrome.storage.local.get.yields({displayId: 'displayId'});
     const contentData = {
       content: {
@@ -48,10 +49,16 @@ describe('Content Loader', () => {
               <html>
               <script language="javascript">
               var presentationData = {
-                  "widget1": "http://s3.amazonaws.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
-                  "widget2": "https://widgets.risevision.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
-                  "widget3": "http://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html",
-                  "widget4": "http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html"
+                  "imageTestS3": "http://s3.amazonaws.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
+                  "imageTestGCS": "https://widgets.risevision.com/widget-image-test/stage-0/0.1.1/dist/widget.html",
+                  "videoRvS3": "http://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html",
+                  "textS3": "http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html",
+                  "googleCalendarS3": "http://s3.amazonaws.com/widget-google-calendar/1.0.0/dist/widget.html",
+                  "googleSheetsS3": "http://s3.amazonaws.com/widget-google-spreadsheet/1.0.0/dist/widget.html",
+                  "htmlS3": "http://s3.amazonaws.com/widget-html/1.0.0/dist/widget.html",
+                  "rssS3": "http://s3.amazonaws.com/widget-rss/1.0.0/dist/widget.html",
+                  "timeDateS3": "http://s3.amazonaws.com/widget-time-date/1.0.0/dist/widget.html",
+                  "webPageS3": "http://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html"
               }
               </script>
               </html>
@@ -66,7 +73,13 @@ describe('Content Loader', () => {
       const layout = data.content.presentations[0].layout;
       assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-image-test/stage-0/0.1.1/dist/widget.html'), -1);
       assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-video-rv/1.1.0/dist/widget.html'), -1);
-      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html') > 0, true);
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-text/1.0.0/dist/widget.html'), -1)
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-google-calendar/1.0.0/dist/widget.html'), -1)
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-google-spreadsheet/1.0.0/dist/widget.html'), -1)
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-html/1.0.0/dist/widget.html'), -1);
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-rss/1.0.0/dist/widget.html'), -1);
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-time-date/1.0.0/dist/widget.html'), -1);
+      assert.equal(layout.indexOf('http://s3.amazonaws.com/widget-web-page/1.0.0/dist/widget.html'), -1);
     });
   });
 
