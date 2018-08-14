@@ -3,7 +3,7 @@ let launchData = {};
 module.exports = {
   init() {
     return new Promise((res) => chrome.storage.local.get('launchData', storedData => {
-      launchData = storedData;
+      launchData = storedData.launchData;
       res();
     }));
   },
