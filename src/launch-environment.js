@@ -15,5 +15,6 @@ module.exports = {
   isDevelopmentVersion() {
     const manifest = chrome.runtime.getManifest();
     return manifest.version === '0.0.0.0';
-  }
+  },
+  getLaunchData() {return launchData;}
 }
