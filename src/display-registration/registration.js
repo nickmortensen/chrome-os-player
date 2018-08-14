@@ -7,8 +7,9 @@ const countdownHtml = require('./countdown.html');
 const countdownScreen = require('./countdown');
 const contentLoader = require('../content-loader');
 const logger = require('../logging/logger');
+const launchEnv = require('../launch-environment');
 
-window.addEventListener('DOMContentLoaded', () => {
+function init() {
   const body = document.querySelector('body');
 
   function goToDisplayId(invalidDisplayId) {
@@ -64,4 +65,8 @@ window.addEventListener('DOMContentLoaded', () => {
       goToDisplayId();
     }
   });
+}
+
+window.addEventListener('DOMContentLoaded', () => {
+  launchEnv.init().then(init);
 });
