@@ -5,10 +5,14 @@ const MILLISECONDS = 1000;
 
 function shouldSchedule(content) {
   if (!(content && content.display && content.display.restartEnabled)) {
+    logger.log('reboot not enabled in display settings');
     return false;
   }
 
-  if (!launchEnvs.isKioskSession()) {return false;}
+  if (!launchEnvs.isKioskSession()) {
+    logger.log('reboot not scheduled because it is not in kiosk mode', launchEnvs.getLaunchData());
+    return false;
+  }
 
   if (!(content.display.restartTime && content.display.restartTime.includes(':'))) {
     logger.log('scheduled reboot error', `invalid reboot schedule time: ${content.display.restartTime}`);
