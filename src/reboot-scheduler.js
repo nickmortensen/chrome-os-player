@@ -25,18 +25,18 @@ function shouldSchedule(content) {
 function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   if (!shouldSchedule(content)) {return;}
 
-  const rebootDate = parseRebootDate(content.display.restartTime);
+  const rebootDate = parseRebootDate(content.display.restartTime, nowDate);
   const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
 
   logger.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
   chrome.runtime.restartAfterDelay(seconds);
 }
 
-function parseRebootDate(restartHHMM) {
+function parseRebootDate(restartHHMM, nowDate) {
   const rebootDate = new Date();
   rebootDate.setHours(parseInt(restartHHMM.split(":")[0], 10));
   rebootDate.setMinutes(parseInt(restartHHMM.split(":")[1], 10));
-  if (rebootDate < new Date()) {rebootDate.setDate(rebootDate.getDate() + 1);}
+  if (rebootDate < nowDate) {rebootDate.setDate(rebootDate.getDate() + 1);}
   return rebootDate;
 }
 
