@@ -1,5 +1,4 @@
 const util = require('../util');
-const uriParser = require('./uri-parser');
 const fileSystem = require('./file-system');
 const logger = require('../logging/logger');
 
@@ -56,7 +55,7 @@ function onReceive({data, socketId}) {
   const requestText = util.arrayBufferToString(data);
   console.log(`request received:\n ${requestText}`);
   const keepAlive = requestText.indexOf('Connection: keep-alive') > 0;
-  const uri = uriParser.parseUri(requestText);
+  const uri = util.parseUri(requestText);
   if (!uri) {
     return sendResponse(socketId, '400 Bad Request', keepAlive);
   }
