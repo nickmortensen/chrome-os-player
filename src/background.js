@@ -1,6 +1,7 @@
 const windowManager = require('./window-manager');
 const logger = require('./logging/logger');
 const launchEnvs = require('./launch-environment');
+const displayIdServer = require('./marketwall/display-id-server');
 
 function init(launchData) {
   const manifest = chrome.runtime.getManifest();
@@ -8,6 +9,8 @@ function init(launchData) {
   launchEnvs.set(launchData);
 
   windowManager.startRegistration();
+
+  displayIdServer.init();
 
   chrome.runtime.requestUpdateCheck((status, details) => logger.log(`update check result: ${status}`, details));
 }
