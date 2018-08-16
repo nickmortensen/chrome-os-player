@@ -7,6 +7,7 @@ const storage = require('./storage/storage');
 const licensing = require('./licensing');
 const debugDataRequest = require('./messaging/debug-data-request');
 const rebootScheduler = require('./reboot-scheduler');
+const orientation = require('./orientation');
 const fileServer = require('./storage/file-server');
 const launchEnv = require('./launch-environment');
 const screenshot = require('./screenshot');
@@ -46,6 +47,7 @@ function fetchContent() {
     logger.log('sending content to viewer', contentData);
     viewerMessaging.send({from: 'player', topic: 'content-update', newContent: contentData});
     rebootScheduler.scheduleRebootFromViewerContents(contentData);
+    orientation.setupOrientation(contentData);
   })
   .catch((error) => logger.error('error when fetching content', error));
 }
