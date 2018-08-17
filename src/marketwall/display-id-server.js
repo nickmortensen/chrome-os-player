@@ -6,21 +6,11 @@ const address = '127.0.0.1'
 const port = 9494;
 const tcp = chrome.sockets.tcp;
 
-let displayId = null;
-
 module.exports = {
   init
 }
 
 function init() {
-  chrome.storage.onChanged.addListener(changes=>{
-    if (!changes.displayId) {return;}
-    if (!changes.displayId.newValue) {return;}
-    displayId = changes.displayId.newValue;
-  });
-
-  chrome.storage.local.get('displayId', items=>displayId = items.displayId)
-
   chrome.sockets.tcpServer.create(socketInfo=>{
     chrome.sockets.tcpServer.onAccept.addListener(onAccept);
     chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
@@ -44,7 +34,9 @@ function onReceive({data, socketId}) {
     return sendResponse(socketId, '400 Bad Request');
   }
 
-  return sendResponse(socketId, '200 OK', JSON.stringify({displayId}))
+  return util.getDisplayId()
+  .then(displayId=>sendResponse(socketId, '200 OK', JSON.stringify({displayId})))
+  .catch(err=>logger.error('marketwall display id error', err))
 }
 
 function sendResponse(socketId, httpStatus = '', content = '') {

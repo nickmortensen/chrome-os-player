@@ -64,5 +64,18 @@ module.exports = {
   stringToArrayBuffer,
   sha1,
   fetchWithRetry,
-  parseUri
+  parseUri,
+  getDisplayId
+}
+
+function getDisplayId() {
+  return new Promise((res, rej)=>{
+    chrome.storage.local.get('displayId', items=>{
+      if (chrome.runtime.lastError) {
+        return rej(Error(chrome.runtime.lastError));
+      }
+
+      res(items.displayId)
+    })
+  })
 }
