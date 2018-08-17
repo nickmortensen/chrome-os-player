@@ -9,6 +9,7 @@ const debugDataRequest = require('./messaging/debug-data-request');
 const rebootScheduler = require('./reboot-scheduler');
 const fileServer = require('./storage/file-server');
 const launchEnv = require('./launch-environment');
+const screenshot = require('./screenshot');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -27,6 +28,7 @@ function setUpMessaging() {
   messaging.on('content-update', fetchContent);
   messaging.on('reboot-request', () => rebootScheduler.rebootNow());
   messaging.on('restart-request', () => rebootScheduler.restart());
+  messaging.on('screenshot-request', (request) => screenshot.handleRequest(webview, request));
   viewerMessaging.on('viewer-config', logger.logClientInfo);
 
   return messaging.init();
