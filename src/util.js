@@ -47,9 +47,35 @@ function bufferToHex(buffer) {
   return Array.prototype.map.call(new Uint8Array(buffer), value => value.toString(16).padStart(2, '0')).join(''); // eslint-disable-line
 }
 
+/**
+ * @param {string} requestText
+ * @returns {string} uri without query string
+ */
+function parseUri(requestText) {
+  const matches = requestText.match(/GET\s(\S+)\s/);
+  if (matches && matches.length > 0) {
+    return matches[1].split('?')[0];
+  }
+  return null;
+}
+
 module.exports = {
   arrayBufferToString,
   stringToArrayBuffer,
   sha1,
-  fetchWithRetry
+  fetchWithRetry,
+  parseUri,
+  getDisplayId
+}
+
+function getDisplayId() {
+  return new Promise((res, rej)=>{
+    chrome.storage.local.get('displayId', items=>{
+      if (chrome.runtime.lastError) {
+        return rej(Error(chrome.runtime.lastError));
+      }
+
+      res(items.displayId)
+    })
+  })
 }
