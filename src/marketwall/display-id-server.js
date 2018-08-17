@@ -5,6 +5,7 @@ const util = require('../util');
 const address = '127.0.0.1'
 const port = 9494;
 const tcp = chrome.sockets.tcp;
+const sockets = new Set();
 
 module.exports = {
   init
@@ -12,7 +13,7 @@ module.exports = {
 
 function init() {
   chrome.sockets.tcpServer.create(socketInfo=>{
-    chrome.sockets.tcpServer.onAccept.addListener(onAccept);
+    chrome.sockets.tcpServer.onAccept.addListener(onAccept.bind(null, socketInfo.socketId));
     chrome.sockets.tcpServer.onAcceptError.addListener(console.error);
     tcp.onReceive.addListener(onReceive);
     chrome.sockets.tcpServer.listen(socketInfo.socketId, address, port, result=>{
@@ -21,11 +22,14 @@ function init() {
   });
 }
 
-function onAccept(acceptInfo) {
+function onAccept(serverSocketId, acceptInfo) {
+  if (acceptInfo.socketId !== serverSocketId) {return;}
   tcp.setPaused(acceptInfo.clientSocketId, false);
+  sockets.add(acceptInfo.clientSocketId);
 }
 
 function onReceive({data, socketId}) {
+  if (!sockets.has(socketId)) {return;}
   const requestText = util.arrayBufferToString(data);
   console.log(`request received:\n${requestText}`);
 
@@ -62,6 +66,7 @@ function sendResponse(socketId, httpStatus = '', content = '') {
       logger.error('marketwall display id error', Error(chrome.runtime.lastError));
     }
 
+    sockets.delete(socketId);
     tcp.disconnect(socketId, ()=>tcp.close(socketId))
   })
 }
