@@ -18,8 +18,6 @@ function setupOrientation(content, nowDate = Date.now()) {
         
         const rotation = content.display.orientation;
         
-        logger.log(`rotation `, rotation);
-        logger.log(`displays `, displays);
         if(rotation != displays[0].rotation) {
             var info = {rotation:0};
             info.rotation = rotation % 360;
