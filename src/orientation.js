@@ -3,7 +3,7 @@ const logger = require('./logging/logger');
 const MAX_DEGREE = 360;
 
 function hasOrientation(content) {
-  if (!(content && content.display && content.display.orientation)) {
+  if (!(content && content.display && Number.isInteger(content.display.orientation))) {
     logger.log('no orientation in display settings');
     return false;
   }
