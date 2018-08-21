@@ -30,7 +30,9 @@ function setUpMessaging() {
   messaging.on('reboot-request', () => rebootScheduler.rebootNow());
   messaging.on('restart-request', () => rebootScheduler.restart());
   messaging.on('screenshot-request', (request) => screenshot.handleRequest(webview, request));
-  viewerMessaging.on('viewer-config', logger.logClientInfo);
+  viewerMessaging.on('viewer-config', (viewerConfig) => {
+    licensing.onAuthorizationStatus(isAuthorized => logger.logClientInfo(viewerConfig, isAuthorized));
+  });
 
   return messaging.init();
 }

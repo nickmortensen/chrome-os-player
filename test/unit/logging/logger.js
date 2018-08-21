@@ -88,6 +88,7 @@ describe('Logger', () => {
     chrome.storage.local.get.yields({});
 
     const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
+    const isAuthorized = false;
     const nowDate = new Date();
 
     const expectedPlayerData = {
@@ -103,10 +104,11 @@ describe('Logger', () => {
       width: viewerConfig.width,
       height: viewerConfig.height,
       time_zone: moment.tz.guess(),
-      utc_offset: moment().format('Z')
+      utc_offset: moment().format('Z'),
+      offline_subscription: isAuthorized
     };
 
-    return logger.logClientInfo(viewerConfig, nowDate)
+    return logger.logClientInfo(viewerConfig, isAuthorized, nowDate)
       .then(() => {
         sinon.assert.calledWith(bq.insert, {ts: nowDate.toISOString(), ...expectedPlayerData}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});
@@ -117,8 +119,9 @@ describe('Logger', () => {
     environment.isDevelopmentVersion.returns(true);
 
     const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
+    const isAuthorized = false;
 
-    return logger.logClientInfo(viewerConfig)
+    return logger.logClientInfo(viewerConfig, isAuthorized)
       .then(() => {
         sinon.assert.notCalled(bq.insert);
       });
@@ -126,6 +129,7 @@ describe('Logger', () => {
 
   it('should not log client info to big query when it is the same', () => {
     const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
+    const isAuthorized = true;
     const nowDate = new Date();
 
     const expectedPlayerData = {
@@ -141,12 +145,13 @@ describe('Logger', () => {
       width: viewerConfig.width,
       height: viewerConfig.height,
       time_zone: moment.tz.guess(),
+      offline_subscription: isAuthorized,
       utc_offset: moment().format('Z')
     };
 
     chrome.storage.local.get.yields({playerData: expectedPlayerData});
 
-    return logger.logClientInfo(viewerConfig, nowDate)
+    return logger.logClientInfo(viewerConfig, isAuthorized, nowDate)
       .then(() => {
         sinon.assert.notCalled(bq.insert);
       });
@@ -154,6 +159,7 @@ describe('Logger', () => {
 
   it('should log client info to big query when it is updated', () => {
     const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
+    const isAuthorized = true;
     const nowDate = new Date();
 
     const expectedPlayerData = {
@@ -169,13 +175,14 @@ describe('Logger', () => {
       width: viewerConfig.width,
       height: viewerConfig.height,
       time_zone: moment.tz.guess(),
-      utc_offset: moment().format('Z')
+      utc_offset: moment().format('Z'),
+      offline_subscription: true
     };
 
-    const staleData = {...expectedPlayerData, height: 900};
+    const staleData = {...expectedPlayerData, height: 900, offline_subscription: isAuthorized};
     chrome.storage.local.get.yields({playerData: staleData});
 
-    return logger.logClientInfo(viewerConfig, nowDate)
+    return logger.logClientInfo(viewerConfig, isAuthorized, nowDate)
       .then(() => {
         sinon.assert.calledWith(bq.insert, {...expectedPlayerData, ts: nowDate.toISOString()}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});

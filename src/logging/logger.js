@@ -4,7 +4,7 @@ const systemInfo = require('./system-info');
 const environment = require('../launch-environment');
 const moment = require('moment-timezone');
 
-function buildPlayerData(viewerConfig) {
+function buildPlayerData(viewerConfig, isAuthorized) {
   return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
     .then(values => {
       const [machineId, displayId, os, ip] = values;
@@ -22,7 +22,8 @@ function buildPlayerData(viewerConfig) {
         width: viewerConfig.width,
         height: viewerConfig.height,
         time_zone: moment.tz.guess(),
-        utc_offset: moment().format("Z")
+        utc_offset: moment().format("Z"),
+        offline_subscription: isAuthorized
       };
     });
 }
@@ -33,10 +34,10 @@ function readPlayerData() {
   });
 }
 
-function logClientInfo(viewerConfig, nowDate = new Date()) {
+function logClientInfo(viewerConfig, isAuthorized, nowDate = new Date()) {
   if (environment.isDevelopmentVersion()) {return Promise.resolve();}
 
-  return Promise.all([buildPlayerData(viewerConfig), readPlayerData()])
+  return Promise.all([buildPlayerData(viewerConfig, isAuthorized), readPlayerData()])
     .then((values) => {
       const [newData, savedData] = values;
       if (isEqual(newData, savedData)) {

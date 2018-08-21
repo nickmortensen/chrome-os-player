@@ -13,21 +13,24 @@ const productCodes = {
 
 const subscriptions = {};
 let displayId = null;
+const authorizationListeners = [];
 
-module.exports = {
-  init() {
-    viewerMessaging.on('licensing-request', sendLicensingUpdate);
+function init() {
+  viewerMessaging.on('licensing-request', sendLicensingUpdate);
 
-    storageLocalMessaging.registerLocalListener(updateProductAuth);
-    store.init();
+  storageLocalMessaging.registerLocalListener(updateProductAuth);
+  store.init();
 
-    chrome.storage.onChanged.addListener(updateDisplayIdAndResubmitWatch);
+  chrome.storage.onChanged.addListener(updateDisplayIdAndResubmitWatch);
 
-    return viewerMessaging.viewerCanReceiveContent()
-    .then(systemInfo.getDisplayId)
-    .then(id=>displayId = id)
-    .then(submitWatchForProductAuthChanges);
-  }
+  return viewerMessaging.viewerCanReceiveContent()
+  .then(systemInfo.getDisplayId)
+  .then(id=>displayId = id)
+  .then(submitWatchForProductAuthChanges);
+}
+
+function onAuthorizationStatus(listener) {
+  authorizationListeners.push(listener);
 }
 
 function updateDisplayIdAndResubmitWatch(changes, area) {
@@ -90,4 +93,14 @@ function sendLicensingUpdate() {
   };
 
   viewerMessaging.send(message);
+
+  authorizationListeners.forEach(listener => {
+    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
+    listener(isAuthorized);
+  });
 }
+
+module.exports = {
+  init,
+  onAuthorizationStatus
+};
