@@ -68,8 +68,7 @@ function init() {
   });
 
   networkChecks.checkSites()
-  .then(()=>console.log('checking network'))
-  .catch(err=>console.log('network check error', err))
+  .catch(err=>logger.log('network check error', err))
 }
 
 window.addEventListener('DOMContentLoaded', () => {
