@@ -3,8 +3,9 @@ const ONE_SECOND_MILLIS = 1000;
 const TIMEOUT_MILLIS = 60000;
 const TIMEOUT_ERROR = Error('network-check-timeout');
 const siteList = [
+  "http://viewer.risevision.com",
+  "http://widgets.risevision.com/widget-image/0.1.1/dist/widget.html",
   "https://services.risevision.com/healthz",
-  "https://viewer.risevision.com",
   "https://storage-dot-rvaserver2.appspot.com",
   "https://store.risevision.com",
   "https://aws.amazon.com/s3/",
