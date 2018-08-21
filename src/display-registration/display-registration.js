@@ -1,6 +1,7 @@
 /* eslint-disable max-statements */
 const windowManager = require('../window-manager');
 const launchEnv = require('../launch-environment');
+const networkChecks = require('../network-checks');
 
 function createViewModel(document) {
 
@@ -48,6 +49,14 @@ function createViewModel(document) {
     errorMessage.innerHTML = message;
   }
 
+  function showNetworkError(message) {
+    const errorSection = document.getElementById('networkErrorSection');
+    const errorMessage = document.getElementById('networkErrorMessage');
+
+    errorSection.hidden = false;
+    errorMessage.innerHTML = message;
+  }
+
   return {
     bindRegistrationControllerFunction(fn) {
       form.onsubmit = (ev) => {
@@ -58,6 +67,10 @@ function createViewModel(document) {
       function getInputs() {
         return Array.from(form.querySelectorAll('input')).map(elm=>elm.value);
       }
+    },
+
+    disableContinue() {
+      document.getElementById('continue').setAttribute('disabled', '');
     },
 
     showEmptyDisplayIdError() {
@@ -80,6 +93,18 @@ function createViewModel(document) {
       showError(`The Display ID <b>${displayId}</b> is invalid. `);
     },
 
+    showNetworkError(err) {
+      const messageEnd = err.message.startsWith("http") ?
+        err.message.split(" ")[0] :
+        'required network sites';
+
+      showNetworkError(`Could not connect to ${messageEnd}. `);
+    },
+
+    showNetworkWaiting() {
+      showNetworkError('Waiting for network checks');
+    },
+
     launchViewer(displayId) {
       windowManager.launchViewer(displayId)
     }
@@ -97,7 +122,14 @@ function createController(viewModel, registrationService) {
   function saveDisplayIdAndLaunchViewer(displayId) {
     chrome.storage.local.set({displayId});
     chrome.storage.local.remove('content');
-    viewModel.launchViewer(displayId);
+
+    viewModel.disableContinue();
+
+    if (!networkChecks.haveCompleted()) {viewModel.showNetworkWaiting()}
+
+    return networkChecks.getResult()
+    .then(() => viewModel.launchViewer(displayId))
+    .catch((err) => viewModel.showNetworkError(err));
   }
 
   const controller = {

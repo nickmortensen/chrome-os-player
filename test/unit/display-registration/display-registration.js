@@ -3,6 +3,7 @@ const assert = require('assert');
 const sinon = require('sinon');
 const chrome = require('sinon-chrome/apps');
 const screen = require('../../../src/display-registration/display-registration');
+const networkChecks = require('../../../src/network-checks');
 
 const sandbox = sinon.createSandbox();
 
@@ -12,6 +13,8 @@ describe('Display ID Screen', () => {
     bindRegistrationFunction() {},
     showEmptyDisplayIdError() {},
     showInvalidDisplayIdError() {},
+    showNetworkCheckError() {},
+    disableContinue() {},
     launchViewer() {}
   }
 
@@ -46,9 +49,11 @@ describe('Display ID Screen', () => {
       });
   });
 
-  it('launches viewer when display ID is valid', () => {
+  it('launches viewer when display ID is valid and network checks pass', () => {
     const validator = ()=>Promise.resolve();
     sandbox.spy(viewModel, 'launchViewer');
+    sandbox.stub(networkChecks, 'getResult').resolves(true);
+    sandbox.stub(networkChecks, 'haveCompleted').returns(true);
 
     const controller = screen.createController(viewModel, validator);
 
@@ -58,6 +63,18 @@ describe('Display ID Screen', () => {
       });
   });
 
+  it('does not launch viewer when display ID is valid and network checks fail', () => {
+    const validator = ()=>Promise.resolve();
+    sandbox.spy(viewModel, 'launchViewer');
+    sandbox.stub(networkChecks, 'getResult').rejects(false);
+
+    const controller = screen.createController(viewModel, validator);
+
+    return controller.validateDisplayId('valid')
+      .then(() => {
+        assert.ok(!viewModel.launchViewer.calledOnce);
+      });
+  });
   it('stores uppercase display ID locally when it is valid', () => {
     const validator = ()=>Promise.resolve();
     const controller = screen.createController(viewModel, validator);

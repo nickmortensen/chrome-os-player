@@ -1,10 +1,13 @@
 const windowManager = require('../window-manager');
+const networkChecks = require('../network-checks');
 const launchEnv = require('../launch-environment');
 
-function createViewModel(document) {
+function createViewModel(document) { // eslint-disable-line max-statements
 
   const secondsRemaining = document.getElementById('secondsRemaining');
   const secondsText = document.getElementById('secondsText');
+  const networkErrorSection = document.getElementById('networkErrorSection');
+  const networkErrorMessage = document.getElementById('networkErrorMessage');
   const actions = document.querySelectorAll('a, button');
   const continueButton = document.getElementById('continue');
   const cancelButton = document.getElementById('cancel');
@@ -17,9 +20,28 @@ function createViewModel(document) {
     }
   }
 
+  function showErrorBox() {
+    continueButton.innerHTML = 'Skip';
+    networkErrorSection.hidden = false;
+    secondsRemaining.className = 'countdown-digits-danger text-danger';
+  }
+
   setupInfoMessage();
 
   return {
+    showNetworkWaiting() {
+      networkErrorMessage.innerHTML = 'Waiting for network checks';
+      showErrorBox();
+    },
+
+    showNetworkError(message) {
+      const specificSite = message.startsWith("http");
+      const genericError = 'required network sites';
+      const messageEnd = specificSite ? message.split(" ")[0] : genericError;
+
+      networkErrorMessage.innerHTML = `Could not connect to ${messageEnd}.`;
+      showErrorBox();
+    },
     bindController(controller) {
       links.forEach(link => {
         link.addEventListener('click', evt => {
@@ -48,9 +70,7 @@ function createViewModel(document) {
 
     updateSecondsRemaining(seconds) {
       secondsRemaining.innerText = seconds;
-      if (seconds === 1) {
-        secondsText.innerText = 'second.';
-      }
+      secondsText.innerText = seconds === 1 ? 'second' : 'seconds';
     }
   }
 }
@@ -67,7 +87,25 @@ function createController(viewModel, displayId) {
     },
 
     continue() {
-      windowManager.launchViewer(displayId);
+      if (skipNetworkError) {return windowManager.launchViewer(displayId)}
+      skipNetworkError = true;
+
+      if (!networkChecks.haveCompleted()) {
+        viewModel.showNetworkWaiting();
+        runningTimer = startCountdown(networkChecks.secondsRemaining());
+      }
+
+      return networkChecks.getResult()
+      .then(()=>windowManager.launchViewer(displayId))
+      .catch(err=>{
+        if (err.message === 'network-check-timeout') {
+          return windowManager.launchViewer(displayId);
+        }
+
+        viewModel.showNetworkError(err.message);
+        clearInterval(runningTimer);
+        runningTimer = startCountdown(SIXTY_SECONDS);
+      })
     },
 
     cancel() {
@@ -75,17 +113,25 @@ function createController(viewModel, displayId) {
     }
   };
 
-  const ONE_SECOND = 1000;
-  const runningTimer = setInterval(setSeconds, ONE_SECOND);
-  let seconds = 10;
+  const ONE_SECOND_MILLIS = 1000;
+  const TEN_SECONDS = 10;
+  const SIXTY_SECONDS = 60;
+  let runningTimer = startCountdown(TEN_SECONDS);
+  let skipNetworkError = false;
 
-  function setSeconds() {
-    seconds -= 1;
-    if (seconds === 0) {
-      controller.stopCountdown();
-      controller.continue();
-    } else {
+  function startCountdown(secs) {
+    let seconds = secs;
+
+    return setInterval(setSeconds, ONE_SECOND_MILLIS);
+
+    function setSeconds() {
+      seconds -= 1;
       viewModel.updateSecondsRemaining(seconds);
+
+      if (seconds === 0) {
+        controller.stopCountdown();
+        controller.continue();
+      }
     }
   }
 
