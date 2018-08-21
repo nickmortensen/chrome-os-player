@@ -38,4 +38,13 @@ describe('Orientation', () => {
     sinon.assert.calledWith(chrome.system.display.setDisplayProperties, "id", {rotation: 90});
     sinon.assert.calledWith(logger.log, `changing orientation from 0 to 90`);
   });
+
+  it('should work on 0 degrees', () => {
+    chrome.system.display.getInfo.yields([{id: "id", rotation: 90}]);
+
+    orientation.setupOrientation({display: {orientation: 0}});
+
+    sinon.assert.calledWith(chrome.system.display.setDisplayProperties, "id", {rotation: 0});
+    sinon.assert.calledWith(logger.log, `changing orientation from 90 to 0`);
+  });
 });
