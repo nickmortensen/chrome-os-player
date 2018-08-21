@@ -22,7 +22,7 @@ function createViewModel(document) { // eslint-disable-line max-statements
 
   function showErrorBox() {
     continueButton.innerHTML = 'Skip';
-    networkErrorSection.removeAttribute('hidden');
+    networkErrorSection.hidden = false;
     secondsRemaining.className = 'countdown-digits-danger text-danger';
   }
 
