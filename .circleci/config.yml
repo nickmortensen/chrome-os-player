@@ -51,6 +51,10 @@ jobs:
           command: NODE_ENV=production npm run dist
       - store_artifacts:
           path: dist/app.zip
+      - persist_to_workspace:
+          root: .
+          paths:
+            - latest-chrome-player-version
 
   "publish-version":
     docker: *DOCKERIMAGE
