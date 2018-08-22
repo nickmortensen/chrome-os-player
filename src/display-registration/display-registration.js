@@ -115,10 +115,6 @@ function createViewModel(document) {
       showNetworkError(`Could not connect to ${messageEnd}. `);
     },
 
-    showNetworkWaiting() {
-      showNetworkError('Waiting for network checks');
-    },
-
     launchViewer(displayId) {
       windowManager.launchViewer(displayId)
     }
@@ -139,7 +135,7 @@ function createController(viewModel, registrationService) {
 
     viewModel.disableContinue();
 
-    if (!networkChecks.haveCompleted()) {viewModel.showNetworkWaiting()}
+    if (!networkChecks.haveCompleted()) {viewModel.showSpinner()}
 
     return networkChecks.getResult()
     .then(() => viewModel.launchViewer(displayId))
