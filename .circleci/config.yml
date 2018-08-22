@@ -89,7 +89,7 @@ workflows:
             branches:
               only:
                 - build/stable
-      - "webstore":
+      - "upload_to_webstore":
           type: approval
           requires:
            - dist
