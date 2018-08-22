@@ -17,7 +17,7 @@ jobs:
           command: npm run test
           no_output_timeout: 1m
 
-  "deploy":
+  "deploy_beta":
     docker: *DOCKERIMAGE
     steps:
       - checkout
@@ -37,6 +37,7 @@ jobs:
             gsutil cp latest-chrome-player-version gs://install-versions.risevision.com/latest-chrome-player-beta-version
             gsutil setmeta -h "Cache-Control:private, max-age=0" -h "Content-Type:text/plain" gs://install-versions.risevision.com/latest-chrome-player-beta-version
             gsutil acl ch -u AllUsers:R gs://install-versions.risevision.com/latest-chrome-player-beta-version
+
   "dist":
     docker: *DOCKERIMAGE
     steps:
@@ -50,6 +51,7 @@ jobs:
           command: NODE_ENV=production npm run dist
       - store_artifacts:
           path: dist/app.zip
+
   "publish-version":
     docker: *DOCKERIMAGE
     steps:
@@ -75,21 +77,21 @@ workflows:
   test_and_deploy:
     jobs:
       - "test"
-      - "deploy":
+      - "deploy_beta":
           requires:
             - test
           filters:
             branches:
               only:
                 - master
-  deploy_production:
-    jobs:
       - "dist":
+          requires:
+            - test
           filters:
             branches:
               only:
                 - build/stable
-      - "upload_to_webstore":
+      - "manual_upload_to_webstore":
           type: approval
           requires:
            - dist
@@ -99,7 +101,7 @@ workflows:
                 - build/stable
       - "publish-version":
           requires:
-            - webstore
+            - manual_upload_to_webstore
           filters:
             branches:
               only:
