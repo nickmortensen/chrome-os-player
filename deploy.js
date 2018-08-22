@@ -33,6 +33,8 @@ function incrementVersion() {
   console.log(`Writing app name "${manifest.name}" and version ${publishVersion} to manifest.json`);
 
   fs.writeFileSync(manifestFilePath, JSON.stringify(manifest, null, 2), {encoding: "utf8"});
+
+  fs.writeFileSync("./latest-chrome-player-version", manifest.version)
 }
 
 function publish() {
@@ -80,8 +82,6 @@ function publish() {
   "https://www.googleapis.com/chromewebstore/v1.1/items/" + appId + "/publish"]);
 
   console.log(chromeWebStorePublishRequest.stdout.toString());
-
-  fs.writeFileSync("./latest-chrome-player-version", manifest.version)
 
   process.exit(chromeWebStorePublishRequest.status);
 }

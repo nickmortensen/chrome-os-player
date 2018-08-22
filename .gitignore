@@ -2,6 +2,7 @@
 dist/
 app/*.bundle.js
 private-keys
+latest-chrome-player-version
 
 # Logs
 logs
