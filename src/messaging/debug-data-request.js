@@ -10,11 +10,15 @@ module.exports = {
       const debugData = {};
 
       fileSystem.readDirEntries('cache')
-      .then(files=>{
-        debugData.files = files.map(({name})=>({name}))
+      .then(files => {
+        debugData.files = files.map(({name}) => ({name}))
       })
       .then(()=>debugData.databaseContents = database.getEntireDBObject())
-      .then(()=>{
+      .then(() => {
+        return new Promise(resolve => chrome.storage.local.get(items => resolve(items)));
+      })
+      .then(items => debugData.localStorageItems = items)
+      .then(() => {
         const logData = JSON.stringify(debugData);
         const dataLen = logData.length;
         const bqDetails = dataLen < MAXLEN ? logData : `too large: ${dataLen}`
