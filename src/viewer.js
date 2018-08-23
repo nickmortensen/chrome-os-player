@@ -31,7 +31,11 @@ function setUpMessaging() {
   messaging.on('restart-request', () => rebootScheduler.restart());
   messaging.on('screenshot-request', (request) => screenshot.handleRequest(webview, request));
   viewerMessaging.on('viewer-config', (viewerConfig) => {
-    licensing.onAuthorizationStatus(isAuthorized => logger.logClientInfo(viewerConfig, isAuthorized));
+    logger.log('viewer config received', viewerConfig);
+    licensing.onAuthorizationStatus(isAuthorized => {
+      logger.log('authorization status received', isAuthorized);
+      logger.logClientInfo(viewerConfig, isAuthorized)
+    });
   });
 
   return messaging.init();
