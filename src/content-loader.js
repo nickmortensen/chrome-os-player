@@ -12,7 +12,7 @@ function fetchContent() {
     return gcsClient.fetchJson(bucketName, filePath);
   })
   .then((contentData) => {
-    if (!contentData || Object.entries(contentData).length === 0) {
+    if (!contentData || Object.keys(contentData).length === 0) {
       logger.error('empty content data');
       return null;
     }

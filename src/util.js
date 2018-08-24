@@ -43,10 +43,6 @@ function fetchWithRetry(url, options = {}, retries = 2, timeout = 1000) { // esl
   });
 }
 
-function bufferToHex(buffer) {
-  return Array.prototype.map.call(new Uint8Array(buffer), value => value.toString(16).padStart(2, '0')).join(''); // eslint-disable-line
-}
-
 /**
  * @param {string} requestText
  * @returns {string} uri without query string
@@ -57,6 +53,14 @@ function parseUri(requestText) {
     return matches[1].split('?')[0];
   }
   return null;
+}
+
+function bufferToHex(buffer) {
+  return Array.prototype.map.call(new Uint8Array(buffer), value => padStart(value.toString(16))).join(''); // eslint-disable-line
+}
+
+function padStart(value) {
+  return `00${value}`.substr(-2); // eslint-disable-line no-magic-numbers
 }
 
 module.exports = {
