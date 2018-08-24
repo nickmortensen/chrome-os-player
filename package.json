@@ -49,6 +49,7 @@
     "gcs-filepath-validator": "^1.0.0",
     "lodash.isequal": "^4.5.0",
     "lodash.padstart": "^4.6.1",
+    "lodash.topairs": "^4.3.0",
     "lokijs": "^1.5.5",
     "moment-timezone": "^0.5.17"
   },
