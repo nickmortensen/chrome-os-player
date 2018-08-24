@@ -1,4 +1,3 @@
-const toPairs = require('lodash.topairs');
 const gcsClient = require('./gcs-client');
 const logger = require('./logging/logger');
 
@@ -13,7 +12,7 @@ function fetchContent() {
     return gcsClient.fetchJson(bucketName, filePath);
   })
   .then((contentData) => {
-    if (!contentData || toPairs(contentData).length === 0) {
+    if (!contentData || Object.keys(contentData).length === 0) {
       logger.error('empty content data');
       return null;
     }
