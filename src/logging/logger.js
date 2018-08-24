@@ -48,7 +48,7 @@ function logClientInfo(viewerConfig, isAuthorized, nowDate = new Date()) {
       return bq.insert(data, 'Player_Data', 'configuration', nowDate)
           .then(() => chrome.storage.local.set({playerData: newData}));
     })
-    .catch(console.error);
+    .catch(err => error('error when logging client info', err));
 }
 
 /**
