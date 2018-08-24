@@ -24,7 +24,7 @@ function setUpMessaging() {
     });
   });
 
-  setupLogEvents(webview);
+  setupWebviewEvents(webview);
 
   messaging.on('content-update', fetchContent);
   messaging.on('reboot-request', () => rebootScheduler.rebootNow());
@@ -41,10 +41,17 @@ function setUpMessaging() {
   return messaging.init();
 }
 
-function setupLogEvents(webview) {
+function setupWebviewEvents(webview) {
   webview.addEventListener('loadabort', evt => logger.error('viewer webview load aborted', null, {code: evt.code, reason: evt.reason}));
   webview.addEventListener('unresponsive', () => logger.error('viewer webview unresponsive'));
-  webview.addEventListener('permissionrequest', evt => logger.log('viewer webview premission requested', evt.permission));
+  webview.addEventListener('permissionrequest', evt => {
+    logger.log('viewer webview premission requested', evt.permission);
+    if (evt.permission === 'geolocation' || evt.permission === 'loadplugin') {
+      evt.request.allow();
+    } else {
+      evt.request.deny();
+    }
+  });
 }
 
 function fetchContent() {
