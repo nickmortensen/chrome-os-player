@@ -1,3 +1,5 @@
+const padStart = require('lodash.padstart');
+
 /**
  * @param {ArrayBuffer} buffer
  * @returns {string}
@@ -44,7 +46,7 @@ function fetchWithRetry(url, options = {}, retries = 2, timeout = 1000) { // esl
 }
 
 function bufferToHex(buffer) {
-  return Array.prototype.map.call(new Uint8Array(buffer), value => value.toString(16).padStart(2, '0')).join(''); // eslint-disable-line
+  return Array.prototype.map.call(new Uint8Array(buffer), value => padStart(value.toString(16), 2, '0')).join(''); // eslint-disable-line
 }
 
 /**
