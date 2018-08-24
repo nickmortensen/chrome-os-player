@@ -38,7 +38,8 @@ function setUpMessaging() {
     });
   });
 
-  return messaging.init();
+  return messaging.init()
+  .catch(() => logger.log('MS connection failed on init'));
 }
 
 function setupLogEvents(webview) {
