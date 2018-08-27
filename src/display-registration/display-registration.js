@@ -50,23 +50,6 @@ function createViewModel(document) {
     errorMessage.innerHTML = message;
   }
 
-  function showNetworkError(message) {
-    const errorSection = document.getElementById('networkErrorSection');
-    const errorMessage = document.getElementById('networkErrorMessage');
-
-    errorSection.hidden = false;
-    errorMessage.innerHTML = message;
-    showContinueAnyway();
-  }
-
-  function showContinueAnyway() {
-    continueButton.disabled = false;
-    continueButton.innerHTML = 'Continue Anyway';
-    continueButton.addEventListener('click', ()=>{
-      continueButton.setAttribute('data-network-error-acknowledged', '');
-    });
-  }
-
   return {
     networkErrorAcknowledged() {
       return continueButton.hasAttribute('data-network-error-acknowledged');
@@ -107,14 +90,6 @@ function createViewModel(document) {
       showError(`The Display ID <b>${displayId}</b> is invalid. `);
     },
 
-    showNetworkError(err) {
-      const messageEnd = err.message.startsWith("http") ?
-        err.message.split(" ")[0] :
-        'required network sites';
-
-      showNetworkError(`Could not connect to ${messageEnd}. `);
-    },
-
     launchViewer(displayId) {
       windowManager.launchViewer(displayId)
     }
@@ -141,7 +116,7 @@ function createController(viewModel, registrationService) {
     .then(() => viewModel.launchViewer(displayId))
     .catch((err) => viewModel.networkErrorAcknowledged() ?
       viewModel.launchViewer(displayId) :
-      viewModel.showNetworkError(err));
+      viewModel.showNetworkError(err, displayId));
   }
 
   const controller = {

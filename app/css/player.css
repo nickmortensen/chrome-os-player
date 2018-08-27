@@ -517,3 +517,7 @@ hr {
   top: 1px;
 }
 
+.zendesk-web-widget a span{
+  color: white;
+}
+
