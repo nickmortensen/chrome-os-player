@@ -8,6 +8,7 @@ function createViewModel(document) {
   const form = document.querySelector('form');
   const links = document.querySelectorAll('a.webview');
   const cancelButton = document.getElementById('cancel');
+  const continueButton = document.getElementById('continue');
 
   links.forEach(link => {
     link.addEventListener('click', evt => {
@@ -55,9 +56,22 @@ function createViewModel(document) {
 
     errorSection.hidden = false;
     errorMessage.innerHTML = message;
+    showContinueAnyway();
+  }
+
+  function showContinueAnyway() {
+    continueButton.disabled = false;
+    continueButton.innerHTML = 'Continue Anyway';
+    continueButton.addEventListener('click', ()=>{
+      continueButton.setAttribute('data-network-error-acknowledged', '');
+    });
   }
 
   return {
+    networkErrorAcknowledged() {
+      return continueButton.hasAttribute('data-network-error-acknowledged');
+    },
+
     bindRegistrationControllerFunction(fn) {
       form.onsubmit = (ev) => {
         ev.preventDefault();
@@ -70,7 +84,7 @@ function createViewModel(document) {
     },
 
     disableContinue() {
-      document.getElementById('continue').setAttribute('disabled', '');
+      continueButton.disabled = true
     },
 
     showEmptyDisplayIdError() {
@@ -129,7 +143,9 @@ function createController(viewModel, registrationService) {
 
     return networkChecks.getResult()
     .then(() => viewModel.launchViewer(displayId))
-    .catch((err) => viewModel.showNetworkError(err));
+    .catch((err) => viewModel.networkErrorAcknowledged() ?
+      viewModel.launchViewer(displayId) :
+      viewModel.showNetworkError(err));
   }
 
   const controller = {

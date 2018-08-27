@@ -20,9 +20,7 @@ let secondsRemaining = TIMEOUT_MILLIS / ONE_SECOND_MILLIS;
 module.exports = {
   checkSites() {
     const checks = Promise.all(siteList.map(site=>{
-      console.log('Checking networking', site);
       return fetch(site).then(resp=>{
-        console.log(site, resp.status);
         return resp.ok ? "" : Promise.reject(Error(site))
       })
       .catch(err=>{
