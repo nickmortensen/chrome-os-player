@@ -51,12 +51,13 @@ function setupWebviewEvents(webview) {
 }
 
 function setupClientInfoLog() {
-  viewerMessaging.on('viewer-config', viewerConfig => {
+  const viewerConfigPromise = new Promise(resolve => viewerMessaging.on('viewer-config', resolve));
+
+  Promise.all([viewerConfigPromise, licensing.getAuthorizationStatus()]).then(values => {
+    const [viewerConfig, isAuthorized] = values;
     logger.log('viewer config received', viewerConfig);
-    licensing.onAuthorizationStatus(isAuthorized => {
-      logger.log('authorization status received', isAuthorized);
-      logger.logClientInfo(viewerConfig, isAuthorized);
-    });
+    logger.log('authorization status received', isAuthorized);
+    logger.logClientInfo(viewerConfig, isAuthorized);
   });
 }
 

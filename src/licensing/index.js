@@ -15,7 +15,17 @@ const productCodes = {
 
 const subscriptions = {};
 let displayId = null;
-const authorizationListeners = [];
+const authorizationStatusObserver = {
+  resolvers: [],
+  resolve() {
+    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
+
+    while (this.resolvers.length > 0) {
+      const fn = this.resolvers.pop();
+      fn(isAuthorized);
+    }
+  }
+};
 
 function init() {
   viewerMessaging.on('licensing-request', sendLicensingUpdate);
@@ -31,15 +41,17 @@ function init() {
   .then(submitWatchForProductAuthChanges);
 }
 
-function onAuthorizationStatus(listener) {
-  authorizationListeners.push(listener);
+function getAuthorizationStatus() {
+  return new Promise(resolve => {
+    authorizationStatusObserver.resolvers.push(resolve);
+    if (Object.keys(subscriptions).length > 0) {
+      authorizationStatusObserver.resolve();
+    }
+  });
 }
 
 function notifyAuthorizationStatusListeners() {
-  authorizationListeners.forEach(listener => {
-    const isAuthorized = util.objectValues(subscriptions).some(subscription => subscription === true);
-    listener(isAuthorized);
-  });
+  authorizationStatusObserver.resolve();
 }
 
 function updateDisplayIdAndResubmitWatch(changes, area) {
@@ -116,5 +128,5 @@ function products() {
 
 module.exports = {
   init,
-  onAuthorizationStatus
+  getAuthorizationStatus
 };
