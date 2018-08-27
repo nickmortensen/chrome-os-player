@@ -67,16 +67,18 @@ function submitWatchForProductAuthChanges() {
 }
 
 function updateProductAuth({topic, status, filePath, ospath} = {}) {
-  if (status === 'NOEXIST') {notifyAuthorizationStatusListeners();}
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
-  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
+  if (topic !== 'FILE-UPDATE') {return}
+  if (status !== 'CURRENT' && status !== 'NOEXIST') {return}
   if (!aProductAuthFileWasChanged()) {return}
 
   const productCode = products().find(prodCode=>{
     return filePath.includes(prodCode);
   });
 
-  return fileSystem.readCachedFileAsObject(ospath.split("/").pop())
+  const objectPromise = status === 'CURRENT' ? fileSystem.readCachedFileAsObject(ospath.split("/").pop()) : Promise.resolve({productCode: false});
+
+  return objectPromise
   .then(obj=>{
     subscriptions[productCode] = obj.authorized;
     logger.log(`licensing - authorization set to ${JSON.stringify(subscriptions)}`);
