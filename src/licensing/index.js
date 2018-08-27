@@ -6,6 +6,7 @@ const storageMessaging = require('../storage/messaging/messaging');
 const fileSystem = require('../storage/file-system')
 const systemInfo = require('../logging/system-info');
 const logger = require('../logging/logger');
+const util = require('../util');
 
 const displayConfigBucket = 'risevision-display-notifications';
 const productCodes = {
@@ -36,7 +37,7 @@ function onAuthorizationStatus(listener) {
 
 function notifyAuthorizationStatusListeners() {
   authorizationListeners.forEach(listener => {
-    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
+    const isAuthorized = util.objectValues(subscriptions).some(subscription => subscription === true);
     listener(isAuthorized);
   });
 }
@@ -51,7 +52,7 @@ function updateDisplayIdAndResubmitWatch(changes, area) {
 function submitWatchForProductAuthChanges() {
   if (!displayId) {return;}
 
-  const filePaths = Object.values(productCodes).map(code=>{
+  const filePaths = products().map(code=>{
     return `${displayConfigBucket}/${displayId}/authorization/${code}.json`;
   });
 
@@ -71,7 +72,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
   if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
   if (!aProductAuthFileWasChanged()) {return}
 
-  const productCode = Object.values(productCodes).find(prodCode=>{
+  const productCode = products().find(prodCode=>{
     return filePath.includes(prodCode);
   });
 
@@ -87,7 +88,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
   });
 
   function aProductAuthFileWasChanged() {
-    return Object.values(productCodes).some(prodCode=>{
+    return products().some(prodCode=>{
       return filePath.includes(prodCode);
     });
   }
@@ -104,6 +105,10 @@ function sendLicensingUpdate() {
   viewerMessaging.send(message);
 
   notifyAuthorizationStatusListeners();
+}
+
+function products() {
+  return util.objectValues(productCodes);
 }
 
 

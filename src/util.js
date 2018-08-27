@@ -54,6 +54,26 @@ function parseUri(requestText) {
   }
   return null;
 }
+/**
+ * Returns the display id saved in chrome.storage.local
+ *
+ * @returns {Promise.<String>} displayId
+ */
+function getDisplayId() {
+  return new Promise((res, rej)=>{
+    chrome.storage.local.get('displayId', items=>{
+      if (chrome.runtime.lastError) {
+        return rej(Error(chrome.runtime.lastError));
+      }
+
+      res(items.displayId)
+    })
+  })
+}
+
+function objectValues(obj) {
+  return Object.keys(obj).map(key => obj[key]);
+}
 
 function bufferToHex(buffer) {
   return Array.prototype.map.call(new Uint8Array(buffer), value => padStart(value.toString(16))).join(''); // eslint-disable-line
@@ -69,17 +89,8 @@ module.exports = {
   sha1,
   fetchWithRetry,
   parseUri,
-  getDisplayId
+  getDisplayId,
+  objectValues
 }
 
-function getDisplayId() {
-  return new Promise((res, rej)=>{
-    chrome.storage.local.get('displayId', items=>{
-      if (chrome.runtime.lastError) {
-        return rej(Error(chrome.runtime.lastError));
-      }
 
-      res(items.displayId)
-    })
-  })
-}
