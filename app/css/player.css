@@ -490,9 +490,7 @@ hr {
   color: #333;
 }
 
-/* Zendesk Web Widget */
-
-.zendesk-web-widget {
+.help-button {
   background-color: #4ab766 !important;
   color: white !important;
   padding: 12px 22px;
@@ -510,14 +508,14 @@ hr {
   font-size: 16px;
 }
 
-.zendesk-web-widget .fa {
+.help-button .fa {
   font-size: 20px;
   margin-right: 4px;
   position: relative;
   top: 1px;
 }
 
-.zendesk-web-widget a span{
+.help-button a span{
   color: white;
 }
 
