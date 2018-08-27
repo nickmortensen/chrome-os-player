@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const viewerMessaging = require('../messaging/viewer-messaging');
 const store = require('./store');
 const storageLocalMessaging = require('../storage/messaging/local-messaging-helper');
@@ -33,6 +34,13 @@ function onAuthorizationStatus(listener) {
   authorizationListeners.push(listener);
 }
 
+function notifyAuthorizationStatusListeners() {
+  authorizationListeners.forEach(listener => {
+    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
+    listener(isAuthorized);
+  });
+}
+
 function updateDisplayIdAndResubmitWatch(changes, area) {
   if (area !== 'local' || !changes.displayId) {return;}
 
@@ -58,6 +66,7 @@ function submitWatchForProductAuthChanges() {
 }
 
 function updateProductAuth({topic, status, filePath, ospath} = {}) {
+  if (status === 'NOEXIST') {notifyAuthorizationStatusListeners();}
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
   if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
   if (!aProductAuthFileWasChanged()) {return}
@@ -94,11 +103,9 @@ function sendLicensingUpdate() {
 
   viewerMessaging.send(message);
 
-  authorizationListeners.forEach(listener => {
-    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
-    listener(isAuthorized);
-  });
+  notifyAuthorizationStatusListeners();
 }
+
 
 module.exports = {
   init,
