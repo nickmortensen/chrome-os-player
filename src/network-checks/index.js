@@ -54,5 +54,9 @@ module.exports = {
   },
   secondsRemaining() {
     return secondsRemaining;
+  },
+  retry() {
+    isComplete = false;
+    module.exports.checkSites();
   }
 };

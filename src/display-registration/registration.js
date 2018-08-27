@@ -7,6 +7,8 @@ const displayRegistrationScreen = require('./display-registration');
 const countdownHtml = require('./countdown.html');
 const spinnerHtml = require('./spinner.html');
 const spinnerScreen = require('./spinner');
+const networkErrorHtml = require('./network-error.html');
+const networkErrorScreen = require('./network-error');
 const countdownScreen = require('./countdown');
 const contentLoader = require('../content-loader');
 const logger = require('../logging/logger');
@@ -21,6 +23,7 @@ function init() {
     const [viewModel, controller] = displayRegistrationScreen.init(document, displayIdValidator);
     viewModel.bindRegistrationControllerFunction(controller.validateDisplayId.bind(controller));
     viewModel.showSpinner = showSpinner;
+    viewModel.showNetworkError = showNetworkError;
     const claimIdLink = document.getElementById('claimIdLink');
     claimIdLink.addEventListener('click', (event) => {
       event.preventDefault();
@@ -38,6 +41,7 @@ function init() {
     const [viewModel, controller] = displayRegistrationScreen.init(document, claimIdSubmittor);
     viewModel.bindRegistrationControllerFunction(controller.submitClaimId.bind(controller));
     viewModel.showSpinner = showSpinner;
+    viewModel.showNetworkError = showNetworkError;
     const displayIdLink = document.getElementById('displayIdLink');
     displayIdLink.addEventListener('click', (event) => {
       event.preventDefault();
@@ -61,6 +65,14 @@ function init() {
     logger.log('showing spinner');
     body.innerHTML = spinnerHtml;
     spinnerScreen.init(document);
+  }
+
+  function showNetworkError(err, displayId) {
+    logger.log('showing network error');
+    body.innerHTML = networkErrorHtml;
+    const controller = networkErrorScreen.init(document, err);
+    controller.goToDisplayId = goToDisplayId;
+    controller.displayId = displayId;
   }
 
   chrome.storage.local.get((items) => {
