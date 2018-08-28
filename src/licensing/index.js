@@ -76,7 +76,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
     return filePath.includes(prodCode);
   });
 
-  const objectPromise = status === 'CURRENT' ? fileSystem.readCachedFileAsObject(ospath.split("/").pop()) : Promise.resolve({productCode: false});
+  const objectPromise = status === 'CURRENT' ? fileSystem.readCachedFileAsObject(ospath.split("/").pop()) : Promise.resolve({[productCode]: false});
 
   return objectPromise
   .then(obj=>{
