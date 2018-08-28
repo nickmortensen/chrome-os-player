@@ -49,6 +49,8 @@ function handleMSFileUpdate(message) {
 
   if (!action) {return Promise.reject(new Error('Invalid file update message'));}
 
+  logger.log(`MS file ${type} received`, {file_path: message.filePath});
+
   return action.process(message)
   .catch(err => {
     logError(err, `storage - handle MSFILEUPDATE ${type} Error`, message.filePath);
