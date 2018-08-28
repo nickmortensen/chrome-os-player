@@ -18,6 +18,7 @@
       "power",
       "alarms"
     ],
+    "minimum_chrome_version": "42",
     "icons": {
       "16": "icon_16.png",
       "48": "icon_48.png",
