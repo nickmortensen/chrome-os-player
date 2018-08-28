@@ -1,3 +1,4 @@
+/* eslint-disable max-statements */
 const viewerMessaging = require('../messaging/viewer-messaging');
 const store = require('./store');
 const storageLocalMessaging = require('../storage/messaging/local-messaging-helper');
@@ -5,6 +6,7 @@ const storageMessaging = require('../storage/messaging/messaging');
 const fileSystem = require('../storage/file-system')
 const systemInfo = require('../logging/system-info');
 const logger = require('../logging/logger');
+const util = require('../util');
 
 const displayConfigBucket = 'risevision-display-notifications';
 const productCodes = {
@@ -33,6 +35,13 @@ function onAuthorizationStatus(listener) {
   authorizationListeners.push(listener);
 }
 
+function notifyAuthorizationStatusListeners() {
+  authorizationListeners.forEach(listener => {
+    const isAuthorized = util.objectValues(subscriptions).some(subscription => subscription === true);
+    listener(isAuthorized);
+  });
+}
+
 function updateDisplayIdAndResubmitWatch(changes, area) {
   if (area !== 'local' || !changes.displayId) {return;}
 
@@ -43,7 +52,7 @@ function updateDisplayIdAndResubmitWatch(changes, area) {
 function submitWatchForProductAuthChanges() {
   if (!displayId) {return;}
 
-  const filePaths = Object.values(productCodes).map(code=>{
+  const filePaths = products().map(code=>{
     return `${displayConfigBucket}/${displayId}/authorization/${code}.json`;
   });
 
@@ -59,14 +68,17 @@ function submitWatchForProductAuthChanges() {
 
 function updateProductAuth({topic, status, filePath, ospath} = {}) {
   if (!filePath || !filePath.startsWith(displayConfigBucket)) {return}
-  if (topic !== 'FILE-UPDATE' || status !== 'CURRENT') {return}
+  if (topic !== 'FILE-UPDATE') {return}
+  if (status !== 'CURRENT' && status !== 'NOEXIST') {return}
   if (!aProductAuthFileWasChanged()) {return}
 
-  const productCode = Object.values(productCodes).find(prodCode=>{
+  const productCode = products().find(prodCode=>{
     return filePath.includes(prodCode);
   });
 
-  return fileSystem.readCachedFileAsObject(ospath.split("/").pop())
+  const objectPromise = status === 'CURRENT' ? fileSystem.readCachedFileAsObject(ospath.split("/").pop()) : Promise.resolve({[productCode]: false});
+
+  return objectPromise
   .then(obj=>{
     subscriptions[productCode] = obj.authorized;
     logger.log(`licensing - authorization set to ${JSON.stringify(subscriptions)}`);
@@ -78,7 +90,7 @@ function updateProductAuth({topic, status, filePath, ospath} = {}) {
   });
 
   function aProductAuthFileWasChanged() {
-    return Object.values(productCodes).some(prodCode=>{
+    return products().some(prodCode=>{
       return filePath.includes(prodCode);
     });
   }
@@ -94,11 +106,13 @@ function sendLicensingUpdate() {
 
   viewerMessaging.send(message);
 
-  authorizationListeners.forEach(listener => {
-    const isAuthorized = Object.values(subscriptions).some(subscription => subscription === true);
-    listener(isAuthorized);
-  });
+  notifyAuthorizationStatusListeners();
 }
+
+function products() {
+  return util.objectValues(productCodes);
+}
+
 
 module.exports = {
   init,

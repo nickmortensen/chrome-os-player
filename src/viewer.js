@@ -30,13 +30,8 @@ function setUpMessaging() {
   messaging.on('reboot-request', () => rebootScheduler.rebootNow());
   messaging.on('restart-request', () => rebootScheduler.restart());
   messaging.on('screenshot-request', (request) => screenshot.handleRequest(webview, request));
-  viewerMessaging.on('viewer-config', (viewerConfig) => {
-    logger.log('viewer config received', viewerConfig);
-    licensing.onAuthorizationStatus(isAuthorized => {
-      logger.log('authorization status received', isAuthorized);
-      logger.logClientInfo(viewerConfig, isAuthorized)
-    });
-  });
+
+  setupClientInfoLog();
 
   return messaging.init()
   .catch(() => logger.log('MS connection failed on init'));
@@ -52,6 +47,16 @@ function setupWebviewEvents(webview) {
     } else {
       evt.request.deny();
     }
+  });
+}
+
+function setupClientInfoLog() {
+  viewerMessaging.on('viewer-config', viewerConfig => {
+    logger.log('viewer config received', viewerConfig);
+    licensing.onAuthorizationStatus(isAuthorized => {
+      logger.log('authorization status received', isAuthorized);
+      logger.logClientInfo(viewerConfig, isAuthorized);
+    });
   });
 }
 
