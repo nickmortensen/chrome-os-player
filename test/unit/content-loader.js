@@ -6,6 +6,7 @@ const gcsClient = require('../../src/gcs-client');
 const logger = require('../../src/logging/logger');
 
 const contentLoader = require('../../src/content-loader');
+const updateFrequencyLogger = require('../../src/update-frequency-logger');
 
 const sandbox = sinon.createSandbox();
 
@@ -15,7 +16,10 @@ describe('Content Loader', () => {
 
   afterEach(() => sandbox.restore());
 
-  beforeEach(() => sandbox.stub(logger, 'error'));
+  beforeEach(() => {
+    sandbox.stub(logger, 'error');
+    sandbox.stub(updateFrequencyLogger, 'logContentChanges');
+  });
 
   it('should load local content', () => {
     const localData = {displayId: 'displayId', content: {content: {presentations: []}}};
@@ -28,17 +32,17 @@ describe('Content Loader', () => {
     });
   });
 
-  it('should fetch content from GCS', () => {
+  it('should fetch content from GCS and log content changes', () => {
     chrome.storage.local.get.yields({displayId: 'displayId'});
     sandbox.stub(gcsClient, 'fetchJson').resolves({content: {presentations: []}});
 
     return contentLoader.loadContent().then(() => {
+      sinon.assert.called(updateFrequencyLogger.logContentChanges);
       sinon.assert.calledWith(gcsClient.fetchJson, 'risevision-display-notifications', 'displayId/content.json');
     });
   });
 
   it('should rewrite supported widget URLs', () => {
-
     chrome.storage.local.get.yields({displayId: 'displayId'});
     const contentData = {
       content: {
