@@ -97,4 +97,22 @@ describe('Reboot Scheduler', () => {
     sinon.assert.called(chrome.runtime.reload);
   });
 
+  it('should schedule alarm if restartAfterDelay is not available', () => {
+    sandbox.stub(envVars, 'isKioskSession').returns(true);
+    const originalRestartAfterDelay = chrome.runtime.restartAfterDelay;
+    Reflect.deleteProperty(chrome.runtime, 'restartAfterDelay');
+
+    const nowDate = Date.now();
+    const oneHour = 60 * 60 * 1000;
+    const restartDate = new Date(nowDate + oneHour);
+    const hh = `${restartDate.getHours()}`.padStart(2, '0');
+    const mm = `${restartDate.getMinutes()}`.padStart(2, '0');
+    const content = {display: {restartEnabled: true, restartTime: `${hh}:${mm}`}};
+
+    rebootScheduler.scheduleRebootFromViewerContents(content, nowDate);
+
+    sinon.assert.calledWith(chrome.alarms.create, 'restart', {when: restartDate});
+    chrome.runtime.restartAfterDelay = originalRestartAfterDelay;
+  });
+
 });
