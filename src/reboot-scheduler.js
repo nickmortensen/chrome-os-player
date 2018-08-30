@@ -29,7 +29,17 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
 
   logger.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
-  chrome.runtime.restartAfterDelay(seconds);
+  if (typeof chrome.runtime.restartAfterDelay === 'function') {
+    chrome.runtime.restartAfterDelay(seconds);
+  } else {
+    chrome.alarms.create('restart', {when: rebootDate});
+    chrome.alarms.onAlarm.addListener(alarm => {
+      if (alarm.name === 'restart') {
+        logger.log('restarting after alarm');
+        chrome.runtime.restart();
+      }
+    });
+  }
 }
 
 function parseRebootDate(restartHHMM, nowDate) {
