@@ -1,4 +1,5 @@
 const gcsClient = require('./gcs-client');
+const updateFrequencyLogger = require('./update-frequency-logger');
 const logger = require('./logging/logger');
 
 function readDisplayId() {
@@ -19,6 +20,8 @@ function fetchContent() {
     return contentData;
   })
   .then(contentData => {
+    updateFrequencyLogger.logContentChanges(contentData);
+
     chrome.storage.local.set({content: contentData});
     return contentData;
   });
