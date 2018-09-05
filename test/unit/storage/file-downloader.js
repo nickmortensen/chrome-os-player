@@ -83,17 +83,22 @@ describe('File Downloader', () => {
     sandbox.stub(fileSystem, 'writeFileToDirectory').resolves({});
     sandbox.stub(fileSystem, 'checkAvailableDiskSpace').resolves(true);
     sandbox.stub(urlProvider, 'getUrl').resolves('http://risevision.com/test/file');
-    fetch.resolves({ok: false, status: 500, headers: {get() {}}});
+    fetch.resolves({
+      ok: false,
+      status: 500,
+      statusText: 'internal server error',
+      headers: {get() {}}
+    });
 
     const entry = {filePath, version, token};
 
     return fileDownloader.download(entry)
       .then(assert.fail)
       .catch(error => {
-        assert.equal(error.message, 'Invalid response with status code 500');
+        assert.equal(error.message, 'internal server error http://risevision.com/test/file');
         sinon.assert.notCalled(fileSystem.writeFileToDirectory);
       });
-  });
+  }).timeout(5000);
 
   it('should reject and not write file when file request rejects', () => {
     sandbox.stub(fileSystem, 'writeFileToDirectory').resolves({});
