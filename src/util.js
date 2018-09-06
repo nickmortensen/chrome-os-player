@@ -34,12 +34,15 @@ function sha1(string) {
  * @param {number} [timeout]
  */
 function fetchWithRetry(url, options = {}, retries = 2, timeout = 1000) { // eslint-disable-line no-magic-numbers
-  return fetch(url, options).catch(error => {
+  return fetch(url, options)
+  .then(resp => resp.ok ? resp : Promise.reject(Error(`${resp.statusText} ${url}`)))
+  .catch(error => {
     if (retries <= 0) {
       return Promise.reject(error);
     }
 
-    return new Promise((resolve) => setTimeout(resolve, timeout)).then(() => fetchWithRetry(url, options, retries - 1, timeout));
+    return new Promise((resolve) => setTimeout(resolve, timeout))
+    .then(() => fetchWithRetry(url, options, retries - 1, timeout));
   });
 }
 

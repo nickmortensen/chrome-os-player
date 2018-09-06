@@ -37,10 +37,6 @@ function download(entry) {
 }
 
 function checkAvailableDiskSpace(response) {
-  if (!response.ok) {
-    return Promise.reject(Error(`Invalid response with status code ${response.status}`));
-  }
-
   const contentLength = response.headers.get('Content-Length');
   const fileSize = Number.parseInt(contentLength, 10) || 0;
 
