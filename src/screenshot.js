@@ -32,7 +32,7 @@ function handleRequest(webview, request) {
         msg: 'screenshot-failed',
         clientId: request.clientId
       });
-      logger.error('error when uploading screenshot', error);
+      logger.error('player - error when uploading screenshot', error);
     });
 }
 

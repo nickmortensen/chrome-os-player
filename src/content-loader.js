@@ -14,7 +14,7 @@ function fetchContent() {
   })
   .then((contentData) => {
     if (!contentData || Object.keys(contentData).length === 0) {
-      logger.error('empty content data');
+      logger.error('player - empty content data');
       return null;
     }
     return contentData;

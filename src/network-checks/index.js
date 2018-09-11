@@ -1,4 +1,3 @@
-const logger = require('../logging/logger');
 const ONE_SECOND_MILLIS = 1000;
 const TIMEOUT_MILLIS = 60000;
 const TIMEOUT_ERROR = Error('network-check-timeout');
@@ -25,8 +24,6 @@ module.exports = {
       })
       .catch(err=>{
         if (!err.message.startsWith("http")) {err.message = `${site} ${err.message}`}
-
-        logger.error(err);
         return Promise.reject(err);
       });
     }));

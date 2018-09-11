@@ -92,7 +92,7 @@ describe('Content Loader', () => {
     sandbox.stub(gcsClient, 'fetchJson').resolves({});
 
     return contentLoader.fetchContent().then((data) => {
-      sinon.assert.calledWith(logger.error, 'empty content data');
+      sinon.assert.calledWith(logger.error, 'player - empty content data');
       assert.equal(data, null);
     });
   });

@@ -33,7 +33,7 @@ function handleFileWatchResult(message) {
 
   return update.updateWatchlistAndMetadata({filePath, version, status, token})
   .then(() => sendFileUpdate({filePath, status, version}))
-  .catch(error => logger.error(`error on handling file watch result for ${filePath}`, error));
+  .catch(error => logger.error(`storage - error on handling file watch result`, error, {filePath}));
 }
 
 function handleFolderWatchResult(message) {

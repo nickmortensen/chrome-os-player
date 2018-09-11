@@ -47,31 +47,31 @@ describe('Messaging Service Client', () => {
   }
 
   it('should log connection opened event', () => {
-    return shouldLogEvent('open', 'MS connection opened');
+    return shouldLogEvent('open', 'messaging - MS connection opened');
   });
 
   it('should log connection closed event', () => {
     connection.on.withArgs('open').yields();
 
-    return shouldLogEvent('close', 'MS connection closed');
+    return shouldLogEvent('close', 'messaging - MS connection closed');
   });
 
   it('should log connection end event', () => {
     connection.on.withArgs('open').yields();
 
-    return shouldLogEvent('end', 'MS disconnected');
+    return shouldLogEvent('end', 'messaging - MS disconnected');
   });
 
   it('should log reconnect event', () => {
     connection.on.withArgs('open').yields();
 
-    return shouldLogEvent('reconnect', 'MS reconnection attempt started');
+    return shouldLogEvent('reconnect', 'messaging - MS reconnection attempt started');
   });
 
   it('should log reconnected event', () => {
     connection.on.withArgs('open').yields();
 
-    return shouldLogEvent('reconnected', 'MS successfully reconnected');
+    return shouldLogEvent('reconnected', 'messaging - MS successfully reconnected');
   });
 
   it('should log connection error event', () => {
@@ -83,7 +83,7 @@ describe('Messaging Service Client', () => {
     const event = 'MS connection error';
 
     return messagingServiceClient.init().catch(() => {
-      sinon.assert.calledWith(logger.error, event, error);
+      sinon.assert.calledWith(logger.error, `messaging - ${event}`, error);
     });
   });
 
