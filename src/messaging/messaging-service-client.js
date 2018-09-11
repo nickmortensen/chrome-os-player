@@ -18,12 +18,12 @@ function connect(displayId, machineId) {
     manual: true
   });
 
-  connection.on('open', () => logger.log('MS connection opened'));
-  connection.on('close', () => logger.log('MS connection closed'));
-  connection.on('end', () => logger.log('MS disconnected'));
-  connection.on('error', (error) => logger.error('MS connection error', error));
-  connection.on('reconnect', () => logger.log('MS reconnection attempt started'));
-  connection.on('reconnected', () => logger.log('MS successfully reconnected'));
+  connection.on('open', () => logger.log('messaging - MS connection opened'));
+  connection.on('close', () => logger.log('messaging - MS connection closed'));
+  connection.on('end', () => logger.log('messaging - MS disconnected'));
+  connection.on('error', (error) => logger.error('messaging - MS connection error', error));
+  connection.on('reconnect', () => logger.log('messaging - MS reconnection attempt started'));
+  connection.on('reconnected', () => logger.log('messaging - MS successfully reconnected'));
   connection.on('data', (data) => {
     logger.log('MS received data', data);
 
