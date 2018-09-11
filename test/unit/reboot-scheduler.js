@@ -111,7 +111,7 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content, nowDate);
 
-    sinon.assert.calledWith(chrome.alarms.create, 'restart', {when: restartDate});
+    sinon.assert.calledWith(chrome.alarms.create, 'restart');
     chrome.runtime.restartAfterDelay = originalRestartAfterDelay;
   });
 
