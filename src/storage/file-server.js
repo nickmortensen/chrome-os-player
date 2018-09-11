@@ -63,8 +63,8 @@ function onReceive({data, socketId}) {
   const fileName = uri.slice(uri.indexOf('/') + 1);
   fileSystem.readFile(fileName, 'cache')
     .then(file => sendResponse(socketId, '200 OK', keepAlive, file))
-    .catch((error) => {
-      logger.error(`responding with 404 due to error when handling file ${fileName}`, error);
+    .catch(error => {
+      logger.error(`storage - responding with 404 due to error when handling file`, error, {fileName});
       sendResponse(socketId, '404 Not Found', keepAlive);
     });
 }

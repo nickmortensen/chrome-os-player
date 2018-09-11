@@ -34,7 +34,7 @@ function clean(filePath) {
       .catch(error => logger.log("warning", error.stack));
     });
   })
-  .catch(error => logger.error(`storage - error while removing expired file metadata: ${filePath}`, error));
+  .catch(error => logger.error(`storage - error while removing expired file metadata`, error, {filePath}));
 }
 
 function cleanExpired() {

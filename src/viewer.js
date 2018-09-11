@@ -38,8 +38,8 @@ function setUpMessaging() {
 }
 
 function setupWebviewEvents(webview) {
-  webview.addEventListener('loadabort', evt => logger.error('viewer webview load aborted', null, {code: evt.code, reason: evt.reason}));
-  webview.addEventListener('unresponsive', () => logger.error('viewer webview unresponsive'));
+  webview.addEventListener('loadabort', evt => logger.error('player - viewer webview load aborted', null, {code: evt.code, reason: evt.reason}));
+  webview.addEventListener('unresponsive', () => logger.error('player - viewer webview unresponsive'));
   webview.addEventListener('permissionrequest', evt => {
     logger.log('viewer webview premission requested', evt.permission);
     if (evt.permission === 'geolocation' || evt.permission === 'loadplugin') {
@@ -68,7 +68,7 @@ function fetchContent() {
     rebootScheduler.scheduleRebootFromViewerContents(contentData);
     orientation.setupOrientation(contentData);
   })
-  .catch((error) => logger.error('error when fetching content', error));
+  .catch((error) => logger.error('player - error when fetching content', error));
 }
 
 function init() {
@@ -77,7 +77,7 @@ function init() {
       .then(storage.init)
       .then(licensing.init)
       .then(debugDataRequest.init)
-      .catch(error => logger.error('error when initilizing modules', error));
+      .catch(error => logger.error('player - error when initilizing modules', error));
     fileServer.init();
     fetchContent();
   });

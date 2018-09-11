@@ -12,6 +12,6 @@ module.exports = {
       if (aPresentationHasChanged) {logger.log('presentation updated');}
       if (theScheduleHasChanged) {logger.log('schedule updated');}
     })
-    .catch(err=>logger.error('Error comparing content.json data', err));
+    .catch(err=>logger.error('player - error comparing content.json data', err));
   }
 };

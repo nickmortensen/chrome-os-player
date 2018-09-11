@@ -40,7 +40,7 @@ function onReceive({data, socketId}) {
 
   return util.getDisplayId()
   .then(displayId=>sendResponse(socketId, '200 OK', JSON.stringify({displayId})))
-  .catch(err=>logger.error('marketwall display id error', err))
+  .catch(err=>logger.error('marketwall - display id error', err))
 }
 
 function sendResponse(socketId, httpStatus = '', content = '') {
@@ -63,7 +63,7 @@ function sendResponse(socketId, httpStatus = '', content = '') {
     console.log(`sent`, sendResult);
 
     if (chrome.runtime.lastError) {
-      logger.error('marketwall display id error', Error(chrome.runtime.lastError));
+      logger.error('marketwall - send display id error', Error(chrome.runtime.lastError.message));
     }
 
     sockets.delete(socketId);
