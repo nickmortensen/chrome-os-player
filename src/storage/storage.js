@@ -12,6 +12,7 @@ function init() {
     .then(() => expiration.cleanExpired())
     .then(() => {
       messaging.init();
+      expiration.requestUnwatchExpired();
       watchlist.requestWatchlistCompare();
       downloadQueue.checkStaleFiles();
       expiration.scheduleIncreaseSequence();

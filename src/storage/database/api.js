@@ -2,8 +2,6 @@
 
 const database = require("./lokijs/database");
 
-const MAX_EXPIRE_COUNT = 5;
-
 function allEntries(collection) {
   return database.getCollection(collection).find();
 }
@@ -198,17 +196,31 @@ module.exports = {
       module.exports.watchlist.setParameter('runtimeSequence', nextSequence);
 
       return nextSequence;
-    },
-    shouldBeExpired(metadataEntry) {
-      const {watchSequence} = metadataEntry;
+    }
+  },
+  expired: {
+    clear: ()=>clear("expired"),
+    allEntries: ()=>allEntries("expired"),
+    put(filePath) {
+      if (!filePath) {throw Error("missing params");}
 
-      if (!watchSequence) {
-        return false;
-      }
+      return new Promise((res, rej)=>{
+        const expired = database.getCollection("expired");
 
-      const currentSequence = module.exports.watchlist.runtimeSequence();
+        let item = expired.by("filePath", filePath);
 
-      return watchSequence + MAX_EXPIRE_COUNT <= currentSequence;
+        if (!item) {
+          item = expired.insert({filePath});
+        }
+
+        try {
+          expired.update(item);
+        } catch (err) {
+          rej(err);
+        }
+
+        res();
+      });
     }
   }
 
