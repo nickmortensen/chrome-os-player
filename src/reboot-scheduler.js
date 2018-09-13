@@ -32,7 +32,7 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   if (typeof chrome.runtime.restartAfterDelay === 'function') {
     chrome.runtime.restartAfterDelay(seconds);
   } else {
-    chrome.alarms.create('restart', {when: rebootDate});
+    chrome.alarms.create('restart', {when: rebootDate.getTime()});
     chrome.alarms.onAlarm.addListener(alarm => {
       if (alarm.name === 'restart') {
         logger.log('restarting after alarm');
