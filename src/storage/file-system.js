@@ -5,6 +5,11 @@ const util = require('../util');
 const logger = require('../logging/logger');
 
 /**
+ * WritableStream requires Chrome 59. This polyfill enables it on older versions.
+ */
+require("@stardazed/streams-polyfill");
+
+/**
  * Creates a new directory under root.
  * @param {string} name
  * @returns {Promise.<DirectoryEntry>}
