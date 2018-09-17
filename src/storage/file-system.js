@@ -94,14 +94,18 @@ function readFileAsArrayBuffer(fileEntry) {
   });
 }
 
+function readCachedFileAsString(fileHash) {
+  return readFile(fileHash, 'cache')
+  .then(readFileAsArrayBuffer)
+  .then(util.arrayBufferToString)
+}
+
 /**
  * @param {string} filePath
  * @returns {Promise.<Object>}
  */
 function readCachedFileAsObject(fileHash) {
-  return readFile(fileHash, 'cache')
-  .then(readFileAsArrayBuffer)
-  .then(util.arrayBufferToString)
+  return readCachedFileAsString(fileHash)
   .then(str=>{
     try {
       return JSON.parse(str);
