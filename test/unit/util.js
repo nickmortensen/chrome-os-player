@@ -22,24 +22,23 @@ describe('Util', () => {
     Reflect.deleteProperty(global, 'TextEncoder');
     Reflect.deleteProperty(global, 'TextDecoder');
     Reflect.deleteProperty(global, 'fetch');
-    sandbox.restore();
   });
 
-  afterEach(() => sandbox.reset());
+  afterEach(() => sandbox.restore());
 
   it('should decode array buffer as string', () => {
     const string = 'string';
     sandbox.stub(TextDecoder.prototype, 'decode').returns(string);
 
-    const buffer = new ArrayBuffer(100); // eslint-disable-line no-magic-numbers
-    const decoded = util.arrayBufferToString(buffer);
+    const buffer = new ArrayBuffer(100);
+    const decoded = util.arrayBufferToString({buffer});
 
     assert.equal(decoded, string);
   });
 
   it('should encode string as array buffer', () => {
-    const buffer = new ArrayBuffer(100); // eslint-disable-line no-magic-numbers
-    sandbox.stub(TextEncoder.prototype, 'encode').returns(buffer);
+    const buffer = new ArrayBuffer(100);
+    sandbox.stub(TextEncoder.prototype, 'encode').returns({buffer});
 
     const string = 'string';
     const encoded = util.stringToArrayBuffer(string);
@@ -51,14 +50,16 @@ describe('Util', () => {
     const crypto = {subtle: {digest() {}}};
     global.crypto = crypto;
 
-    sandbox.stub(crypto.subtle, 'digest').resolves(new Uint8Array(1, 2, 3)); // eslint-disable-line no-magic-numbers
+    sandbox.stub(TextEncoder.prototype, 'encode').returns({buffer: new Uint8Array(1, 2, 3)});
+    sandbox.stub(crypto.subtle, 'digest').resolves(new Uint8Array(4, 5, 6));
 
     return util.sha1('string').then((hash) => {
-      assert.equal(hash, '00');
+      assert.equal(hash, '00000000');
     });
   });
 
   it('should fetch without retrying when first attempt is successful', () => {
+    fetch.reset();
     const expectedResponse = {ok: true, status: 200};
     fetch.resolves(expectedResponse);
     const url = 'https://www.risevision.com';
@@ -69,6 +70,7 @@ describe('Util', () => {
   });
 
   it('should retry fetch', () => {
+    fetch.reset();
     fetch.onFirstCall().rejects(new Error('fetch rejected'));
     const expectedResponse = {ok: true, status: 200};
     fetch.onSecondCall().resolves(expectedResponse);
@@ -83,6 +85,7 @@ describe('Util', () => {
   });
 
   it('should reject fetch after many retries', () => {
+    fetch.reset();
     const expectedError = new Error('fetch rejected');
     fetch.rejects(expectedError);
 
