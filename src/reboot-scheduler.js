@@ -1,8 +1,6 @@
 const launchEnvs = require("./launch-environment");
 const logger = require('./logging/logger');
 
-const MILLISECONDS = 1000;
-
 function shouldSchedule(content) {
   if (!(content && content.display && content.display.restartEnabled)) {
     logger.log('reboot not enabled in display settings');
@@ -26,20 +24,14 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   if (!shouldSchedule(content)) {return;}
 
   const rebootDate = parseRebootDate(content.display.restartTime, nowDate);
-  const seconds = Math.floor((rebootDate - nowDate) / MILLISECONDS);
-
-  logger.log(`scheduling reboot for ${rebootDate} in ${seconds} seconds from now`);
-  if (typeof chrome.runtime.restartAfterDelay === 'function') {
-    chrome.runtime.restartAfterDelay(seconds);
-  } else {
-    chrome.alarms.create('restart', {when: rebootDate.getTime()});
-    chrome.alarms.onAlarm.addListener(alarm => {
-      if (alarm.name === 'restart') {
-        logger.log('restarting after alarm');
-        chrome.runtime.restart();
-      }
-    });
-  }
+  logger.log('scheduling reboot', rebootDate.toString());
+  chrome.alarms.create('restart', {when: rebootDate.getTime()});
+  chrome.alarms.onAlarm.addListener(alarm => {
+    if (alarm.name === 'restart') {
+      logger.log('restarting after alarm');
+      chrome.runtime.restart();
+    }
+  });
 }
 
 function parseRebootDate(restartHHMM, nowDate) {
