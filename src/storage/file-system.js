@@ -5,6 +5,11 @@ const util = require('../util');
 const logger = require('../logging/logger');
 
 /**
+ * WritableStream requires Chrome 59. This polyfill enables it on older versions.
+ */
+require("@stardazed/streams-polyfill");
+
+/**
  * Creates a new directory under root.
  * @param {string} name
  * @returns {Promise.<DirectoryEntry>}
@@ -89,14 +94,18 @@ function readFileAsArrayBuffer(fileEntry) {
   });
 }
 
+function readCachedFileAsString(fileHash) {
+  return readFile(fileHash, 'cache')
+  .then(readFileAsArrayBuffer)
+  .then(util.arrayBufferToString)
+}
+
 /**
  * @param {string} filePath
  * @returns {Promise.<Object>}
  */
 function readCachedFileAsObject(fileHash) {
-  return readFile(fileHash, 'cache')
-  .then(readFileAsArrayBuffer)
-  .then(util.arrayBufferToString)
+  return readCachedFileAsString(fileHash)
   .then(str=>{
     try {
       return JSON.parse(str);

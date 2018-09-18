@@ -13,7 +13,8 @@ function arrayBufferToString(buffer) {
  */
 function stringToArrayBuffer(string) {
   const encoder = new TextEncoder('utf8');
-  return encoder.encode(string);
+  const encoded = encoder.encode(string);
+  return encoded.buffer;
 }
 
 /**
