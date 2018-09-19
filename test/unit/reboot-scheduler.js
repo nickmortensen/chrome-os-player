@@ -7,9 +7,10 @@ const sandbox = sinon.createSandbox();
 
 describe('Reboot Scheduler', () => {
 
-  after(() => chrome.flush());
-
-  afterEach(() => sandbox.restore());
+  afterEach(() => {
+    sandbox.restore();
+    chrome.flush();
+  });
 
   beforeEach(() => sandbox.stub(logger, 'log'));
 
@@ -17,7 +18,7 @@ describe('Reboot Scheduler', () => {
     sandbox.stub(envVars, 'isKioskSession').returns(true);
     rebootScheduler.scheduleRebootFromViewerContents();
 
-    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+    sinon.assert.notCalled(chrome.alarms.create);
   });
 
   it('should not schedule reboot when display is empty', () => {
@@ -26,7 +27,7 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
 
-    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+    sinon.assert.notCalled(chrome.alarms.create);
   });
 
   it('should not schedule reboot when restart is not enable', () => {
@@ -35,7 +36,7 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
 
-    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+    sinon.assert.notCalled(chrome.alarms.create);
   });
 
   it('should not schedule reboot when not in kiosk mode', () => {
@@ -44,7 +45,7 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
 
-    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+    sinon.assert.notCalled(chrome.alarms.create);
   });
 
   it('should not schedule reboot and log error when restart time is not valid', () => {
@@ -54,7 +55,7 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content);
 
-    sinon.assert.notCalled(chrome.runtime.restartAfterDelay);
+    sinon.assert.notCalled(chrome.alarms.create);
     sinon.assert.calledWith(logger.log, 'scheduled reboot error', 'invalid reboot schedule time: tomorrow')
   });
 
@@ -69,7 +70,10 @@ describe('Reboot Scheduler', () => {
 
     rebootScheduler.scheduleRebootFromViewerContents(content, nowDate);
 
-    sinon.assert.calledWith(chrome.runtime.restartAfterDelay, 3600);
+    chrome.alarms.onAlarm.dispatch({name: 'restart'});
+
+    sinon.assert.calledWith(chrome.alarms.create, 'restart');
+    sinon.assert.called(chrome.runtime.restart);
   });
 
   it('should reload and not reboot now when not in kiosk mode', () => {
@@ -95,24 +99,6 @@ describe('Reboot Scheduler', () => {
     rebootScheduler.restart();
 
     sinon.assert.called(chrome.runtime.reload);
-  });
-
-  it('should schedule alarm if restartAfterDelay is not available', () => {
-    sandbox.stub(envVars, 'isKioskSession').returns(true);
-    const originalRestartAfterDelay = chrome.runtime.restartAfterDelay;
-    Reflect.deleteProperty(chrome.runtime, 'restartAfterDelay');
-
-    const nowDate = Date.now();
-    const oneHour = 60 * 60 * 1000;
-    const restartDate = new Date(nowDate + oneHour);
-    const hh = `${restartDate.getHours()}`.padStart(2, '0');
-    const mm = `${restartDate.getMinutes()}`.padStart(2, '0');
-    const content = {display: {restartEnabled: true, restartTime: `${hh}:${mm}`}};
-
-    rebootScheduler.scheduleRebootFromViewerContents(content, nowDate);
-
-    sinon.assert.calledWith(chrome.alarms.create, 'restart');
-    chrome.runtime.restartAfterDelay = originalRestartAfterDelay;
   });
 
 });
