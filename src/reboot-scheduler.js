@@ -7,11 +7,6 @@ function shouldSchedule(content) {
     return false;
   }
 
-  if (!launchEnvs.isKioskSession()) {
-    logger.log('reboot not scheduled because it is not in kiosk mode', launchEnvs.getLaunchData());
-    return false;
-  }
-
   if (!(content.display.restartTime && content.display.restartTime.includes(':'))) {
     logger.log('scheduled reboot error', `invalid reboot schedule time: ${content.display.restartTime}`);
     return false;
@@ -28,8 +23,7 @@ function scheduleRebootFromViewerContents(content, nowDate = Date.now()) {
   chrome.alarms.create('restart', {when: rebootDate.getTime()});
   chrome.alarms.onAlarm.addListener(alarm => {
     if (alarm.name === 'restart') {
-      logger.log('restarting after alarm');
-      chrome.runtime.restart();
+      rebootNow();
     }
   });
 }
