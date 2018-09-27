@@ -234,6 +234,18 @@ describe('Content Comparison', () => {
       }))
     });
 
+    it('should pass without a schedule if default content.json', () => {
+      assert.doesNotReject(contentComparison.compareContentData({
+        content: {
+          presentations: [
+            {
+              id: "2b95b77e-839c-4674-b020-e2198df49061"
+            }
+          ]
+        }
+      }))
+    });
+
     it('passing', () => {
       assert.doesNotReject(contentComparison.compareContentData({
         content: {
@@ -243,5 +255,4 @@ describe('Content Comparison', () => {
       }))
     });
   });
-
 });
