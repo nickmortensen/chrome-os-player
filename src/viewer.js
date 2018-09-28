@@ -19,7 +19,7 @@ function setUpMessaging() {
   webview.addEventListener('loadstart', (evt) => {
     if (!evt.isTopLevel) {return;}
     if (!evt.url.match(/http[s]?:\/\/viewer(?:-test)?.risevision.com/)) {return;}
-    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction()}, ()=>{
+    webview.executeScript({code: viewerInjector.generateMessagingSetupFunction(), runAt: 'document_end'}, ()=>{
       viewerMessaging.send({from: 'player', topic: 'latch-app-window'});
     });
   });
