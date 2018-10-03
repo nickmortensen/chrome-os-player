@@ -246,6 +246,20 @@ describe('Content Comparison', () => {
       }))
     });
 
+    it('should pass without a presentation if only url items in the schedule', () => {
+      assert.doesNotReject(contentComparison.compareContentData({
+        content: {
+          schedule: {
+            items: [
+              {
+                type: "url"
+              }
+            ]
+          }
+        }
+      }));
+    });
+
     it('passing', () => {
       assert.doesNotReject(contentComparison.compareContentData({
         content: {
