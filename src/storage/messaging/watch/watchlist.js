@@ -1,5 +1,6 @@
 const messagingServiceClient = require('../../../messaging/messaging-service-client');
 const db = require("../../database/api");
+const deleteFile = require("../delete/delete");
 const update = require("../update/update");
 const watch = require("./watch");
 
@@ -54,11 +55,16 @@ function refresh(watchlist, lastChanged) {
     const metaData = db.fileMetadata.get(filePath);
 
     if (!metaData) {
+      if (version === "0") {
+        return Promise.resolve();
+      }
+
       return addNewFile(filePath);
     }
 
-    return version === metaData.version ?
-      Promise.resolve() : refreshUpdatedFile(metaData);
+    return version === metaData.version ? Promise.resolve() :
+      version === "0" ? deleteFile.process(metaData) :
+      refreshUpdatedFile(metaData);
   }))
   .then(() => markMissingFilesAsUnknown(watchlist))
   .then(() => db.watchlist.setLastChanged(lastChanged));
