@@ -71,13 +71,12 @@ describe('Storage Messaging', () => {
     });
   });
 
-  it('should delete entry from metadata and watchlist db collections and send file update on MSFILEUPDATE delete message', () => {
+  it('should delete entry from metadata collection and send file update on MSFILEUPDATE delete message', () => {
     sandbox.stub(localMessaging, 'sendFileUpdate').resolves();
 
     const message = {filePath, version, token, type: 'DELETE', topic: 'MSFILEUPDATE', watchlistLastChanged: '2522697262234'};
 
     return messaging.handleMSFileUpdate(message).then(() => {
-      sinon.assert.calledWith(db.watchlist.delete, filePath);
       sinon.assert.calledWith(db.fileMetadata.delete, filePath);
       sinon.assert.calledWith(localMessaging.sendFileUpdate, {filePath, status: 'DELETED'});
     });
