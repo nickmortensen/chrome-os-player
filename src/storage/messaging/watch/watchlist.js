@@ -54,6 +54,10 @@ function refresh(watchlist, lastChanged) {
     const metaData = db.fileMetadata.get(filePath);
 
     if (!metaData) {
+      if (version === "0") {
+        return Promise.resolve();
+      }
+
       return addNewFile(filePath);
     }
 
