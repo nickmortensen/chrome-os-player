@@ -23,6 +23,7 @@ describe('Storage', () => {
     sandbox.stub(fileSystem, 'clearLeastRecentlyUsedFiles').resolves();
     sandbox.stub(expiration, 'cleanExpired').resolves();
     sandbox.stub(expiration, 'scheduleIncreaseSequence').resolves();
+    sandbox.stub(expiration, 'requestUnwatchExpired').resolves();
   });
 
   it('should initialize storage messaging', () => {

@@ -1,4 +1,4 @@
-const COLLECTIONS = ["metadata", "runtime_info", "watchlist"];
+const COLLECTIONS = ["metadata", "runtime_info", "watchlist", "expired"];
 
 const loki = require("lokijs");
 const LokiIndexedAdapter = require("lokijs/src/loki-indexed-adapter");
