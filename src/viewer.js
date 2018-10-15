@@ -17,7 +17,6 @@ function setUpMessaging() {
   viewerMessaging.init(webview);
 
   webview.addEventListener('loadcommit', (evt) => {
-    logger.log('viewer webview loadstart event', {isTopLevel: evt.isTopLevel, url: evt.url});
     if (!evt.isTopLevel) {return;}
     if (!evt.url.match(/http[s]?:\/\/viewer(?:-test)?.risevision.com/)) {return;}
     webview.executeScript({code: viewerInjector.generateMessagingSetupFunction(), runAt: 'document_start'}, ()=>{
