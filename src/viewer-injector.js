@@ -79,8 +79,8 @@ function generateScriptText(fn) {
 
   const scriptText = `(function() {
       var script = document.createElement("script");
-      script.innerHTML = "(function() { (${fnText})(); })()"
-      document.head.appendChild(script);
+      script.textContent = "(function() { (${fnText})(); })()";
+      (document.head || document.documentElement).appendChild(script);
       })()`;
   return scriptText;
 }
