@@ -94,6 +94,10 @@ function getChromeOSVersion() {
   return '';
 }
 
+function getAppId() {
+  return new Promise(resolve => resolve(chrome.runtime.id));
+}
+
 module.exports = {
   getMachineId,
   getDisplayId,
@@ -103,5 +107,6 @@ module.exports = {
   getPlayerVersion,
   getPlayerName,
   getChromeVersion,
-  getChromeOSVersion
+  getChromeOSVersion,
+  getAppId
 }

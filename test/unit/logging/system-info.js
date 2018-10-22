@@ -164,4 +164,13 @@ describe('System Info', () => {
       });
   });
 
+  it('should return appid', () => {
+    chrome.runtime.id = 'appid';
+    return systemInfo.getAppId()
+      .then(id => {
+        assert.equal(id, 'appid');
+      });
+  });
+
+
 });
