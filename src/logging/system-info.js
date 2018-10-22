@@ -95,7 +95,7 @@ function getChromeOSVersion() {
 }
 
 function getAppId() {
-  return new Promise(resolve => resolve(chrome.runtime.id));
+  return chrome.runtime.id;
 }
 
 module.exports = {
