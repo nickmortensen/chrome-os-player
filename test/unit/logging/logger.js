@@ -28,6 +28,7 @@ describe('Logger', () => {
     sandbox.stub(systemInfo, 'getPlayerName').returns('(Beta) RisePlayer');
     sandbox.stub(systemInfo, 'getChromeVersion').returns('64.0.3282.186');
 
+    chrome.runtime.id = null;
   });
 
   afterEach(() => sandbox.restore());
@@ -86,12 +87,14 @@ describe('Logger', () => {
 
   it('should log client info to big query', () => {
     chrome.storage.local.get.yields({});
+    chrome.runtime.id = 'appid';
 
     const viewerConfig = {width: 1000, height: 1000, viewerVersion: 'viewerVersion'};
     const isAuthorized = false;
     const nowDate = new Date();
 
     const expectedPlayerData = {
+      app_id: 'appid',
       machine_id: 'machineId',
       display_id: 'displayId',
       os_description: 'Chrome OS 10323.9.0',
@@ -133,6 +136,7 @@ describe('Logger', () => {
     const nowDate = new Date();
 
     const expectedPlayerData = {
+      app_id: 'appid',
       display_id: 'displayId',
       machine_id: 'machineId',
       os_description: 'Chrome OS 10323.9.0',
@@ -150,6 +154,7 @@ describe('Logger', () => {
     };
 
     chrome.storage.local.get.yields({playerData: expectedPlayerData});
+    chrome.runtime.id = 'appid';
 
     return logger.logClientInfo(viewerConfig, isAuthorized, nowDate)
       .then(() => {
@@ -163,6 +168,7 @@ describe('Logger', () => {
     const nowDate = new Date();
 
     const expectedPlayerData = {
+      app_id: 'appid',
       machine_id: 'machineId',
       display_id: 'displayId',
       os_description: 'Chrome OS 10323.9.0',
@@ -181,6 +187,7 @@ describe('Logger', () => {
 
     const staleData = {...expectedPlayerData, height: 900, offline_subscription: isAuthorized};
     chrome.storage.local.get.yields({playerData: staleData});
+    chrome.runtime.id = 'appid';
 
     return logger.logClientInfo(viewerConfig, isAuthorized, nowDate)
       .then(() => {

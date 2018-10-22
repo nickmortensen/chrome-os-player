@@ -5,9 +5,9 @@ const environment = require('../launch-environment');
 const moment = require('moment-timezone');
 
 function buildPlayerData(viewerConfig, isAuthorized) {
-  return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress()])
+  return Promise.all([systemInfo.getMachineId(), systemInfo.getDisplayId(), systemInfo.getOS(), systemInfo.getIpAddress(), systemInfo.getAppId()])
     .then(values => {
-      const [machineId, displayId, os, ip] = values;
+      const [machineId, displayId, os, ip, appid] = values;
       const chromeOSVersion = systemInfo.getChromeOSVersion();
       return {
         machine_id: machineId,
@@ -23,7 +23,8 @@ function buildPlayerData(viewerConfig, isAuthorized) {
         height: viewerConfig.height,
         time_zone: moment.tz.guess(),
         utc_offset: moment().format("Z"),
-        offline_subscription: isAuthorized
+        offline_subscription: isAuthorized,
+        app_id: appid
       };
     });
 }
