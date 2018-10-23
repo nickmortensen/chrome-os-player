@@ -11,6 +11,7 @@ const orientation = require('./orientation');
 const fileServer = require('./storage/file-server');
 const launchEnv = require('./launch-environment');
 const screenshot = require('./screenshot');
+const uptime = require('./uptime/uptime');
 
 function setUpMessaging() {
   const webview = document.querySelector('webview');
@@ -68,6 +69,7 @@ function fetchContent() {
     viewerMessaging.send({from: 'player', topic: 'content-update', newContent: contentData});
     rebootScheduler.scheduleRebootFromViewerContents(contentData);
     orientation.setupOrientation(contentData);
+    uptime.setSchedule(contentData);
   })
   .catch((error) => logger.error('player - error when fetching content', error));
 }

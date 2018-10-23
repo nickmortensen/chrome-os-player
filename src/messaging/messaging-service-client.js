@@ -6,6 +6,7 @@ const systemInfo = require('../logging/system-info');
 const messageHandlers = {};
 
 let connection = null;
+let readyState = null;
 
 function connect(displayId, machineId) {
   const url = `https://services.risevision.com/messaging/primus/?displayId=${displayId}&machineId=${machineId}`;
@@ -18,6 +19,7 @@ function connect(displayId, machineId) {
     manual: true
   });
 
+  connection.on('readyStateChange', newState => readyState = newState);
   connection.on('open', () => logger.log('messaging - MS connection opened'));
   connection.on('close', () => logger.log('messaging - MS connection closed'));
   connection.on('end', () => logger.log('messaging - MS disconnected'));
@@ -73,8 +75,13 @@ function send(message) {
   connection.write(message);
 }
 
+function isConnected() {
+  return readyState === "open";
+}
+
 module.exports = {
   init,
   on,
-  send
+  send,
+  isConnected
 }
