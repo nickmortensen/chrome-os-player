@@ -62,6 +62,8 @@ function setUpMessaging() {
     eventHandlers[eventName].push(handler);
   }
 
+  registerMessageHandler('renderer-ping', () => sendMessageToApp({message: 'renderer-pong'}));
+
   window.useWindowMessagingForLocalMessaging = true;
   window.disableViewerContentFetch = true;
   window.useRLSSingleFile = true;

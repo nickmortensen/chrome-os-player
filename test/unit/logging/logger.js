@@ -18,12 +18,12 @@ describe('Logger', () => {
 
     sandbox.stub(environment, 'isDevelopmentVersion').returns(false);
 
-    sandbox.stub(systemInfo, 'getId').returns('displayId');
-    sandbox.stub(systemInfo, 'getMachineId').returns('machineId');
-    sandbox.stub(systemInfo, 'getDisplayId').returns('displayId');
-    sandbox.stub(systemInfo, 'getOS').returns('mac/x86-64');
+    sandbox.stub(systemInfo, 'getId').resolves('displayId');
+    sandbox.stub(systemInfo, 'getMachineId').resolves('machineId');
+    sandbox.stub(systemInfo, 'getDisplayId').resolves('displayId');
+    sandbox.stub(systemInfo, 'getOS').resolves('mac/x86-64');
     sandbox.stub(systemInfo, 'getChromeOSVersion').returns('10323.9.0');
-    sandbox.stub(systemInfo, 'getIpAddress').returns('192.168.0.1');
+    sandbox.stub(systemInfo, 'getIpAddress').resolves('192.168.0.1');
     sandbox.stub(systemInfo, 'getPlayerVersion').returns('0.0.0.0');
     sandbox.stub(systemInfo, 'getPlayerName').returns('(Beta) RisePlayer');
     sandbox.stub(systemInfo, 'getChromeVersion').returns('64.0.3282.186');
@@ -193,6 +193,18 @@ describe('Logger', () => {
       .then(() => {
         sinon.assert.calledWith(bq.insert, {...expectedPlayerData, ts: nowDate.toISOString()}, 'Player_Data', 'configuration');
         sinon.assert.calledWith(chrome.storage.local.set, {playerData: expectedPlayerData});
+      });
+  });
+
+  it('should log uptime to big query', () => {
+    const nowDate = new Date();
+    const connected = true;
+    const showing = true;
+    const scheduled = false;
+
+    return logger.logUptime(connected, showing, scheduled, nowDate)
+      .then(() => {
+        sinon.assert.calledWith(bq.insert, {display_id: 'displayId', connected, showing, scheduled, ts: nowDate.toISOString()}, 'Uptime_Events', 'events');
       });
   });
 
