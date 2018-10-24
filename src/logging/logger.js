@@ -52,6 +52,23 @@ function logClientInfo(viewerConfig, isAuthorized, nowDate = new Date()) {
     .catch(err => error('error when logging client info', err));
 }
 
+function logUptime(connected, showing, scheduled, nowDate = new Date()) {
+  if (environment.isDevelopmentVersion()) {return Promise.resolve();}
+
+  return systemInfo.getId()
+    .then(id => {
+      const data = {
+        display_id: id,
+        showing,
+        connected,
+        scheduled,
+        ts: nowDate.toISOString()
+      };
+      return bq.insert(data, 'Uptime_Events', 'events', nowDate);
+    })
+    .catch(err => error('error when logging uptime', err));
+}
+
 /**
  * @param {string} event
  * @param {object} [details]
@@ -100,5 +117,6 @@ function error(event, err, details = {}, nowDate = new Date()) {
 module.exports = {
   log,
   logClientInfo,
+  logUptime,
   error
 }

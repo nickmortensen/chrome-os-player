@@ -8,7 +8,6 @@ const uptimeInterval = 300000;
 let schedule = null;
 
 function setSchedule(data) {
-  console.log('uptime - setSchedule', data);
   if (data && data.content && data.content.schedule) {
     schedule = data.content.schedule;
   }
@@ -43,7 +42,7 @@ function calculate() {
   checkRendererHealth().then(rendererResult => {
     const connectedToMS = messagingServiceClient.isConnected();
     const shouldBePlaying = scheduleParser.canPlay(schedule);
-    logger.log('uptime', {connectedToMS, rendererResult, shouldBePlaying});
+    logger.logUptime(connectedToMS, rendererResult, shouldBePlaying);
   })
   .catch(err => logger.error('uptime - error', err));
 }
