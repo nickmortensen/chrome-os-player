@@ -1,4 +1,5 @@
 const scheduleParser = require('./schedule-parser');
+const messagingServiceClient = require('../messaging/messaging-service-client');
 const logger = require('../logging/logger');
 
 let schedule = null;
@@ -17,7 +18,8 @@ function calculate() {
   }
 
   const shouldBePlaying = scheduleParser.canPlay(schedule);
-  logger.log('uptime', {shouldBePlaying});
+  const connectedToMS = messagingServiceClient.isConnected();
+  logger.log('uptime', {shouldBePlaying, connectedToMS});
 }
 
 module.exports = {
