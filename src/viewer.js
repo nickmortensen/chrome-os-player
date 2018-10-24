@@ -82,6 +82,7 @@ function init() {
       .then(debugDataRequest.init)
       .catch(error => logger.error('player - error when initilizing modules', error));
     fileServer.init();
+    uptime.init();
     fetchContent();
   });
 }

@@ -107,5 +107,29 @@ describe('Viewer Messaging', () => {
     sinon.assert.calledWith(webview.contentWindow.postMessage, message, webview.src);
   });
 
+  it('should handle messages once', () => {
+    const eventHandler = sandbox.spy();
+    viewerMessaging.once('widget-ready', eventHandler);
+
+    const data = {message: 'widget-ready', widgetUrl: 'http://widgets.risevision.com/widget-image/0.1.1/dist/widget.html', from: 'viewer'};
+    onMessageEvent({data, preventDefault() {}});
+    onMessageEvent({data, preventDefault() {}});
+
+    sinon.assert.calledOnce(eventHandler);
+  });
+
+  it('should remove all listeners', () => {
+    const eventHandler = sandbox.spy();
+    viewerMessaging.on('widget-ready', eventHandler);
+
+    const data = {message: 'widget-ready', widgetUrl: 'http://widgets.risevision.com/widget-image/0.1.1/dist/widget.html', from: 'viewer'};
+    onMessageEvent({data, preventDefault() {}});
+
+    viewerMessaging.removeAllListeners('widget-ready');
+
+    onMessageEvent({data, preventDefault() {}});
+
+    sinon.assert.calledOnce(eventHandler);
+  });
 
 });

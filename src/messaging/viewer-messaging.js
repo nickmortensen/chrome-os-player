@@ -56,6 +56,23 @@ function on(topic, handler) {
   messageHandlers[key].push(handler);
 }
 
+function once(topic, handler) {
+  const key = topic.toLowerCase();
+  if (!messageHandlers[key]) {
+    messageHandlers[key] = [];
+  }
+
+  messageHandlers[key].push((data) => {
+    handler(data);
+    messageHandlers[key] = [];
+  });
+}
+
+function removeAllListeners(topic) {
+  const key = topic.toLowerCase();
+  messageHandlers[key] = [];
+}
+
 function send(message) {
   if (messageSender) {
     messageSender.sendMessage(message);
@@ -84,6 +101,8 @@ function viewerCanReceiveContent() {
 module.exports = {
   init,
   on,
+  once,
+  removeAllListeners,
   send,
   viewerCanReceiveContent
 }
