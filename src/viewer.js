@@ -71,7 +71,10 @@ function fetchContent() {
     orientation.setupOrientation(contentData);
     uptime.setSchedule(contentData);
   })
-  .catch((error) => logger.error('player - error when fetching content', error));
+  .catch((error) => {
+    logger.error('player - error when fetching content', error);
+    rebootScheduler.rebootNow();
+  });
 }
 
 function init() {
