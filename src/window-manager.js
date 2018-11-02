@@ -51,8 +51,8 @@ function createWebViewWindow(file, url, options = {}) {
           console.error(err);
         });
         webview.src = url;
+        resolve(appWin);
       });
-      resolve(appWin);
     });
   });
 }
