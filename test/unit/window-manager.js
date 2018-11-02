@@ -46,8 +46,18 @@ describe('Window Manager', () => {
   });
 
   it('should close previous window when viewer is launched', () => {
-    const viewerWindow = {onClosed: {addListener() {}}, contentWindow: {addEventListener() {}}};
+    const viewerWindow = {
+      onClosed: {addListener() {}},
+      contentWindow: {
+        addEventListener() {},
+        document: {
+          querySelector() {}
+        }
+      }
+    }
     sandbox.stub(viewerWindow.onClosed, 'addListener').yields([]);
+    sandbox.stub(viewerWindow.contentWindow, 'addEventListener').yields([]);
+    sandbox.stub(viewerWindow.contentWindow.document, 'querySelector').returns({addEventListener() {}});
     chrome.app.window.create.yields(viewerWindow);
 
     const previousWindow = {close: sinon.spy()};
@@ -70,8 +80,18 @@ describe('Window Manager', () => {
     const previousWindow = {close: sinon.spy()};
     chrome.app.window.current.returns(previousWindow);
 
-    const viewerWindow = {onClosed: {addListener() {}}, contentWindow: {addEventListener() {}}};
+    const viewerWindow = {
+      onClosed: {addListener() {}},
+      contentWindow: {
+        addEventListener() {},
+        document: {
+          querySelector() {}
+        }
+      }
+    };
     sandbox.stub(viewerWindow.onClosed, 'addListener').yields([]);
+    sandbox.stub(viewerWindow.contentWindow, 'addEventListener').yields([]);
+    sandbox.stub(viewerWindow.contentWindow.document, 'querySelector').returns({addEventListener() {}});
     chrome.app.window.create.yields(viewerWindow);
 
     const displayId = 'displayId';
