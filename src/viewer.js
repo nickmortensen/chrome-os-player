@@ -40,8 +40,8 @@ function setUpMessaging() {
 }
 
 function setupWebviewEvents(webview) {
+  setupResponsivenessEvents(webview);
   webview.addEventListener('loadabort', evt => logger.error('player - viewer webview load aborted', null, {code: evt.code, reason: evt.reason}));
-  webview.addEventListener('unresponsive', () => logger.error('player - viewer webview unresponsive'));
   webview.addEventListener('permissionrequest', evt => {
     logger.log('viewer webview premission requested', evt.permission);
     if (evt.permission === 'geolocation' || evt.permission === 'loadplugin') {
@@ -50,6 +50,18 @@ function setupWebviewEvents(webview) {
       evt.request.deny();
     }
   });
+}
+
+function setupResponsivenessEvents(webview) {
+  let responsiveTimer = null;
+  const sixMinutes = 6 * 60 * 1000; // eslint-disable-line
+
+  webview.addEventListener('unresponsive', () => {
+    logger.error('player - viewer webview unresponsive');
+    responsiveTimer = setTimeout(() => rebootScheduler.rebootNow(), sixMinutes);
+  });
+
+  webview.addEventListener('responsive', () => clearTimeout(responsiveTimer));
 }
 
 function setupClientInfoLog() {
